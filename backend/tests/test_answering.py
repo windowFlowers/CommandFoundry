@@ -1,0 +1,122 @@
+from __future__ import annotations
+
+import httpx
+import pytest
+
+from app.answering import AnswerService
+from app.generation import DeepSeekGenerator, ModelAnswerDraft
+from app.main import retriever
+from app.models import CommandBlock
+
+
+class FailedGenerator:
+    available = True
+
+    def generate(self, query, hits):
+        raise ValueError("invalid JSON")
+
+
+class SuccessfulGenerator:
+    available = True
+
+    def generate(self, query, hits):
+        return ModelAnswerDraft(
+            summary="使用 git revert 创建一个反向提交。",
+            commands=[
+                CommandBlock(
+                    label="安全回滚",
+                    code="git revert <commit>",
+                    platforms=["Windows", "macOS", "Linux"],
+                    prerequisites=["Git 仓库工作区干净"],
+                )
+            ],
+            notes=["该方式保留历史。"],
+        )
+
+
+def _generator(handler: httpx.MockTransport) -> DeepSeekGenerator:
+    return DeepSeekGenerator(
+        api_key="test-key-not-a-secret",
+        base_url="https://api.deepseek.example/v1/",
+        model="deepseek-chat",
+        timeout_seconds=2,
+        transport=handler,
+    )
+
+
+def _git_hits():
+    return retriever.retrieve("Git 安全回滚提交", top_k=4)
+
+
+def test_invalid_model_output_falls_back_without_losing_citations() -> None:
+    hits = retriever.retrieve("Git 安全回滚提交", top_k=4)
+    answer, reason = AnswerService(FailedGenerator()).answer("Git 安全回滚提交", hits)
+    assert answer.mode == "local_fallback"
+    assert reason == "ValueError"
+    assert answer.citations
+
+
+def test_valid_model_output_is_structured_and_grounded() -> None:
+    hits = retriever.retrieve("Git 安全回滚提交", top_k=4)
+    answer, reason = AnswerService(SuccessfulGenerator()).answer("Git 安全回滚提交", hits)
+    assert answer.mode == "model"
+    assert reason == "model"
+    assert answer.commands[0].code == "git revert <commit>"
+    assert answer.citations[0].source_id == "git.git-revert"
+
+
+def test_deepseek_success_response_is_validated() -> None:
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert request.url == "https://api.deepseek.example/v1/chat/completions"
+        assert request.headers["Authorization"] == "Bearer test-key-not-a-secret"
+        payload = {
+            "choices": [
+                {
+                    "message": {
+                        "content": """```json
+                        {
+                          "summary": "使用反向提交安全撤销变更。",
+                          "commands": [{
+                            "label": "撤销提交",
+                            "language": "bash",
+                            "code": "git revert <commit>",
+                            "platforms": ["Windows", "macOS", "Linux"],
+                            "prerequisites": ["当前目录是 Git 仓库"],
+                            "risk": "low",
+                            "warning": null
+                          }],
+                          "notes": ["会保留历史记录。"]
+                        }
+                        ```"""
+                    }
+                }
+            ]
+        }
+        return httpx.Response(200, json=payload)
+
+    draft = _generator(httpx.MockTransport(respond)).generate("如何安全回滚？", _git_hits())
+    assert draft.commands[0].code == "git revert <commit>"
+    assert draft.summary == "使用反向提交安全撤销变更。"
+
+
+def test_deepseek_timeout_is_exposed_for_fallback() -> None:
+    def timeout(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("mock timeout", request=request)
+
+    with pytest.raises(httpx.ReadTimeout):
+        _generator(httpx.MockTransport(timeout)).generate("如何安全回滚？", _git_hits())
+
+
+def test_deepseek_rate_limit_is_exposed_for_fallback() -> None:
+    transport = httpx.MockTransport(lambda _: httpx.Response(429, json={"error": {"message": "rate limited"}}))
+    with pytest.raises(httpx.HTTPStatusError) as caught:
+        _generator(transport).generate("如何安全回滚？", _git_hits())
+    assert caught.value.response.status_code == 429
+
+
+def test_deepseek_invalid_json_is_rejected() -> None:
+    transport = httpx.MockTransport(
+        lambda _: httpx.Response(200, json={"choices": [{"message": {"content": "not-json"}}]})
+    )
+    with pytest.raises(ValueError, match="结构化答案"):
+        _generator(transport).generate("如何安全回滚？", _git_hits())

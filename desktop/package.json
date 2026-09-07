@@ -1,0 +1,77 @@
+{
+  "name": "aegiscopilot-desktop",
+  "version": "2.0.0",
+  "private": true,
+  "author": "AegisCopilot Contributors",
+    "description": "Local-first developer command RAG assistant",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "build:icon": "..\\backend\\.venv\\Scripts\\python.exe scripts/build-icon.py",
+    "build:frontend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-frontend.ps1",
+    "build:backend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-backend.ps1",
+    "capture:ui": "electron scripts/capture-ui.cjs",
+    "dist:dir": "npm run build:icon && npm run build:frontend && npm run build:backend && electron-builder --dir",
+    "dist:win": "npm run build:icon && npm run build:frontend && npm run build:backend && electron-builder --win nsis --x64"
+  },
+  "build": {
+    "appId": "com.aegiscopilot.desktop",
+    "productName": "AegisCopilot",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "electron/**/*",
+      "assets/icon.ico",
+      "assets/icon.png",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/dist",
+        "to": "frontend"
+      },
+      {
+        "from": "../backend/dist/aegis-backend",
+        "to": "backend"
+      },
+      {
+        "from": "../knowledge",
+        "to": "knowledge"
+      },
+      {
+        "from": "../models/cache",
+        "to": "models/cache"
+      }
+    ],
+    "asar": true,
+    "afterPack": "scripts/after-pack.cjs",
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "AegisCopilot",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "39.8.10",
+    "electron-builder": "26.0.12"
+  }
+}

@@ -1,0 +1,335 @@
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawn } = require("node:child_process");
+
+const {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  protocol,
+  safeStorage,
+  shell,
+} = require("electron");
+
+const { clearApiKey, readApiKey, saveApiKey } = require("./model-config.cjs");
+const {
+  buildBackendLaunchSpec,
+  buildRuntimeEnvironment,
+  buildViteLaunchSpec,
+  extractLocalPort,
+  findFreePort,
+  stopProcessTree,
+  waitForHealth,
+} = require("./process-manager.cjs");
+const { registerAppProtocol } = require("./protocol.cjs");
+
+app.setAppUserModelId("com.aegiscopilot.desktop");
+app.setPath("userData", path.join(app.getPath("appData"), "AegisCopilot"));
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "aegis",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      stream: true,
+      corsEnabled: true,
+    },
+  },
+]);
+
+const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
+const LOOPBACK_HOST = "127.0.0.1";
+let mainWindow = null;
+let backendProcess = null;
+let frontendProcess = null;
+let runtime = null;
+let shuttingDown = false;
+let servicesReady = false;
+
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if (!hasSingleInstanceLock) app.quit();
+
+function frontendDistRoot() {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, "frontend")
+    : path.join(PROJECT_ROOT, "frontend", "dist");
+}
+
+function logDirectory() {
+  const directory = path.join(app.getPath("userData"), "logs");
+  fs.mkdirSync(directory, { recursive: true });
+  return directory;
+}
+
+function attachProcessLog(child, name) {
+  const stream = fs.createWriteStream(path.join(logDirectory(), `${name}.log`), { flags: "a" });
+  child.stdout?.pipe(stream);
+  child.stderr?.pipe(stream);
+  child.once("close", () => stream.end());
+}
+
+function waitForSpawn(child, label) {
+  return new Promise((resolve, reject) => {
+    child.once("spawn", resolve);
+    child.once("error", (error) => reject(new Error(`${label}启动失败：${error.message}`)));
+  });
+}
+
+function secureModelKey() {
+  return readApiKey({ userDataPath: app.getPath("userData"), safeStorage });
+}
+
+async function startBackend() {
+  const port = runtime?.backendPort || (await findFreePort());
+  const spec = buildBackendLaunchSpec({
+    projectRoot: PROJECT_ROOT,
+    packaged: app.isPackaged,
+    resourcesPath: process.resourcesPath,
+    port,
+  });
+  const baseEnv = {
+    ...process.env,
+    AEGIS_LLM_API_KEY: secureModelKey() || process.env.AEGIS_LLM_API_KEY || "",
+    AEGIS_LLM_MODEL: "deepseek-chat",
+    AEGIS_LLM_BASE_URL: "https://api.deepseek.com/v1",
+  };
+  const environment = app.isPackaged
+    ? buildRuntimeEnvironment({
+        userDataPath: app.getPath("userData"),
+        resourcesPath: process.resourcesPath,
+        baseEnv,
+      })
+    : {
+        ...baseEnv,
+        AEGIS_STORAGE_DIR: path.join(app.getPath("userData"), "storage"),
+        AEGIS_KNOWLEDGE_DIR: path.join(PROJECT_ROOT, "knowledge"),
+        AEGIS_MODEL_DIR: path.join(PROJECT_ROOT, "models", "cache"),
+      };
+
+  backendProcess = spawn(spec.command, spec.args, {
+    cwd: spec.cwd,
+    env: environment,
+    windowsHide: true,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  attachProcessLog(backendProcess, "backend");
+  backendProcess.once("exit", () => handleUnexpectedServiceExit("后端"));
+  await waitForSpawn(backendProcess, "后端");
+  await waitForHealth(`http://${LOOPBACK_HOST}:${port}/health`, { timeoutMs: 90_000 });
+  runtime = { ...(runtime || {}), backendPort: port, apiBaseUrl: `http://${LOOPBACK_HOST}:${port}` };
+}
+
+function startVite() {
+  const spec = buildViteLaunchSpec({ projectRoot: PROJECT_ROOT });
+  let output = "";
+  const portPromise = new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Vite 在 60 秒内没有报告可访问地址")), 60_000);
+    const handleOutput = (chunk) => {
+      output += chunk.toString();
+      const port = extractLocalPort(output);
+      if (port) {
+        clearTimeout(timeout);
+        resolve(port);
+      }
+    };
+    frontendProcess = spawn(spec.command, spec.args, {
+      cwd: spec.cwd,
+      env: { ...process.env, VITE_API_PROXY_TARGET: runtime.apiBaseUrl },
+      windowsHide: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    frontendProcess.stdout?.on("data", handleOutput);
+    frontendProcess.stderr?.on("data", handleOutput);
+    frontendProcess.once("error", (error) => {
+      clearTimeout(timeout);
+      reject(new Error(`Vite 启动失败：${error.message}`));
+    });
+    frontendProcess.once("exit", (code) => {
+      if (code && !shuttingDown) reject(new Error(`Vite 退出，code=${code}`));
+    });
+    attachProcessLog(frontendProcess, "frontend");
+    frontendProcess.once("exit", () => handleUnexpectedServiceExit("前端"));
+  });
+  return portPromise;
+}
+
+async function startServices() {
+  runtime = null;
+  await startBackend();
+  runtime.frontendPort = app.isPackaged ? null : await startVite();
+  servicesReady = true;
+}
+
+async function stopServices() {
+  servicesReady = false;
+  const processes = [frontendProcess, backendProcess].filter(Boolean);
+  frontendProcess = null;
+  backendProcess = null;
+  await Promise.all(processes.map((child) => stopProcessTree(child)));
+}
+
+async function restartBackend() {
+  servicesReady = false;
+  const processToStop = backendProcess;
+  backendProcess = null;
+  if (processToStop) await stopProcessTree(processToStop);
+  await startBackend();
+  servicesReady = true;
+}
+
+async function handleUnexpectedServiceExit(label) {
+  if (shuttingDown || !servicesReady) return;
+  servicesReady = false;
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: "error",
+    title: "AegisCopilot 服务已停止",
+    message: `${label}进程意外退出。`,
+    detail: `可以重启应用恢复。日志目录：${logDirectory()}`,
+    buttons: ["重启应用", "退出"],
+    defaultId: 0,
+    cancelId: 1,
+  });
+  if (result.response === 0) app.relaunch();
+  app.quit();
+}
+
+function isAllowedNavigation(url) {
+  if (app.isPackaged) return url.startsWith("aegis://app/");
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" && ["127.0.0.1", "localhost"].includes(parsed.hostname) && parsed.port === String(runtime.frontendPort);
+  } catch {
+    return false;
+  }
+}
+
+function createMainWindow() {
+  Menu.setApplicationMenu(null);
+  mainWindow = new BrowserWindow({
+    width: 1440,
+    height: 920,
+    minWidth: 1080,
+    minHeight: 720,
+    show: false,
+    backgroundColor: "#edf1f3",
+    icon: path.join(__dirname, "..", "assets", "icon.ico"),
+    titleBarStyle: "hidden",
+    titleBarOverlay: { color: "#dbe2e6", symbolColor: "#34434d", height: 38 },
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      preload: path.join(__dirname, "preload.cjs"),
+      additionalArguments: [
+        `--aegis-api-base=${runtime.apiBaseUrl}`,
+        `--aegis-packaged=${app.isPackaged}`,
+        `--aegis-version=${app.getVersion()}`,
+      ],
+    },
+  });
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https:\/\//i.test(url)) shell.openExternal(url);
+    return { action: "deny" };
+  });
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    if (!isAllowedNavigation(url)) {
+      event.preventDefault();
+      if (/^https:\/\//i.test(url)) shell.openExternal(url);
+    }
+  });
+  mainWindow.once("ready-to-show", () => mainWindow.show());
+  mainWindow.on("closed", () => { mainWindow = null; });
+  return mainWindow;
+}
+
+async function loadMainWindow() {
+  const window = createMainWindow();
+  if (app.isPackaged) {
+    registerAppProtocol(protocol, frontendDistRoot());
+    await window.loadURL("aegis://app/");
+  } else {
+    await window.loadURL(`http://${LOOPBACK_HOST}:${runtime.frontendPort}/`);
+  }
+}
+
+async function testDeepSeek(apiKey) {
+  const key = String(apiKey || secureModelKey()).trim();
+  if (!key) throw new Error("请先输入或保存 API Key");
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const response = await fetch("https://api.deepseek.com/v1/models", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(response.status === 401 ? "API Key 无效" : `DeepSeek 返回 HTTP ${response.status}`);
+    return { ok: true, message: "DeepSeek 连接成功。" };
+  } catch (error) {
+    if (error.name === "AbortError") throw new Error("连接超时，请检查网络后重试");
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function registerModelConfigIpc() {
+  ipcMain.handle("model-config:status", () => ({
+    configured: Boolean(secureModelKey()),
+    encryptionAvailable: safeStorage.isEncryptionAvailable(),
+    provider: "DeepSeek",
+    model: "deepseek-chat",
+  }));
+  ipcMain.handle("model-config:test", (_, input = {}) => testDeepSeek(input.apiKey));
+  ipcMain.handle("model-config:save", async (_, input = {}) => {
+    saveApiKey({ userDataPath: app.getPath("userData"), apiKey: input.apiKey, safeStorage });
+    await restartBackend();
+    return { ok: true };
+  });
+  ipcMain.handle("model-config:clear", async () => {
+    clearApiKey({ userDataPath: app.getPath("userData") });
+    await restartBackend();
+    return { ok: true };
+  });
+}
+
+async function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  await stopServices();
+}
+
+async function bootstrap() {
+  if (!hasSingleInstanceLock) return;
+  try {
+    registerModelConfigIpc();
+    await startServices();
+    await loadMainWindow();
+  } catch (error) {
+    await dialog.showMessageBox({
+      type: "error",
+      title: "AegisCopilot 启动失败",
+      message: error.message,
+      detail: `日志目录：${logDirectory()}`,
+      buttons: ["退出"],
+    });
+    await shutdown();
+    app.exit(1);
+  }
+}
+
+app.on("second-instance", () => {
+  if (!mainWindow) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.focus();
+});
+app.on("before-quit", (event) => {
+  if (shuttingDown) return;
+  event.preventDefault();
+  shutdown().finally(() => app.exit(0));
+});
+app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
+app.whenReady().then(bootstrap);

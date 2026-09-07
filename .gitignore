@@ -9,6 +9,10 @@ dist/
 coverage/
 *.egg-info/
 backend/.mypy_cache/
+backend/build/
 backend/storage/
 frontend/.vite/
 .private/
+.runtime/
+models/cache/
+desktop/assets/icon-source.png

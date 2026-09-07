@@ -1,153 +1,60 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8002";
-const AUTH_TOKEN_KEY = "aegis.auth.token";
-
-export function getStoredAuthToken() {
-  const legacyToken = window.localStorage.getItem(AUTH_TOKEN_KEY);
-  if (legacyToken) {
-    window.localStorage.removeItem(AUTH_TOKEN_KEY);
-  }
-  return window.sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
+export function apiBaseUrl() {
+  return window.aegisDesktop?.apiBaseUrl || import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8002";
 }
 
-export function setStoredAuthToken(token) {
-  if (token) {
-    window.sessionStorage.setItem(AUTH_TOKEN_KEY, token);
-    window.localStorage.removeItem(AUTH_TOKEN_KEY);
-    return;
-  }
-  window.sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
-}
-
-export function clearStoredAuthToken() {
-  window.sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
-}
-
-function buildHeaders(extraHeaders = {}) {
-  const token = getStoredAuthToken();
-  return {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...extraHeaders,
-  };
-}
-
-async function parseJson(response) {
+export async function fetchJson(path, { method = "GET", body } = {}) {
+  const response = await fetch(`${apiBaseUrl()}${path}`, {
+    method,
+    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
   if (!response.ok) {
     const raw = await response.text();
+    let message = raw || `请求失败：${response.status}`;
     try {
-      const payload = JSON.parse(raw);
-      throw new Error(payload.detail || raw || `请求失败：${response.status}`);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        const text = (raw || "").trim();
-        if (response.status === 404 && text === "Not Found") {
-          if (response.url.endsWith("/auth/login")) {
-            throw new Error("登录接口不存在，请确认后端已经重启到最新版本。");
-          }
-          throw new Error("未找到对应的接口或资源。");
-        }
-        throw new Error(raw || `请求失败：${response.status}`);
-      }
-      throw error;
+      message = JSON.parse(raw).detail || message;
+    } catch {
+      // The backend may intentionally return plain text for fatal startup errors.
     }
+    throw new Error(message);
   }
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }
 
-export async function fetchJson(path, { method = "GET", body, headers = {} } = {}) {
-  const init = {
-    method,
-    headers: buildHeaders(headers),
-  };
-
-  if (body !== undefined) {
-    if (body instanceof FormData) {
-      init.body = body;
-    } else {
-      init.body = typeof body === "string" ? body : JSON.stringify(body);
-      init.headers = {
-        "Content-Type": "application/json",
-        ...init.headers,
-      };
-    }
+export function parseSseFrame(frame) {
+  let event = "message";
+  const data = [];
+  for (const line of frame.split(/\r?\n/)) {
+    if (line.startsWith("event:")) event = line.slice(6).trim();
+    if (line.startsWith("data:")) data.push(line.slice(5).trimStart());
   }
-
-  const response = await fetch(`${API_BASE}${path}`, init);
-  return parseJson(response);
+  if (!data.length) return null;
+  return { event, data: JSON.parse(data.join("\n")) };
 }
 
-export function withQuery(path, params = {}) {
-  const search = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") {
-      return;
-    }
-    search.set(key, String(value));
-  });
-  const query = search.toString();
-  return query ? `${path}?${query}` : path;
-}
-
-export async function uploadFile(path, file) {
-  const formData = new FormData();
-  formData.append("file", file);
-  return fetchJson(path, {
+export async function streamChat({ query, conversationId, onEvent }) {
+  const response = await fetch(`${apiBaseUrl()}/chat/stream`, {
     method: "POST",
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, conversation_id: conversationId || null }),
   });
-}
-
-export async function streamChat({ query, conversationId }, { onConversation, onStatus, onDelta, onDone }) {
-  const response = await fetch(`${API_BASE}/chat/stream`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...buildHeaders(),
-    },
-    body: JSON.stringify({
-      query,
-      conversation_id: conversationId || null,
-    }),
-  });
-
-  if (!response.ok || !response.body) {
-    const detail = await response.text();
-    throw new Error(detail || `流式请求失败：${response.status}`);
-  }
-
+  if (!response.ok || !response.body) throw new Error(`流式请求失败：${response.status}`);
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
-
   while (true) {
     const { value, done } = await reader.read();
-    if (done) {
-      break;
-    }
-
-    buffer += decoder.decode(value, { stream: true });
-    const frames = buffer.split("\n\n");
+    buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+    const frames = buffer.split(/\r?\n\r?\n/);
     buffer = frames.pop() || "";
-
     for (const frame of frames) {
-      if (!frame.startsWith("data: ")) {
-        continue;
-      }
-
-      const payload = JSON.parse(frame.slice(6));
-      if (payload.type === "conversation") {
-        onConversation?.(payload);
-      }
-      if (payload.type === "status") {
-        onStatus?.(payload);
-      }
-      if (payload.type === "delta") {
-        onDelta?.(payload);
-      }
-      if (payload.type === "done") {
-        onDone?.(payload);
-      }
+      const parsed = parseSseFrame(frame);
+      if (parsed) onEvent?.(parsed);
     }
+    if (done) break;
+  }
+  if (buffer.trim()) {
+    const parsed = parseSseFrame(buffer);
+    if (parsed) onEvent?.(parsed);
   }
 }

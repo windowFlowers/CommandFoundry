@@ -1,0 +1,602 @@
+[
+  {
+    "id": "case-001",
+    "query": "Docker 帮助",
+    "expected_topic_id": "docker.docker",
+    "domain": "docker"
+  },
+  {
+    "id": "case-002",
+    "query": "使用 Dockerfile 构建",
+    "expected_topic_id": "docker.docker-build",
+    "domain": "docker"
+  },
+  {
+    "id": "case-003",
+    "query": "启动 compose",
+    "expected_topic_id": "docker.docker-compose",
+    "domain": "docker"
+  },
+  {
+    "id": "case-004",
+    "query": "从容器复制文件",
+    "expected_topic_id": "docker.docker-cp",
+    "domain": "docker"
+  },
+  {
+    "id": "case-005",
+    "query": "进入 Docker 容器",
+    "expected_topic_id": "docker.docker-exec",
+    "domain": "docker"
+  },
+  {
+    "id": "case-006",
+    "query": "列出本地镜像",
+    "expected_topic_id": "docker.docker-images",
+    "domain": "docker"
+  },
+  {
+    "id": "case-007",
+    "query": "查看容器详细配置",
+    "expected_topic_id": "docker.docker-inspect",
+    "domain": "docker"
+  },
+  {
+    "id": "case-008",
+    "query": "持续查看 Docker 日志",
+    "expected_topic_id": "docker.docker-logs",
+    "domain": "docker"
+  },
+  {
+    "id": "case-009",
+    "query": "查看 Docker 网络",
+    "expected_topic_id": "docker.docker-network",
+    "domain": "docker"
+  },
+  {
+    "id": "case-010",
+    "query": "列出运行中的容器",
+    "expected_topic_id": "docker.docker-ps",
+    "domain": "docker"
+  },
+  {
+    "id": "case-011",
+    "query": "移除容器",
+    "expected_topic_id": "docker.docker-rm",
+    "domain": "docker"
+  },
+  {
+    "id": "case-012",
+    "query": "启动容器",
+    "expected_topic_id": "docker.docker-run",
+    "domain": "docker"
+  },
+  {
+    "id": "case-013",
+    "query": "停止容器",
+    "expected_topic_id": "docker.docker-stop",
+    "domain": "docker"
+  },
+  {
+    "id": "case-014",
+    "query": "清理 Docker 磁盘",
+    "expected_topic_id": "docker.docker-system",
+    "domain": "docker"
+  },
+  {
+    "id": "case-015",
+    "query": "查看数据卷",
+    "expected_topic_id": "docker.docker-volume",
+    "domain": "docker"
+  },
+  {
+    "id": "case-016",
+    "query": "添加文件到暂存区",
+    "expected_topic_id": "git.git-add",
+    "domain": "git"
+  },
+  {
+    "id": "case-017",
+    "query": "新建分支",
+    "expected_topic_id": "git.git-branch",
+    "domain": "git"
+  },
+  {
+    "id": "case-018",
+    "query": "复制某个提交",
+    "expected_topic_id": "git.git-cherry-pick",
+    "domain": "git"
+  },
+  {
+    "id": "case-019",
+    "query": "下载 Git 仓库",
+    "expected_topic_id": "git.git-clone",
+    "domain": "git"
+  },
+  {
+    "id": "case-020",
+    "query": "创建 Git 提交",
+    "expected_topic_id": "git.git-commit",
+    "domain": "git"
+  },
+  {
+    "id": "case-021",
+    "query": "查看未提交修改",
+    "expected_topic_id": "git.git-diff",
+    "domain": "git"
+  },
+  {
+    "id": "case-022",
+    "query": "创建 Git 仓库",
+    "expected_topic_id": "git.git-init",
+    "domain": "git"
+  },
+  {
+    "id": "case-023",
+    "query": "查看 Git 日志",
+    "expected_topic_id": "git.git-log",
+    "domain": "git"
+  },
+  {
+    "id": "case-024",
+    "query": "合并分支",
+    "expected_topic_id": "git.git-merge",
+    "domain": "git"
+  },
+  {
+    "id": "case-025",
+    "query": "拉取并变基",
+    "expected_topic_id": "git.git-pull",
+    "domain": "git"
+  },
+  {
+    "id": "case-026",
+    "query": "整理提交历史",
+    "expected_topic_id": "git.git-rebase",
+    "domain": "git"
+  },
+  {
+    "id": "case-027",
+    "query": "恢复误删提交",
+    "expected_topic_id": "git.git-reflog",
+    "domain": "git"
+  },
+  {
+    "id": "case-028",
+    "query": "查看远程地址",
+    "expected_topic_id": "git.git-remote",
+    "domain": "git"
+  },
+  {
+    "id": "case-029",
+    "query": "Git 回滚并改写历史",
+    "expected_topic_id": "git.git-reset",
+    "domain": "git"
+  },
+  {
+    "id": "case-030",
+    "query": "丢弃文件修改",
+    "expected_topic_id": "git.git-restore",
+    "domain": "git"
+  },
+  {
+    "id": "case-031",
+    "query": "Git 安全回滚",
+    "expected_topic_id": "git.git-revert",
+    "domain": "git"
+  },
+  {
+    "id": "case-032",
+    "query": "临时保存修改",
+    "expected_topic_id": "git.git-stash",
+    "domain": "git"
+  },
+  {
+    "id": "case-033",
+    "query": "查看修改文件",
+    "expected_topic_id": "git.git-status",
+    "domain": "git"
+  },
+  {
+    "id": "case-034",
+    "query": "切换分支",
+    "expected_topic_id": "git.git-switch",
+    "domain": "git"
+  },
+  {
+    "id": "case-035",
+    "query": "创建版本标签",
+    "expected_topic_id": "git.git-tag",
+    "domain": "git"
+  },
+  {
+    "id": "case-036",
+    "query": "HTTP 并发压测",
+    "expected_topic_id": "http.ab",
+    "domain": "http"
+  },
+  {
+    "id": "case-037",
+    "query": "curl GET",
+    "expected_topic_id": "http.curl",
+    "domain": "http"
+  },
+  {
+    "id": "case-038",
+    "query": "调用 gRPC 服务",
+    "expected_topic_id": "http.grpcurl",
+    "domain": "http"
+  },
+  {
+    "id": "case-039",
+    "query": "HTTPie GET",
+    "expected_topic_id": "http.http",
+    "domain": "http"
+  },
+  {
+    "id": "case-040",
+    "query": "HTTP ping",
+    "expected_topic_id": "http.httping",
+    "domain": "http"
+  },
+  {
+    "id": "case-041",
+    "query": "格式化 JSON",
+    "expected_topic_id": "http.jq",
+    "domain": "http"
+  },
+  {
+    "id": "case-042",
+    "query": "检查开放端口",
+    "expected_topic_id": "http.nmap",
+    "domain": "http"
+  },
+  {
+    "id": "case-043",
+    "query": "查看 HTTPS 证书",
+    "expected_topic_id": "http.openssl",
+    "domain": "http"
+  },
+  {
+    "id": "case-044",
+    "query": "断点续传下载",
+    "expected_topic_id": "http.wget",
+    "domain": "http"
+  },
+  {
+    "id": "case-045",
+    "query": "xh 请求",
+    "expected_topic_id": "http.xh",
+    "domain": "http"
+  },
+  {
+    "id": "case-046",
+    "query": "切换目录",
+    "expected_topic_id": "linux.cd",
+    "domain": "linux"
+  },
+  {
+    "id": "case-047",
+    "query": "给脚本执行权限",
+    "expected_topic_id": "linux.chmod",
+    "domain": "linux"
+  },
+  {
+    "id": "case-048",
+    "query": "更改文件用户",
+    "expected_topic_id": "linux.chown",
+    "domain": "linux"
+  },
+  {
+    "id": "case-049",
+    "query": "复制文件",
+    "expected_topic_id": "linux.cp",
+    "domain": "linux"
+  },
+  {
+    "id": "case-050",
+    "query": "磁盘剩余空间",
+    "expected_topic_id": "linux.df",
+    "domain": "linux"
+  },
+  {
+    "id": "case-051",
+    "query": "文件夹大小",
+    "expected_topic_id": "linux.du",
+    "domain": "linux"
+  },
+  {
+    "id": "case-052",
+    "query": "按名称找文件",
+    "expected_topic_id": "linux.find",
+    "domain": "linux"
+  },
+  {
+    "id": "case-053",
+    "query": "在文件中搜索",
+    "expected_topic_id": "linux.grep",
+    "domain": "linux"
+  },
+  {
+    "id": "case-054",
+    "query": "结束进程",
+    "expected_topic_id": "linux.kill",
+    "domain": "linux"
+  },
+  {
+    "id": "case-055",
+    "query": "查看目录文件",
+    "expected_topic_id": "linux.ls",
+    "domain": "linux"
+  },
+  {
+    "id": "case-056",
+    "query": "新建文件夹",
+    "expected_topic_id": "linux.mkdir",
+    "domain": "linux"
+  },
+  {
+    "id": "case-057",
+    "query": "移动文件",
+    "expected_topic_id": "linux.mv",
+    "domain": "linux"
+  },
+  {
+    "id": "case-058",
+    "query": "列出进程",
+    "expected_topic_id": "linux.ps",
+    "domain": "linux"
+  },
+  {
+    "id": "case-059",
+    "query": "快速搜索代码",
+    "expected_topic_id": "linux.rg",
+    "domain": "linux"
+  },
+  {
+    "id": "case-060",
+    "query": "删除文件",
+    "expected_topic_id": "linux.rm",
+    "domain": "linux"
+  },
+  {
+    "id": "case-061",
+    "query": "上传文件到服务器",
+    "expected_topic_id": "linux.scp",
+    "domain": "linux"
+  },
+  {
+    "id": "case-062",
+    "query": "远程登录 Linux",
+    "expected_topic_id": "linux.ssh",
+    "domain": "linux"
+  },
+  {
+    "id": "case-063",
+    "query": "创建 tar.gz",
+    "expected_topic_id": "linux.tar",
+    "domain": "linux"
+  },
+  {
+    "id": "case-064",
+    "query": "查看 CPU 内存占用",
+    "expected_topic_id": "linux.top",
+    "domain": "linux"
+  },
+  {
+    "id": "case-065",
+    "query": "压缩目录",
+    "expected_topic_id": "linux.zip",
+    "domain": "linux"
+  },
+  {
+    "id": "case-066",
+    "query": "备份 MySQL",
+    "expected_topic_id": "sql.backup",
+    "domain": "sql"
+  },
+  {
+    "id": "case-067",
+    "query": "MySQL 新建数据库",
+    "expected_topic_id": "sql.create-database",
+    "domain": "sql"
+  },
+  {
+    "id": "case-068",
+    "query": "MySQL 添加索引",
+    "expected_topic_id": "sql.create-index",
+    "domain": "sql"
+  },
+  {
+    "id": "case-069",
+    "query": "MySQL 新建表",
+    "expected_topic_id": "sql.create-table",
+    "domain": "sql"
+  },
+  {
+    "id": "case-070",
+    "query": "MySQL 创建账号",
+    "expected_topic_id": "sql.create-user",
+    "domain": "sql"
+  },
+  {
+    "id": "case-071",
+    "query": "MySQL 怎么创建视图",
+    "expected_topic_id": "sql.create-view",
+    "domain": "sql"
+  },
+  {
+    "id": "case-072",
+    "query": "MySQL 删除记录",
+    "expected_topic_id": "sql.delete-rows",
+    "domain": "sql"
+  },
+  {
+    "id": "case-073",
+    "query": "MySQL EXPLAIN",
+    "expected_topic_id": "sql.explain-query",
+    "domain": "sql"
+  },
+  {
+    "id": "case-074",
+    "query": "MySQL 插入记录",
+    "expected_topic_id": "sql.insert-row",
+    "domain": "sql"
+  },
+  {
+    "id": "case-075",
+    "query": "MySQL JOIN",
+    "expected_topic_id": "sql.join-tables",
+    "domain": "sql"
+  },
+  {
+    "id": "case-076",
+    "query": "登录 MySQL",
+    "expected_topic_id": "sql.mysql-connect",
+    "domain": "sql"
+  },
+  {
+    "id": "case-077",
+    "query": "导入 MySQL 备份",
+    "expected_topic_id": "sql.restore",
+    "domain": "sql"
+  },
+  {
+    "id": "case-078",
+    "query": "MySQL 查询数据",
+    "expected_topic_id": "sql.select-rows",
+    "domain": "sql"
+  },
+  {
+    "id": "case-079",
+    "query": "MySQL 开启事务",
+    "expected_topic_id": "sql.transaction",
+    "domain": "sql"
+  },
+  {
+    "id": "case-080",
+    "query": "MySQL 修改记录",
+    "expected_topic_id": "sql.update-rows",
+    "domain": "sql"
+  },
+  {
+    "id": "case-081",
+    "query": "Python 格式化",
+    "expected_topic_id": "toolchain.black",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-082",
+    "query": "启用 pnpm yarn",
+    "expected_topic_id": "toolchain.corepack",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-083",
+    "query": "JavaScript lint",
+    "expected_topic_id": "toolchain.eslint",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-084",
+    "query": "执行 JavaScript 文件",
+    "expected_topic_id": "toolchain.node",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-085",
+    "query": "npm 安装依赖",
+    "expected_topic_id": "toolchain.npm",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-086",
+    "query": "不安装运行 npm 包",
+    "expected_topic_id": "toolchain.npx",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-087",
+    "query": "安装 Python 依赖",
+    "expected_topic_id": "toolchain.pip",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-088",
+    "query": "pip3 install",
+    "expected_topic_id": "toolchain.pip3",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-089",
+    "query": "安装 Python 命令行工具",
+    "expected_topic_id": "toolchain.pipx",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-090",
+    "query": "pnpm install",
+    "expected_topic_id": "toolchain.pnpm",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-091",
+    "query": "格式化 JavaScript",
+    "expected_topic_id": "toolchain.prettier",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-092",
+    "query": "运行单元测试",
+    "expected_topic_id": "toolchain.pytest",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-093",
+    "query": "执行 Python 脚本",
+    "expected_topic_id": "toolchain.python",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-094",
+    "query": "执行 Python3 脚本",
+    "expected_topic_id": "toolchain.python3",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-095",
+    "query": "Python lint",
+    "expected_topic_id": "toolchain.ruff",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-096",
+    "query": "执行 TypeScript 文件",
+    "expected_topic_id": "toolchain.ts-node",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-097",
+    "query": "uv 安装依赖",
+    "expected_topic_id": "toolchain.uv",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-098",
+    "query": "Python 虚拟环境",
+    "expected_topic_id": "toolchain.virtualenv",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-099",
+    "query": "启动 Vite 开发服务器",
+    "expected_topic_id": "toolchain.vite",
+    "domain": "toolchain"
+  },
+  {
+    "id": "case-100",
+    "query": "yarn install",
+    "expected_topic_id": "toolchain.yarn",
+    "domain": "toolchain"
+  }
+]
