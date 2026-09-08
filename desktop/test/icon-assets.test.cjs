@@ -27,7 +27,7 @@ test("Windows packaging stamps AegisCopilot metadata and recreates shortcuts", (
   const backendBuild = fs.readFileSync(path.join(desktopRoot, "scripts", "build-backend.ps1"), "utf8");
   const afterPackPath = path.join(desktopRoot, "scripts", "after-pack.cjs");
 
-  assert.equal(packageJson.version, "2.0.0");
+  assert.equal(packageJson.version, "2.1.0");
   assert.equal(packageJson.build.win.signAndEditExecutable, false);
   assert.equal(packageJson.build.afterPack, "scripts/after-pack.cjs");
   assert.equal(fs.existsSync(afterPackPath), true);

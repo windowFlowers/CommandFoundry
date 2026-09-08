@@ -21,10 +21,16 @@ def _allowed_origins() -> list[str]:
 
 class Settings(BaseModel):
     app_name: str = "AegisCopilot API"
-    app_version: str = "2.0.0"
+    app_version: str = "2.1.0"
     environment: str = os.getenv("AEGIS_ENV", "local")
     storage_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_STORAGE_DIR", PROJECT_ROOT / "backend" / "storage"))
     knowledge_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_KNOWLEDGE_DIR", PROJECT_ROOT / "knowledge"))
+    upload_dir: Path = Field(
+        default_factory=lambda: _path_from_env(
+            "AEGIS_UPLOAD_DIR",
+            _path_from_env("AEGIS_STORAGE_DIR", PROJECT_ROOT / "backend" / "storage") / "uploads",
+        )
+    )
     model_cache_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_MODEL_DIR", PROJECT_ROOT / "models" / "cache"))
     embedding_model: str = os.getenv("AEGIS_EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     embedding_enabled: bool = os.getenv("AEGIS_EMBEDDING_ENABLED", "1").strip().lower() not in {"0", "false", "no"}

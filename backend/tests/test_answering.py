@@ -52,7 +52,9 @@ def test_invalid_model_output_falls_back_without_losing_citations() -> None:
     hits = retriever.retrieve("Git 安全回滚提交", top_k=4)
     answer, reason = AnswerService(FailedGenerator()).answer("Git 安全回滚提交", hits)
     assert answer.mode == "local_fallback"
-    assert reason == "ValueError"
+    assert reason == "invalid_json"
+    assert answer.generation.attempted is True
+    assert answer.generation.fallback_reason == "invalid_json"
     assert answer.citations
 
 
@@ -70,6 +72,9 @@ def test_deepseek_success_response_is_validated() -> None:
         assert request.url == "https://api.deepseek.example/v1/chat/completions"
         assert request.headers["Authorization"] == "Bearer test-key-not-a-secret"
         payload = {
+            "id": "chatcmpl-test",
+            "model": "deepseek-chat",
+            "usage": {"prompt_tokens": 80, "completion_tokens": 20, "total_tokens": 100},
             "choices": [
                 {
                     "message": {
@@ -97,6 +102,9 @@ def test_deepseek_success_response_is_validated() -> None:
     draft = _generator(httpx.MockTransport(respond)).generate("如何安全回滚？", _git_hits())
     assert draft.commands[0].code == "git revert <commit>"
     assert draft.summary == "使用反向提交安全撤销变更。"
+    assert draft.generation.request_id == "chatcmpl-test"
+    assert draft.generation.total_tokens == 100
+    assert draft.generation.latency_ms > 0
 
 
 def test_deepseek_timeout_is_exposed_for_fallback() -> None:
@@ -120,3 +128,46 @@ def test_deepseek_invalid_json_is_rejected() -> None:
     )
     with pytest.raises(ValueError, match="结构化答案"):
         _generator(transport).generate("如何安全回滚？", _git_hits())
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected"),
+    [
+        (httpx.ReadTimeout("timeout"), "timeout"),
+        (httpx.ConnectError("dns"), "provider_error"),
+    ],
+)
+def test_generation_failures_are_normalized(failure: Exception, expected: str) -> None:
+    request = httpx.Request("POST", "https://api.deepseek.example/v1/chat/completions")
+    if isinstance(failure, httpx.RequestError):
+        failure._request = request
+
+    class Generator:
+        available = True
+        model = "deepseek-chat"
+
+        def generate(self, query, hits):
+            raise failure
+
+    answer, reason = AnswerService(Generator()).answer("Git 安全回滚", _git_hits())
+    assert reason == expected
+    assert answer.generation.fallback_reason == expected
+    assert answer.generation.attempted is True
+
+
+@pytest.mark.parametrize(("status_code", "expected"), [(401, "authentication"), (403, "authentication"), (429, "rate_limit"), (500, "provider_error")])
+def test_http_failures_are_normalized(status_code: int, expected: str) -> None:
+    request = httpx.Request("POST", "https://api.deepseek.example/v1/chat/completions")
+    response = httpx.Response(status_code, request=request)
+    failure = httpx.HTTPStatusError("failed", request=request, response=response)
+
+    class Generator:
+        available = True
+        model = "deepseek-chat"
+
+        def generate(self, query, hits):
+            raise failure
+
+    answer, reason = AnswerService(Generator()).answer("Git 安全回滚", _git_hits())
+    assert reason == expected
+    assert answer.generation.fallback_reason == expected

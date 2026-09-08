@@ -3,10 +3,11 @@ export function apiBaseUrl() {
 }
 
 export async function fetchJson(path, { method = "GET", body } = {}) {
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     method,
-    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    headers: body === undefined || isForm ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
   });
   if (!response.ok) {
     const raw = await response.text();
@@ -32,13 +33,21 @@ export function parseSseFrame(frame) {
   return { event, data: JSON.parse(data.join("\n")) };
 }
 
-export async function streamChat({ query, conversationId, onEvent }) {
+export async function streamChat({ query, conversationId, knowledgeBaseId, onEvent }) {
   const response = await fetch(`${apiBaseUrl()}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, conversation_id: conversationId || null }),
+    body: JSON.stringify({
+      query,
+      conversation_id: conversationId || null,
+      knowledge_base_id: knowledgeBaseId || null,
+    }),
   });
-  if (!response.ok || !response.body) throw new Error(`流式请求失败：${response.status}`);
+  if (!response.ok || !response.body) {
+    let message = `流式请求失败：${response.status}`;
+    try { message = (await response.json()).detail || message; } catch { /* keep status */ }
+    throw new Error(message);
+  }
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";

@@ -19,17 +19,25 @@ def _events(raw: str) -> list[tuple[str, dict]]:
 
 def test_health_and_knowledge_status() -> None:
     with TestClient(app) as client:
-        assert client.get("/health").json() == {"status": "ok", "version": "2.0.0"}
+        assert client.get("/health").json() == {"status": "ok", "version": "2.1.0"}
         payload = client.get("/knowledge/status").json()
     assert payload["ready"] is True
-    assert payload["topic_count"] == 100
+    assert payload["topic_count"] == 300
     assert payload["domains"] == {
-        "docker": 15,
-        "git": 20,
-        "http": 10,
-        "linux": 20,
-        "sql": 15,
-        "toolchain": 20,
+        "cicd": 15,
+        "docker": 25,
+        "git": 30,
+        "http": 20,
+        "java": 20,
+        "kubernetes": 20,
+        "linux": 30,
+        "network": 20,
+        "node": 20,
+        "python": 25,
+        "redis": 15,
+        "sql": 30,
+        "testing": 10,
+        "windows": 20,
     }
     assert payload["retrieval_mode"] == "bm25"
 
@@ -51,8 +59,8 @@ def test_conversation_crud_and_missing_stream_target() -> None:
     with TestClient(app) as client:
         created = client.post("/conversations", json={"title": "Docker 排查"}).json()
         assert any(item["id"] == created["id"] for item in client.get("/conversations").json()["items"])
-        events = _events(client.post("/chat/stream", json={"query": "docker logs", "conversation_id": "missing"}).text)
-        assert events == [("error", {"message": "会话不存在"})]
+        missing = client.post("/chat/stream", json={"query": "docker logs", "conversation_id": "missing"})
+        assert missing.status_code == 404
         assert client.delete(f"/conversations/{created['id']}").status_code == 204
         assert client.get(f"/conversations/{created['id']}").status_code == 404
 

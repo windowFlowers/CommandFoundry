@@ -1,6 +1,6 @@
 {
   "name": "aegiscopilot-desktop",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "author": "AegisCopilot Contributors",
     "description": "Local-first developer command RAG assistant",
@@ -12,6 +12,9 @@
     "build:frontend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-frontend.ps1",
     "build:backend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-backend.ps1",
     "capture:ui": "electron scripts/capture-ui.cjs",
+    "verify:deepseek": "electron scripts/verify-deepseek.cjs",
+    "verify:rag": "electron scripts/verify-rag.cjs",
+    "verify:uploads": "..\\backend\\.venv\\Scripts\\python.exe ..\\scripts\\verify_uploads.py",
     "dist:dir": "npm run build:icon && npm run build:frontend && npm run build:backend && electron-builder --dir",
     "dist:win": "npm run build:icon && npm run build:frontend && npm run build:backend && electron-builder --win nsis --x64"
   },

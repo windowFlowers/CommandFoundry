@@ -52,13 +52,13 @@ try {
         throw "Packaged backend did not become ready."
     }
 
-    if ($health.version -ne "2.0.0") {
+    if ($health.version -ne "2.1.0") {
         throw "Unexpected backend version: $($health.version)"
     }
 
     $knowledge = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/knowledge/status" -TimeoutSec 5
-    if (-not $knowledge.ready -or $knowledge.topic_count -ne 100) {
-        throw "Packaged backend did not load the 100-topic knowledge base."
+    if (-not $knowledge.ready -or $knowledge.topic_count -ne 300) {
+        throw "Packaged backend did not load the 300-topic knowledge base."
     }
 
     for ($attempt = 0; $attempt -lt 60 -and $knowledge.retrieval_mode -ne "hybrid" -and -not $knowledge.embedding_error; $attempt++) {

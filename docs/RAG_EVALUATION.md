@@ -4,44 +4,42 @@
 
 ## 数据集
 
-`knowledge/eval_dataset.json` 共 100 条查询，每个知识主题 1 条，覆盖六个领域。每条记录只包含查询、预期主题 ID 和领域，不使用模型生成结果判定检索命中。
+`knowledge/eval_dataset.json` 共 300 条独立自然语言查询，每个知识主题一条。主题分布为：Linux 30、Git 30、SQL 30、Docker 25、HTTP 20、Python 25、Node 20、Windows 20、Kubernetes 20、网络 20、Redis 15、Java 20、CI/CD 15、测试与调试 10。
 
-| 领域 | 数量 |
-|---|---:|
-| Linux / Shell | 20 |
-| Git | 20 |
-| SQL / MySQL | 15 |
-| Docker | 15 |
-| HTTP / cURL | 10 |
-| Python / Node | 20 |
-| 合计 | 100 |
+每条记录只包含查询、预期主题 ID 和领域，不使用大模型结果判定检索命中。构建脚本同时校验主题 ID、HTTPS 来源、固定 revision、许可证、SHA-256、占位符和命令代码。
 
 ## 结果
 
 | 检索配置 | Top-1 | Top-3 |
 |---|---:|---:|
-| BM25 本地降级 | 100% | 100% |
-| BM25 + BGE-small-zh-v1.5 + RRF | 92% | 98% |
+| BM25 本地降级 | 97.00%（291/300） | 100%（300/300） |
+| BM25 + BGE-small-zh-v1.5 + RRF | 92.00%（276/300） | 99.33%（298/300） |
 
-目标为 Top-3 不低于 85%，当前混合检索高出 13 个百分点。三个面试核心问题均 Top-1 命中：
+目标为混合检索 Top-3 不低于 90%，当前高出 9.33 个百分点。三个面试核心问题均 Top-1 命中：
 
 - Linux 切换目录 → `linux.cd`
 - Git 安全回滚 → `git.git-revert`
 - MySQL 创建视图 → `sql.create-view`
 
-混合检索的 2 个 Top-3 失配样例是“查看未提交修改”和“MySQL JOIN”。它们在向量路由中被邻近主题挤出前三，但精确别名场景的 BM25 降级路径均命中。首版保留该结果并在后续通过补充对比式问法评测、调整向量候选权重来改进，不为 100 个主题引入复杂 reranker。
+## 功能与失败验证
 
-## 安全与失败测试
-
-- `rm -rf`、`git reset --hard`、强制推送、`DROP/TRUNCATE`、Docker prune、Kubernetes delete、`curl | sh` 全部被提升为高风险并带警告。
-- `sudo` 至少为中风险。
-- 无 Key、无命中和模型非法 JSON 均进入 `local_fallback`。
-- 所有引用的 `source_id` 均存在于 manifest，每条来源有固定 revision、URL、license 和 SHA-256。
+- 多知识库隔离、会话绑定、已删除知识库历史只读和 409 冲突均有自动化测试。
+- TXT/Markdown/PDF/DOCX 已完成真实文件上传、提取、后台索引和内容预览验收；20 MB 上限、重复文件、空文本、扫描型 PDF 与加密 PDF 均有确定性拒绝路径。
+- 分块按标题、段落和代码围栏执行；超长代码围栏保持为一个完整块。
+- `rm -rf`、`git reset --hard`、强推、`DROP/TRUNCATE`、Docker prune、Kubernetes delete、`curl | sh` 全部提升为高风险并带警告。
+- 无 Key、无命中、401/403、429、超时、网络失败和非法 JSON 均映射到稳定的 `fallback_reason`。
+- 使用 Windows 安全存储中的 Key 完成真实 Chat Completions 与完整 RAG 验收；最近一次完整链路返回 `mode=model`、响应 ID、2210 token、3250 ms 和 4 条引用（单次实测值，不作为性能承诺）。
+- 所有 300 个来源都能同时追溯到 `manifest.json` 与 `sources.lock.json`；构建期缓存不进入运行时。
 
 ## 复现
 
 ```powershell
 .\backend\.venv\Scripts\python.exe scripts\evaluate_rag.py
+
+cd desktop
+npm run verify:deepseek
+npm run verify:rag
+npm run verify:uploads
 ```
 
-输出为 JSON，分别给出 BM25 与混合检索的 Top-1 / Top-3 命中数和命中率。完整测试仍可通过 `backend\.venv\Scripts\python.exe -m pytest -q` 运行。
+真实模型验证只输出请求证据，不输出 API Key、Authorization、完整请求正文或模型原始响应。

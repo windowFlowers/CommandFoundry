@@ -32,6 +32,10 @@ try {
         --additional-hooks-dir $hooksRoot `
         --collect-all fastembed `
         --collect-all onnxruntime `
+        --collect-all pypdf `
+        --collect-all docx `
+        --collect-all lxml `
+        --hidden-import multipart `
         --hidden-import rank_bm25 `
         $entrypoint
     if ($LASTEXITCODE -ne 0) {

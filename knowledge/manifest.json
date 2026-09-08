@@ -1,15 +1,173 @@
 {
-  "schema_version": 1,
-  "topic_count": 100,
+  "schema_version": 2,
+  "topic_count": 300,
   "domains": {
-    "linux": 20,
-    "git": 20,
-    "sql": 15,
-    "docker": 15,
-    "http": 10,
-    "toolchain": 20
+    "cicd": 15,
+    "docker": 25,
+    "git": 30,
+    "http": 20,
+    "java": 20,
+    "kubernetes": 20,
+    "linux": 30,
+    "network": 20,
+    "node": 20,
+    "python": 25,
+    "redis": 15,
+    "sql": 30,
+    "testing": 10,
+    "windows": 20
   },
   "sources": [
+    {
+      "source_id": "cicd.act",
+      "title": "tldr: act",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/act.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/act.md",
+      "sha256": "b0290486950d3a74206b2f52f71a74aff4b92e549314208b71df505757add807",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.ansible-playbook",
+      "title": "tldr: ansible-playbook",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ansible-playbook.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ansible-playbook.md",
+      "sha256": "5fff1ce87165e7cdc3d22d97be6aea1ab2e5613df8d2fd44a6e1aab1cd66cf2a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-cache",
+      "title": "tldr: gh-cache",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-cache.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-cache.md",
+      "sha256": "b24b20b7be5696146615dfa401301b5ee33865380022e7eb832a68cd49906ffa",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-pr",
+      "title": "tldr: gh-pr",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-pr.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-pr.md",
+      "sha256": "3064bddff6160d2f4a7d884a03d1d01ba55efb127ff33bdd9084074484e9e3e9",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-release",
+      "title": "tldr: gh-release",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-release.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-release.md",
+      "sha256": "ae47dc3954a3fd6bfa6f8ab87fb06de618cc807ce28df1d22178a3bf23e6045a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-repo",
+      "title": "tldr: gh-repo",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-repo.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-repo.md",
+      "sha256": "1a20a17940cb2ad02a1b8a310960c5ff112c7841d8ddc69f1abdc80037068d39",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-run",
+      "title": "tldr: gh-run",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-run.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-run.md",
+      "sha256": "642a2f8183ff7ebc546a3d1b1390499a33dff6dd3bfdfc1e09f7d0bd4c6acddd",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-secret",
+      "title": "tldr: gh-secret",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-secret.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-secret.md",
+      "sha256": "5a5b5439e5d57fed2c973bdb15db417e43a4aa84417fb58db0eff888564660cb",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-variable",
+      "title": "tldr: gh-variable",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-variable.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-variable.md",
+      "sha256": "9183a02ee244366ba51594281d023a1fd19def48072948172f108ef518d40ad5",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gh-workflow",
+      "title": "tldr: gh-workflow",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gh-workflow.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gh-workflow.md",
+      "sha256": "10f86584535afe8c186b0fd525b1839ad7ae064cf5c57b39f2beec18815249a0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.gitlab-runner",
+      "title": "tldr: gitlab-runner",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gitlab-runner.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gitlab-runner.md",
+      "sha256": "26baa4da69f485afc00d0170f5fe793d471ed1da6dc76fb10d25283c8114eb99",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.helm",
+      "title": "tldr: helm",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/helm.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/helm.md",
+      "sha256": "b7e0f5aa802372e86b80fd7e42007c7ce6f7a5980db04067173bd8b17c49725d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.jenkins",
+      "title": "tldr: jenkins",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jenkins.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jenkins.md",
+      "sha256": "02fde420b5c2454c2fef74b8090005b409c2d72b7ee7a45857f69836a9e817d8",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.packer",
+      "title": "tldr: packer",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/packer.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/packer.md",
+      "sha256": "07fb81f42ce0b829035ee8a971ff76ba3c202a74bc2fcb3837fa48e7150c9541",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "cicd.terraform",
+      "title": "tldr: terraform",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/terraform.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/terraform.md",
+      "sha256": "afd1361e075627a4f51dc9482c998386fb50dcc0bcf5646c37dfab0f1a158b35",
+      "kind": "vendored"
+    },
     {
       "source_id": "docker.docker",
       "title": "tldr: docker",
@@ -28,6 +186,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/docker-build.md",
       "sha256": "d6b078fe63b4a560ed55627650e9ea4df063b532bba763cec9fc6aa8afc506d1",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-commit",
+      "title": "tldr: docker-commit",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-commit.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-commit.md",
+      "sha256": "abbb532d52dae1ba6cf69cecb7a0252d38d886fa01aade0ca927198605ad62a7",
       "kind": "vendored"
     },
     {
@@ -81,6 +249,26 @@
       "kind": "vendored"
     },
     {
+      "source_id": "docker.docker-load",
+      "title": "tldr: docker-load",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-load.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-load.md",
+      "sha256": "d3551d8d917c86635eba6abf781735645f610f807146e9e21d04a9cc5c527f17",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-login",
+      "title": "tldr: docker-login",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-login.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-login.md",
+      "sha256": "047660cd58445d5e6f3d218c58564ee0d16392a15ddd4fd00bf051d407115872",
+      "kind": "vendored"
+    },
+    {
       "source_id": "docker.docker-logs",
       "title": "tldr: docker-logs",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-logs.md",
@@ -111,6 +299,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "docker.docker-pull",
+      "title": "tldr: docker-pull",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-pull.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-pull.md",
+      "sha256": "27094ed6a75655a4d71bf0cd1818604021e8dc7a7f41099302c2ec14f87395f8",
+      "kind": "vendored"
+    },
+    {
       "source_id": "docker.docker-rm",
       "title": "tldr: docker-rm",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-rm.md",
@@ -128,6 +326,46 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/docker-run.md",
       "sha256": "9c16e341a6e79389d9258e3814751929fc6e9bca4177c46beb6b859201f4b793",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-save",
+      "title": "tldr: docker-save",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-save.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-save.md",
+      "sha256": "07dee26f4ae579d7f03e2078bd63f9bb1f005dc088ec3455ff6a18ba43753d3e",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-search",
+      "title": "tldr: docker-search",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-search.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-search.md",
+      "sha256": "0e08130a94d7028054c924182b49ef6f5ad3f6ea57ebbafeae60821d81204ba5",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-start",
+      "title": "tldr: docker-start",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-start.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-start.md",
+      "sha256": "14e11ee913158b3c902947b7718e74ec9fde59e28d665df8ddbaf11eb1f63e08",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-stats",
+      "title": "tldr: docker-stats",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-stats.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-stats.md",
+      "sha256": "af5ec435b31f259ce543a6eeabc6b2490648dc646ef96043247db003d024cfb9",
       "kind": "vendored"
     },
     {
@@ -151,6 +389,26 @@
       "kind": "vendored"
     },
     {
+      "source_id": "docker.docker-tag",
+      "title": "tldr: docker-tag",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-tag.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-tag.md",
+      "sha256": "17bc3c56d7e3d43c2ac4556abbd3423168e14102f004fc403bbc7ea0250e6f7c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "docker.docker-top",
+      "title": "tldr: docker-top",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-top.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-top.md",
+      "sha256": "c90bef687d7dcc9555d9099712c2ef295b578525204faf585cfc117182e562c2",
+      "kind": "vendored"
+    },
+    {
       "source_id": "docker.docker-volume",
       "title": "tldr: docker-volume",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-volume.md",
@@ -168,6 +426,36 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/git-add.md",
       "sha256": "b8ae39c682057ef9bb81e547e47897f6af95914a7fb79fc18590e552ef92dc92",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-archive",
+      "title": "tldr: git-archive",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-archive.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-archive.md",
+      "sha256": "d8716583c795fb0a4d7f44ada7b75a2c45dcb043fc734b7fc3d15f9a44f964e7",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-bisect",
+      "title": "tldr: git-bisect",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-bisect.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-bisect.md",
+      "sha256": "3f92ef62addddd752726778a22435163f776af11a7b465f41465c83eb66f2fb8",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-blame",
+      "title": "tldr: git-blame",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-blame.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-blame.md",
+      "sha256": "3cfc842392e667b2beab45892030bbec93419e317900763356a9e9ac37b95557",
       "kind": "vendored"
     },
     {
@@ -191,6 +479,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "git.git-clean",
+      "title": "tldr: git-clean",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-clean.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-clean.md",
+      "sha256": "6e174f7c6ca5aa3131ea650cb23bd254a11564919c2bc8821f4c7a1a5154c9a5",
+      "kind": "vendored"
+    },
+    {
       "source_id": "git.git-clone",
       "title": "tldr: git-clone",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-clone.md",
@@ -211,6 +509,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "git.git-config",
+      "title": "tldr: git-config",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-config.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-config.md",
+      "sha256": "868154bfc1bca2b14b7d2fbb830999e8349f3fd5fcf99d30d10294188c81690a",
+      "kind": "vendored"
+    },
+    {
       "source_id": "git.git-diff",
       "title": "tldr: git-diff",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-diff.md",
@@ -218,6 +526,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/git-diff.md",
       "sha256": "a4b7ef141f653b22132fedf54affec4ce2d99d545a608162b784cd8aba3e51f4",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-fetch",
+      "title": "tldr: git-fetch",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-fetch.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-fetch.md",
+      "sha256": "1e9d44d11e62ade345a20dfb810b7de20a4d5d5267f3dede18c77f9230ab065a",
       "kind": "vendored"
     },
     {
@@ -258,6 +576,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/git-pull.md",
       "sha256": "3e8f9abf2a499297c5f6e886b102950d3702083dc17ba0d86df195b51743303c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-push",
+      "title": "tldr: git-push",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-push.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-push.md",
+      "sha256": "17cc3e47633fbaf8fbe222beaf031fa4cf2b875d3d0f2980ce888be5103f7b68",
       "kind": "vendored"
     },
     {
@@ -321,6 +649,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "git.git-show",
+      "title": "tldr: git-show",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-show.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-show.md",
+      "sha256": "7fbb91ef4a810d218321cee0cecfabf2c7253473a0dda2a919eb3e5a6cd0878e",
+      "kind": "vendored"
+    },
+    {
       "source_id": "git.git-stash",
       "title": "tldr: git-stash",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-stash.md",
@@ -338,6 +676,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/git-status.md",
       "sha256": "f091011848082f407db6140ed4f702cca7ff1971409789ff348f1701cfbe5581",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "git.git-submodule",
+      "title": "tldr: git-submodule",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-submodule.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-submodule.md",
+      "sha256": "98a1ae88fdf2c0615d425bca7fd4c2094a50d0e6c84456515fa38520ff1254c9",
       "kind": "vendored"
     },
     {
@@ -361,6 +709,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "git.git-worktree",
+      "title": "tldr: git-worktree",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-worktree.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-worktree.md",
+      "sha256": "562089052efbebfd3068603846bff58970a5b24aeb4d9e11d1781f6e9bc041ea",
+      "kind": "vendored"
+    },
+    {
       "source_id": "http.ab",
       "title": "tldr: ab",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ab.md",
@@ -371,6 +729,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "http.aria2c",
+      "title": "tldr: aria2c",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/aria2c.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/aria2c.md",
+      "sha256": "36665c3c5652c0867df62e9a34493047af1e89985de26ff62454ad63525bbf01",
+      "kind": "vendored"
+    },
+    {
       "source_id": "http.curl",
       "title": "tldr: curl",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/curl.md",
@@ -378,6 +746,26 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/curl.md",
       "sha256": "9e29c5cac3dc10d4538013f26cb332225aa1f4ea560bc641127654ebc534f3a4",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.curlie",
+      "title": "tldr: curlie",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/curlie.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/curlie.md",
+      "sha256": "5ccf7bb09830ed2e0cbbc33f61adac7c01e0df2093c587f538310de0879b8dac",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.dig",
+      "title": "tldr: dig",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/dig.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/dig.md",
+      "sha256": "482109a346fea82b5db2933939708cacb423ff8936aba336f8bf39b3dbae9a8f",
       "kind": "vendored"
     },
     {
@@ -411,6 +799,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "http.ip",
+      "title": "tldr: ip",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ip.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ip.md",
+      "sha256": "ec74450f88aaeedf1b643cb6fd17e7316e7f6011872b03089f9ab0054d521564",
+      "kind": "vendored"
+    },
+    {
       "source_id": "http.jq",
       "title": "tldr: jq",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jq.md",
@@ -418,6 +816,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/jq.md",
       "sha256": "763483dfe784a6b744565c2f25c912a9c2ef940c1bfbd38cf742768f9237e400",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.nc",
+      "title": "tldr: nc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nc.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nc.md",
+      "sha256": "cb9bb413c9ed8c63b2d402996d6b1f37e497ffa8103bef5ad2b83a2a3d3e9775",
       "kind": "vendored"
     },
     {
@@ -441,6 +849,46 @@
       "kind": "vendored"
     },
     {
+      "source_id": "http.ping",
+      "title": "tldr: ping",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ping.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ping.md",
+      "sha256": "dc39cb51da8252728d9cab913ad64032344beb1b22108327bc8e2baf0a2f86c2",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.ss",
+      "title": "tldr: ss",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ss.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ss.md",
+      "sha256": "8850135d3eea21954c73484d2f05b0b4f20cb7215cf2e3ca1241a573b6957406",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.tcpdump",
+      "title": "tldr: tcpdump",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tcpdump.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tcpdump.md",
+      "sha256": "de46ca449b8a8cc004a10eab7cd777107264294e35bd08a1626930406ad42a0d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "http.traceroute",
+      "title": "tldr: traceroute",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/traceroute.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/traceroute.md",
+      "sha256": "8533668a62e47fccaea4d3ac300e09054ffe51bee714595acf1b1006097e8a4b",
+      "kind": "vendored"
+    },
+    {
       "source_id": "http.wget",
       "title": "tldr: wget",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/wget.md",
@@ -451,6 +899,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "http.whois",
+      "title": "tldr: whois",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/whois.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/whois.md",
+      "sha256": "016e755c5cc8694f133ba20b93b6786e68c5230cc822511806ae085a5efe18ed",
+      "kind": "vendored"
+    },
+    {
       "source_id": "http.xh",
       "title": "tldr: xh",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/xh.md",
@@ -458,6 +916,416 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/xh.md",
       "sha256": "f6e67141d66310846e49e1f6595eeaf391f8a600693a9f8b385c467796a0fb0c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle",
+      "title": "tldr: gradle",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle.md",
+      "sha256": "0b2e3054f62def6ef411e3bdcd417a4b6fcf96737b1670a28bd325c17be34223",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-build",
+      "title": "tldr: gradle-build",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-build.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-build.md",
+      "sha256": "0aca324465a2b4821dcf6bb62514cb459710aaa6d9e56bc7234532c48e6a0e9b",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-clean",
+      "title": "tldr: gradle-clean",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-clean.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-clean.md",
+      "sha256": "a56b8c44915181164f14cfa86fac78e2c1b3ade2e36e2393b42def8e769aee9d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-dependencies",
+      "title": "tldr: gradle-dependencies",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-dependencies.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-dependencies.md",
+      "sha256": "32f6f2ac565e2c027588b2cc38aff89366927042e2561d361f886f206f359524",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-init",
+      "title": "tldr: gradle-init",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-init.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-init.md",
+      "sha256": "b3d375320f1616f84cb66f3aad3a59ef5310949c6129de21fdab03842c501d72",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-tasks",
+      "title": "tldr: gradle-tasks",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-tasks.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-tasks.md",
+      "sha256": "7732e81f117e6888f7eee2e92303a5d0e2a61cf45a883a6c3fc2b7613ec4a4e1",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-test",
+      "title": "tldr: gradle-test",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-test.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-test.md",
+      "sha256": "9e8f38ec2a97e1cd888c201873803fbefd73970ca0f938da0f78a5fd91a4b60d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.gradle-wrapper",
+      "title": "tldr: gradle-wrapper",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-wrapper.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle-wrapper.md",
+      "sha256": "3bacba33991befa2689668b9009ee10fc1469e3e7170b250dd5040b03beb1c4e",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.jar",
+      "title": "tldr: jar",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jar.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jar.md",
+      "sha256": "151dd31bdb9d00fbbd43f6a6b45a1532d69d8ffbc8fcff19dfdbec6aa506521d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.java",
+      "title": "tldr: java",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/java.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/java.md",
+      "sha256": "bb16f713a98f214b526c2be4945f7ec2217e56acca4f25c1af50cedf701dc130",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.javac",
+      "title": "tldr: javac",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/javac.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/javac.md",
+      "sha256": "7490734503f66dab065f68788e0c5bab169ce6033a31ab19e3de01fe7ae06186",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.javadoc",
+      "title": "tldr: javadoc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/javadoc.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/javadoc.md",
+      "sha256": "173ba65ea3685f382f0aec4e956a43804b41ca92d67af2bfdc71ac8c56f2d71e",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.jps",
+      "title": "tldr: jps",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jps.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jps.md",
+      "sha256": "d69789d9a9fe42fc61cd1c32ddaf72fdafeea8e0787b328e9a0a46cf37407f7c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.keytool",
+      "title": "tldr: keytool",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/keytool.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/keytool.md",
+      "sha256": "8f5b48844514643ee261f08c7ee49e1ee1c45b53749924871d770c8aa618d86d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.kotlin",
+      "title": "tldr: kotlin",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kotlin.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kotlin.md",
+      "sha256": "9fcd2841814aac7aa29f663022474f864a0c79503dd2e3a44405d7275d576699",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.mvn",
+      "title": "tldr: mvn",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn.md",
+      "sha256": "3ccbb83efe2bca027e357c0efeaeef444b8c6ca779f30cf46b063e8436283a46",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.mvn-archetype",
+      "title": "tldr: mvn-archetype",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-archetype.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn-archetype.md",
+      "sha256": "6133e0d607ade379992e69195b94b9e5d94af6ab7bd556c63e2095d5f3a1e2c5",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.mvn-compile",
+      "title": "tldr: mvn-compile",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-compile.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn-compile.md",
+      "sha256": "4bea114041d701fad62029b1d2866a026565297735bc1ea224f991cbc32a8be6",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.mvn-dependency",
+      "title": "tldr: mvn-dependency",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-dependency.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn-dependency.md",
+      "sha256": "188c4f48a637b48a960ca24e9b7ee07ad2b11ddf4405eccb0177d2f70f9b1d47",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "java.mvn-package",
+      "title": "tldr: mvn-package",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-package.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn-package.md",
+      "sha256": "ff0ba6a88910ae0a4a845a4e7bbfe7b66ee4751bd3a823a6ac2428dba4b4dbaa",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl",
+      "title": "tldr: kubectl",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl.md",
+      "sha256": "247594e8d19423197b216239d0a9aa21d6fb89c86b85fb85ffcd97c6b0bbd58a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-apply",
+      "title": "tldr: kubectl-apply",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-apply.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-apply.md",
+      "sha256": "f386204137b19285bb0ebdb707617ece09acbc44f2fdb4fd542db43ea9668642",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-config",
+      "title": "tldr: kubectl-config",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-config.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-config.md",
+      "sha256": "21bde3bab9001bb428be9e8bf4374ea2a80fd0a222cabad15977f5533d654d4c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-cp",
+      "title": "tldr: kubectl-cp",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-cp.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-cp.md",
+      "sha256": "0b86699fe2d4005b4b17597fccf15bfcbf738c2ebe2b453f0bb3e735d2600b5a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-create",
+      "title": "tldr: kubectl-create",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-create.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-create.md",
+      "sha256": "790e8dd5bdefaf6fc85504492a77c133c303d63e732d78b3402498d73e3fd5e4",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-delete",
+      "title": "tldr: kubectl-delete",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-delete.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-delete.md",
+      "sha256": "93ca0f9e0a4263e4d8b8a5e860345d80df262af4ed4fb7e5177dc296a0412a88",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-describe",
+      "title": "tldr: kubectl-describe",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-describe.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-describe.md",
+      "sha256": "a0ab948545606b82f56e7b6158a608de3f8daa35a196b4b06c276df214a4e14c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-exec",
+      "title": "tldr: kubectl-exec",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-exec.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-exec.md",
+      "sha256": "cc3873a657011b985af62260bfb439312bfd6aca2554496a8d2089c9bec10818",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-explain",
+      "title": "tldr: kubectl-explain",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-explain.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-explain.md",
+      "sha256": "7285f37446b27803c8ffc05e3dd6dd215c90fa59ad5db5ef9084495999ac01b0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-expose",
+      "title": "tldr: kubectl-expose",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-expose.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-expose.md",
+      "sha256": "a603553bfd891f397e93d778b942ea4e169306249321bf1058fca9ae6ef6be2e",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-get",
+      "title": "tldr: kubectl-get",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-get.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-get.md",
+      "sha256": "19a9811027dee6981b6a7288708ba57c0e572698756fbd64689869cbb4850bab",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-label",
+      "title": "tldr: kubectl-label",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-label.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-label.md",
+      "sha256": "7026ce1eaa3c3c5be353b29401b383ab19e6d8d91538473aa2e8ca909937c6df",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-logs",
+      "title": "tldr: kubectl-logs",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-logs.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-logs.md",
+      "sha256": "4d220312c304512d61a716a27e784403a00399737d5913e1da3ebdc4caeea6f7",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-patch",
+      "title": "tldr: kubectl-patch",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-patch.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-patch.md",
+      "sha256": "71447d7d3b8d0aff3b3289017aa22c666ca1c306c4ada5a95fe567e891250f1d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-port-forward",
+      "title": "tldr: kubectl-port-forward",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-port-forward.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-port-forward.md",
+      "sha256": "250abbef8858f15fc069ad92e398f89bdb6e8f080d20fd2a257cf2865cf104ab",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-rollout",
+      "title": "tldr: kubectl-rollout",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-rollout.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-rollout.md",
+      "sha256": "2aa57a93d9fc1c0dcc6daacc9cc17f1ff9dafbbc6569ec5944e274c4541339d3",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-scale",
+      "title": "tldr: kubectl-scale",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-scale.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-scale.md",
+      "sha256": "4f140b9f7e1a058551745565fdd6444b4a5cd3095c4456a1eaf41690ef6b681f",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-taint",
+      "title": "tldr: kubectl-taint",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-taint.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-taint.md",
+      "sha256": "ecab9c8c6dd1ced5646196d31244168663c243e136d450cb706e5bd0be0f0b50",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-top",
+      "title": "tldr: kubectl-top",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-top.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-top.md",
+      "sha256": "9667c903b65943720f7349c34073b05d6eb89dbd3774291520dc4105d6152de0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "kubernetes.kubectl-wait",
+      "title": "tldr: kubectl-wait",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-wait.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-wait.md",
+      "sha256": "5bb1a64dc2d39143ca34563b486f66522c15fe928b6b42b671a1380663c0133e",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.cat",
+      "title": "tldr: cat",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cat.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cat.md",
+      "sha256": "db25e6c94318558a3fc929b953eefe98cb2d75bb320dc6a9e36539c15e35a008",
       "kind": "vendored"
     },
     {
@@ -541,6 +1409,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "linux.head",
+      "title": "tldr: head",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/head.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/head.md",
+      "sha256": "588ee6ce82a841a3941f6539ad1d12224fbc301377fd495a5403d43650fc4a6f",
+      "kind": "vendored"
+    },
+    {
       "source_id": "linux.kill",
       "title": "tldr: kill",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kill.md",
@@ -548,6 +1426,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/kill.md",
       "sha256": "660b24e48da7c5068110ffcc1a2dd761488938ceb8e97e48df9cf1f31b2b3806",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.less",
+      "title": "tldr: less",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/less.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/less.md",
+      "sha256": "cb23411121a42b1e835326718fd6c7245fc81b81ec336078beeaa9cf8fcc8f35",
       "kind": "vendored"
     },
     {
@@ -591,6 +1479,16 @@
       "kind": "vendored"
     },
     {
+      "source_id": "linux.pwd",
+      "title": "tldr: pwd",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pwd.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pwd.md",
+      "sha256": "a701198670f4e6e18b4dfa8ec7e17843c0b5718f3a39bc26fb360b0644a2b363",
+      "kind": "vendored"
+    },
+    {
       "source_id": "linux.rg",
       "title": "tldr: rg",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/rg.md",
@@ -621,6 +1519,26 @@
       "kind": "vendored"
     },
     {
+      "source_id": "linux.sed",
+      "title": "tldr: sed",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sed.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sed.md",
+      "sha256": "e58a0db2d4c251d7a1f12011119e3063379d7fd73a81cb0880de13ba360fdee2",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.sort",
+      "title": "tldr: sort",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sort.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sort.md",
+      "sha256": "d19edca317a3f84246468f62efae3232e304231c082b038e3ff54addbbe1d9e9",
+      "kind": "vendored"
+    },
+    {
       "source_id": "linux.ssh",
       "title": "tldr: ssh",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ssh.md",
@@ -628,6 +1546,16 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/ssh.md",
       "sha256": "5024eec782b87995705cd78b2ba155777895b901810e1ad65ed73c14b1604302",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.tail",
+      "title": "tldr: tail",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tail.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tail.md",
+      "sha256": "b208bcdcfdd66475cb10dcc10e568dcd66ccca2d1f9d2f5eb6fad27b7c84e40d",
       "kind": "vendored"
     },
     {
@@ -651,6 +1579,36 @@
       "kind": "vendored"
     },
     {
+      "source_id": "linux.touch",
+      "title": "tldr: touch",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/touch.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/touch.md",
+      "sha256": "29654118c0f624ef36bb4b1a405d835e334d9439bad05a1cf6ae9a7770b651d0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.uniq",
+      "title": "tldr: uniq",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uniq.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/uniq.md",
+      "sha256": "5a3f0feb78c6c9e19eb9b3f8a65d29ea3ceeb44a1b94ff95a6ae13dfcf3ec9fd",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "linux.wc",
+      "title": "tldr: wc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/wc.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/wc.md",
+      "sha256": "97c17362b5ccfaea4084384f44e827bcae39b9abfcdcf4ef32b77a0059d3d5a3",
+      "kind": "vendored"
+    },
+    {
       "source_id": "linux.zip",
       "title": "tldr: zip",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/zip.md",
@@ -661,167 +1619,217 @@
       "kind": "vendored"
     },
     {
-      "source_id": "sql.backup",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "60b1cddc8cbe6ef3df1aa9dda877636145b378e7b20ff7959ec07b7f18454bdf",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.create-database",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-database.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "8c1057619bf4cef48067aca628b5f04254e358f73e25fcd35a678d2dafb78786",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.create-index",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-index.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "c1af11d88b4f5de8f8499b5d5fbdd7182250ecc6aecc09caeaa908c9cfaf5c4f",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.create-table",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-table.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "d560851dac21a016d0e2b17ca37c48f0fb28ab2777f7218492fa937df615deac",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.create-user",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-user.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "7edc87aabd2ed1a107b7f32328ed456de6b51f1c92ea7e9bd66b9b35d2805560",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.create-view",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-view.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "1360042f7feedc681ec774e0b7bd9c0e1ee4e2329c9fee58fd304a1a5774adc3",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.delete-rows",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/delete.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "8ec1c48162e07b607a6c7309cac2f15d912ffca674dafc1412925ab692138e46",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.explain-query",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/explain.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "7e755aa590cfd84b655e3f8bd98d51f0a19c1829272476dd2d86eb534ac5d6a7",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.insert-row",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/insert.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "dd36e05e005cf3d1765a4fda205ebb05f996eefd3599269dc4b2c869e83ee541",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.join-tables",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/join.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "f4b25645565c312088c8ded6aaed0fb2b223a0e8db5ce3a07556dc5a27094bd4",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.mysql-connect",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "2a3ed26a27b7746f715c6d6626edae5c61265da11096b37d3f86ea02c0d76d44",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.restore",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysql-batch-commands.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "b239f4c95640bc483b67007e4d692f9777ea9374506932ce63ac9d9dfe8b4f5b",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.select-rows",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "ead4085cb1d483b016b4b50fde643ad2554b7ef504bb55421d732b525db166d8",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.transaction",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/commit.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "352e1aecbc772c8d66de2689dbbb8f7ab7e128734fa4f0ba389a16c6626f8f53",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "sql.update-rows",
-      "title": "AegisCopilot MySQL 种子知识",
-      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/update.html",
-      "license": "MIT (project-authored)",
-      "revision": "v2.0.0",
-      "path": "generated/mysql",
-      "sha256": "dcae42982698e0fdc060bbec969ede2629207f551a879614ca065d61e3f81af7",
-      "kind": "generated_seed"
-    },
-    {
-      "source_id": "toolchain.black",
-      "title": "tldr: black",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/black.md",
+      "source_id": "network.certbot",
+      "title": "tldr: certbot",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/certbot.md",
       "license": "CC BY 4.0",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/black.md",
-      "sha256": "7a0c266ed7ead9ec9fa0e6fbc1a853627558acd0b735631aaf6a9bfa5747bb34",
+      "path": "pages/linux/certbot.md",
+      "sha256": "2f32b78276e6f226a4c9871ce13fdfad182c5f624d52506e3fd7c9fccaf1d134",
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.corepack",
+      "source_id": "network.dig",
+      "title": "tldr: dig",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/dig.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/dig.md",
+      "sha256": "482109a346fea82b5db2933939708cacb423ff8936aba336f8bf39b3dbae9a8f",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.firewall-cmd",
+      "title": "tldr: firewall-cmd",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/firewall-cmd.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/firewall-cmd.md",
+      "sha256": "086167cc4e5e244c7ec377373e47e2c66811d08139e025f68900e14034f87a24",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.hostnamectl",
+      "title": "tldr: hostnamectl",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/hostnamectl.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/hostnamectl.md",
+      "sha256": "c90e164309125ff7e8259c65e8f55557edf380a8a47b1f308392774e37465e22",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ip",
+      "title": "tldr: ip",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ip.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ip.md",
+      "sha256": "ec74450f88aaeedf1b643cb6fd17e7316e7f6011872b03089f9ab0054d521564",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.lsof",
+      "title": "tldr: lsof",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/lsof.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/lsof.md",
+      "sha256": "4a93efd677ebc1309a88a309ea3739c4a298e9f0bbd06c950b18cd0efedd0a8a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.nc",
+      "title": "tldr: nc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nc.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nc.md",
+      "sha256": "cb9bb413c9ed8c63b2d402996d6b1f37e497ffa8103bef5ad2b83a2a3d3e9775",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.netstat",
+      "title": "tldr: netstat",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/netstat.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/netstat.md",
+      "sha256": "b3736fbab73112f10a069ec24161a5c419d76f251d849169c5f2b8582fab2c17",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.nginx",
+      "title": "tldr: nginx",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nginx.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nginx.md",
+      "sha256": "4c4654473171ac048fc1c8d953f20945e43add6401144ee52acc92a0845a75a0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.nslookup",
+      "title": "tldr: nslookup",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nslookup.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nslookup.md",
+      "sha256": "d00dfa13a395666dd6a373a264e70e1e620cc4c083198f44dcbb283485ff4046",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ping",
+      "title": "tldr: ping",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ping.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ping.md",
+      "sha256": "dc39cb51da8252728d9cab913ad64032344beb1b22108327bc8e2baf0a2f86c2",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.rsync",
+      "title": "tldr: rsync",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/rsync.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/rsync.md",
+      "sha256": "70c7bf156aaff1ef96b6a374053bac9f2d510a4b2f73305903f47951b0d34a5b",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.sftp",
+      "title": "tldr: sftp",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sftp.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sftp.md",
+      "sha256": "768bdfda43815126025f4e96601d29ce3d70ed8cc8e60f638ce7e9616a5636ce",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ss",
+      "title": "tldr: ss",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ss.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ss.md",
+      "sha256": "8850135d3eea21954c73484d2f05b0b4f20cb7215cf2e3ca1241a573b6957406",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ssh",
+      "title": "tldr: ssh",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ssh.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ssh.md",
+      "sha256": "5024eec782b87995705cd78b2ba155777895b901810e1ad65ed73c14b1604302",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ssh-copy-id",
+      "title": "tldr: ssh-copy-id",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ssh-copy-id.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ssh-copy-id.md",
+      "sha256": "aa550544b9bdde539cc3cc0fc46d5f678087c543735b1a1250a767da0532e6da",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ssh-keygen",
+      "title": "tldr: ssh-keygen",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ssh-keygen.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ssh-keygen.md",
+      "sha256": "4ff0ff4125dbdf2049049cfb3553d76836899c21ca5963c60e7cc2f8ef134930",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.tcpdump",
+      "title": "tldr: tcpdump",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tcpdump.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tcpdump.md",
+      "sha256": "de46ca449b8a8cc004a10eab7cd777107264294e35bd08a1626930406ad42a0d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.traceroute",
+      "title": "tldr: traceroute",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/traceroute.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/traceroute.md",
+      "sha256": "8533668a62e47fccaea4d3ac300e09054ffe51bee714595acf1b1006097e8a4b",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "network.ufw",
+      "title": "tldr: ufw",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ufw.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ufw.md",
+      "sha256": "8792174d8058a56101837b96bc34a4376f371c478bef27bccebb5377f098bd23",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.bun",
+      "title": "tldr: bun",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/bun.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/bun.md",
+      "sha256": "e519bc4698c470363f767a2450119afb1633ad9df5245059376d0e54fcf7c973",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.corepack",
       "title": "tldr: corepack",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/corepack.md",
       "license": "CC BY 4.0",
@@ -831,7 +1839,17 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.eslint",
+      "source_id": "node.deno",
+      "title": "tldr: deno",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/deno.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/deno.md",
+      "sha256": "fb1fd0fb7f58b72a0a1c7e07df60c3ea89ad96748bf1071d41d221769f9e98bf",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.eslint",
       "title": "tldr: eslint",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/eslint.md",
       "license": "CC BY 4.0",
@@ -841,7 +1859,7 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.node",
+      "source_id": "node.node",
       "title": "tldr: node",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/node.md",
       "license": "CC BY 4.0",
@@ -851,7 +1869,7 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.npm",
+      "source_id": "node.npm",
       "title": "tldr: npm",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm.md",
       "license": "CC BY 4.0",
@@ -861,7 +1879,77 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.npx",
+      "source_id": "node.npm-audit",
+      "title": "tldr: npm-audit",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-audit.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-audit.md",
+      "sha256": "00aefd9efa6b7e429f75900ce59a1d3b0ba54ccc25e897705799609308cc343c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-cache",
+      "title": "tldr: npm-cache",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-cache.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-cache.md",
+      "sha256": "5aadec676aba18522178efa496a868fa7252d79f3f4890f700f7cc772e3d3e39",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-config",
+      "title": "tldr: npm-config",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-config.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-config.md",
+      "sha256": "51f7847f7749b849cd5fc23f4e0c9221253facc3763308ec1839f1d7e98c3f9a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-install",
+      "title": "tldr: npm-install",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-install.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-install.md",
+      "sha256": "a1d0a0e18b67e57ef9e3c4bd507a1f151a392da8de0bbd44ac6e7943bebdd7b1",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-publish",
+      "title": "tldr: npm-publish",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-publish.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-publish.md",
+      "sha256": "a77054f2e7220f87dc3dd200710301e83342f2453f46725018b7a63f19fc8c19",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-run-script",
+      "title": "tldr: npm-run-script",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-run-script.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-run-script.md",
+      "sha256": "a2fb0d230a91fb22f156afaa4cd342956d1370dab83473d6cb9acbc8f8464257",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npm-test",
+      "title": "tldr: npm-test",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-test.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-test.md",
+      "sha256": "c78770b9f2990cfa8e832315e1b13a62faa37a9e478dfaee437065459feb3a60",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "node.npx",
       "title": "tldr: npx",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npx.md",
       "license": "CC BY 4.0",
@@ -871,37 +1959,7 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.pip",
-      "title": "tldr: pip",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pip.md",
-      "sha256": "bf8c42d018422a66f1e97d84a574ebc4131ed7b28532a11524c271e7044c2fde",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.pip3",
-      "title": "tldr: pip3",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip3.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pip3.md",
-      "sha256": "fabb9e52c534ef5c967d84be1aba3a1f2078e7a177427acb844dbb45279ab077",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.pipx",
-      "title": "tldr: pipx",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pipx.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pipx.md",
-      "sha256": "74ab539caeb200649922731a1e6c2ed266d96c18797ff6089734eb58236b75c4",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.pnpm",
+      "source_id": "node.pnpm",
       "title": "tldr: pnpm",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pnpm.md",
       "license": "CC BY 4.0",
@@ -911,7 +1969,7 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.prettier",
+      "source_id": "node.prettier",
       "title": "tldr: prettier",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/prettier.md",
       "license": "CC BY 4.0",
@@ -921,47 +1979,7 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.pytest",
-      "title": "tldr: pytest",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pytest.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pytest.md",
-      "sha256": "25036432727a8b14beea2031eddfb527d3a968e9efe03b2097584f2590a08cae",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.python",
-      "title": "tldr: python",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/python.md",
-      "sha256": "2a07652c1437e460eb9eb6f449a1df3f4c6e4d7c573198d4f232b8327c91c9e7",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.python3",
-      "title": "tldr: python3",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python3.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/python3.md",
-      "sha256": "2a3d7528c0ec9651046dac91330bb3c4204aaa866c46170f7478b82b68d86fb6",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.ruff",
-      "title": "tldr: ruff",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ruff.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/ruff.md",
-      "sha256": "e65b4d13a460565eb467565810da1dcdb344b59cba3c98d9d810e1d3d1692150",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.ts-node",
+      "source_id": "node.ts-node",
       "title": "tldr: ts-node",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ts-node.md",
       "license": "CC BY 4.0",
@@ -971,27 +1989,17 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.uv",
-      "title": "tldr: uv",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uv.md",
+      "source_id": "node.tsc",
+      "title": "tldr: tsc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tsc.md",
       "license": "CC BY 4.0",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/uv.md",
-      "sha256": "fe5a0389abc12b789cf1c21314685b8a283e900a6b4d88b9aaed62abb44a513c",
+      "path": "pages/common/tsc.md",
+      "sha256": "bdfa4f3d5568f1f862cb0fbec23167dcb0c7e71fb6e739cc51c85d1ee57de5f6",
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.virtualenv",
-      "title": "tldr: virtualenv",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/virtualenv.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/virtualenv.md",
-      "sha256": "6b37a231f21147655890b9b3dbc3329eb5f0026f96846d6ed7c26be17d76037f",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "toolchain.vite",
+      "source_id": "node.vite",
       "title": "tldr: vite",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/vite.md",
       "license": "CC BY 4.0",
@@ -1001,13 +2009,1013 @@
       "kind": "vendored"
     },
     {
-      "source_id": "toolchain.yarn",
+      "source_id": "node.yarn",
       "title": "tldr: yarn",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/yarn.md",
       "license": "CC BY 4.0",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/yarn.md",
       "sha256": "a96542cc9e779bf87aef5e872fc0d6ab24d82aff6efbf0eeb68a2990178a7a20",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.black",
+      "title": "tldr: black",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/black.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/black.md",
+      "sha256": "7a0c266ed7ead9ec9fa0e6fbc1a853627558acd0b735631aaf6a9bfa5747bb34",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.conda",
+      "title": "tldr: conda",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/conda.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/conda.md",
+      "sha256": "9cde165046ff56ba6b27390ff15baa90310aa2152f3e132e556a1eda9344c05c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.django-admin",
+      "title": "tldr: django-admin",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/django-admin.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/django-admin.md",
+      "sha256": "f180a1bb43ae63ccda9072feb9843796466542a543113434216451060a3e1f58",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.flake8",
+      "title": "tldr: flake8",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/flake8.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/flake8.md",
+      "sha256": "d54adc7139eea68aad58d7a0e8e1beac58911cf42a434901eea6fd69b77699b3",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.flask",
+      "title": "tldr: flask",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/flask.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/flask.md",
+      "sha256": "06a906c0e263c2700cf3ae6a4497659d49578226a8f99c2affcfdc776555dcf8",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.gunicorn",
+      "title": "tldr: gunicorn",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gunicorn.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gunicorn.md",
+      "sha256": "c57fc7595e9cbdaae06db76ee3850a88c8002e54579f8110ae5b37d34f78d48a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.http-server",
+      "title": "tldr: http-server",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/http-server.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/http-server.md",
+      "sha256": "da2bb9cecb24885d5baa5bd867bbbd4bf0779ce594d74b0d45c2e5ee926d6a3b",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.ipython",
+      "title": "tldr: ipython",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ipython.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ipython.md",
+      "sha256": "69db42534918b6ebe19e1885f90816f7a45d593309c8fa28d98c3cb58c5e7aa3",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.jupyter",
+      "title": "tldr: jupyter",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jupyter.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jupyter.md",
+      "sha256": "42c24a8e509f8b8f51cff616bcbf5266cde6e36eb545926b4d9ffd23567ffcda",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.mypy",
+      "title": "tldr: mypy",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mypy.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mypy.md",
+      "sha256": "d15d08b69f70444b71656f9042af7b5caedce34a5f96e45be6e61257d47e2dc2",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pip",
+      "title": "tldr: pip",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip.md",
+      "sha256": "bf8c42d018422a66f1e97d84a574ebc4131ed7b28532a11524c271e7044c2fde",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pip3",
+      "title": "tldr: pip3",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip3.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip3.md",
+      "sha256": "fabb9e52c534ef5c967d84be1aba3a1f2078e7a177427acb844dbb45279ab077",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pipenv",
+      "title": "tldr: pipenv",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pipenv.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pipenv.md",
+      "sha256": "ff53acfe4649e8fa471de88c1c9d5916199f757c8b4c7c7b943d95bada29e7e0",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pipx",
+      "title": "tldr: pipx",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pipx.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pipx.md",
+      "sha256": "74ab539caeb200649922731a1e6c2ed266d96c18797ff6089734eb58236b75c4",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.poetry",
+      "title": "tldr: poetry",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/poetry.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/poetry.md",
+      "sha256": "266c9e44e9c3600d9c38f4286fd63990cc4a57f926ed0eadfb3aed37e705e366",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pydoc",
+      "title": "tldr: pydoc",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pydoc.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pydoc.md",
+      "sha256": "80e6681aaedea474b411c78dcf5e7dfd3c58c17d1d6036077de81230499a94da",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pyenv",
+      "title": "tldr: pyenv",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pyenv.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pyenv.md",
+      "sha256": "2e1f18e9c260fc72e7084972d86b9df4c00b94f0a24de0d24d8df114dff95965",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pylint",
+      "title": "tldr: pylint",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pylint.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pylint.md",
+      "sha256": "b6c6f4a93a524f630450ef50411d5ad3785d6961a92e013c323a930c4ed34d39",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.pytest",
+      "title": "tldr: pytest",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pytest.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pytest.md",
+      "sha256": "25036432727a8b14beea2031eddfb527d3a968e9efe03b2097584f2590a08cae",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.python",
+      "title": "tldr: python",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/python.md",
+      "sha256": "2a07652c1437e460eb9eb6f449a1df3f4c6e4d7c573198d4f232b8327c91c9e7",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.python3",
+      "title": "tldr: python3",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python3.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/python3.md",
+      "sha256": "2a3d7528c0ec9651046dac91330bb3c4204aaa866c46170f7478b82b68d86fb6",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.ruff",
+      "title": "tldr: ruff",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ruff.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ruff.md",
+      "sha256": "e65b4d13a460565eb467565810da1dcdb344b59cba3c98d9d810e1d3d1692150",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.tox",
+      "title": "tldr: tox",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tox.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tox.md",
+      "sha256": "7019ba7bc98c0f2204243f737715bab3797eca20156b6e64077e54c95262c866",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.uv",
+      "title": "tldr: uv",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uv.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/uv.md",
+      "sha256": "fe5a0389abc12b789cf1c21314685b8a283e900a6b4d88b9aaed62abb44a513c",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "python.virtualenv",
+      "title": "tldr: virtualenv",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/virtualenv.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/virtualenv.md",
+      "sha256": "6b37a231f21147655890b9b3dbc3329eb5f0026f96846d6ed7c26be17d76037f",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "redis.delete-key",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/del/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "d20daaa77677522b13e889c5b2e7f131111968b36216b4c5017033df13150db2",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.expire",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/expire/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "731f14152f81f8d81add7405109bf7a280fa5509c84cb6ecdf8e56540ea07780",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.hash",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/data-types/hashes/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "b4342e9cf3fa8c7c91649138bedab2a03e5b12e4a992d93c9b5357d828f36870",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.info",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/info/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "d7088361612266e7b33d27baaaa970037ed52414a05df2fca0de262a22099348",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.list",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/data-types/lists/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "b97d908809f76384951a263b09eb7efe496ea574cdc31d5956097d7dacd7d9c8",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.memory-usage",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/memory-usage/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "3571f3a7bc115b792599ef232676bd3149a17137274141b5a7c94d90707e6c44",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.pipeline",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/clients/patterns/bulk-loading/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "e46255865b132fd6212ca14ae1cb6443df234946b4f1f47af0d0c1ffe387aa77",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.pubsub",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/pubsub/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "c6b73e0a4862d721b1148b2bd70f45d1b9e29d4c1261bef73dd980c0fc299d97",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.scan-keys",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/scan/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "9928993a2b8e1f753fd6d9748aca0833a3cb69c79fe99ad085be92546e11ab2d",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.set",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/data-types/sets/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "227786b92d253a0f7c2fa58dac11aa1e4c2e865552a220214ada572915348f17",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.slowlog",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/slowlog-get/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "63aea2f1e3d68bc2878cb452068e66354c0841043fd23a82c661e3cc6619ed28",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.sorted-set",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/data-types/sorted-sets/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "48b248339b3306678070f384d1093ce179c3ef0b5b34bfa3b95205221e73da8d",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.string-get",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/get/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "a03dc143ee03418ba314f25a8f53ed48156aa37a03c611bbd2965d7a9970a11d",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.string-set",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/commands/set/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "841dbf99bda8cba0cd17cebf728be8c977cdfb870c5cd4e2653092e3103978b0",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "redis.transaction",
+      "title": "AegisCopilot Redis 种子知识",
+      "source_url": "https://redis.io/docs/latest/develop/interact/transactions/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "sha256": "d12f8a636c3f570df4068a8dfaedeff206bf407f559bbe3d197c48c9f0f34892",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.backup",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "60b1cddc8cbe6ef3df1aa9dda877636145b378e7b20ff7959ec07b7f18454bdf",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.create-database",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-database.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "8c1057619bf4cef48067aca628b5f04254e358f73e25fcd35a678d2dafb78786",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.create-index",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-index.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "c1af11d88b4f5de8f8499b5d5fbdd7182250ecc6aecc09caeaa908c9cfaf5c4f",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.create-table",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-table.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "d560851dac21a016d0e2b17ca37c48f0fb28ab2777f7218492fa937df615deac",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.create-user",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-user.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "7edc87aabd2ed1a107b7f32328ed456de6b51f1c92ea7e9bd66b9b35d2805560",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.create-view",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-view.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "1360042f7feedc681ec774e0b7bd9c0e1ee4e2329c9fee58fd304a1a5774adc3",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.delete-rows",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/delete.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "8ec1c48162e07b607a6c7309cac2f15d912ffca674dafc1412925ab692138e46",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.explain-query",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/explain.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "7e755aa590cfd84b655e3f8bd98d51f0a19c1829272476dd2d86eb534ac5d6a7",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.insert-row",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/insert.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "dd36e05e005cf3d1765a4fda205ebb05f996eefd3599269dc4b2c869e83ee541",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.join-tables",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/join.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "f4b25645565c312088c8ded6aaed0fb2b223a0e8db5ce3a07556dc5a27094bd4",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.mysql-connect",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "2a3ed26a27b7746f715c6d6626edae5c61265da11096b37d3f86ea02c0d76d44",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-backup",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/app-pgdump.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "4f52507518e44da140e3d76b77cfd54d20db4824a9d1fb62e102a3809f781cb3",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-connect",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/app-psql.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "a1967c3b1bd051a1fe1e8d47dc34f0acc3beea2ab71ef1b9c45f6c766d52275f",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-create-database",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/app-createdb.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "97421d1bec15a991b99b6e6482bebd5cd17a4c97ec26053ceaf907d6f7833711",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-create-index",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-createindex.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "f6ef86499ee13745a17478a383b05eccd0f4d54b9c5a82fadc94fc00d2dc3ac2",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-create-table",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-createtable.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "93e268305c09ef09d05b1107ff852dc58ac95d5aacd37a80c13f0027ccd542ff",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-create-view",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-createview.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "e57c9edbfdacb66803af346e9f88d24119510c90a8b59fe33eac3fd15b635b92",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-delete",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-delete.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "e1a1e0d326ea189b7c14f90d88306a12d08b0e0aab47350f3a40a9d80798976e",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-explain",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/using-explain.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "02a8a46dcd5be31cc7582525c49d5ba131a6a0d9d07ea1b00bb6e1fd5accb27a",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-insert",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-insert.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "385590e1da57c20f8430cd6df3bcda7c2200f39bc0aefce695435a61be4c5126",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-list",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/app-psql.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "70263b3300c65cc41b653ab2771fdd3c9ff5a9236c317b7c73aa094e71dd095a",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-restore",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/app-pgrestore.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "56ad6980cfe0ff136143e9c3add6255ebb1638dd4abd2c3c1933640c87fb9e3f",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-select",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-select.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "4ff2a218789b5a1ca195bc6c0edb4d3f0ece27e289acba76a80593a7dd54bbdd",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-transaction",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/tutorial-transactions.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "c8bfd0de96168a916b58b655a369b695d4bf8f8f31fa3887e02c13e538d029ac",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-update",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-update.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "18f3f5f3bdf9f6789ecdc4788b13176e8306b29e19b5c2a3bc5366a2b5fac3c8",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.postgres-upsert",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://www.postgresql.org/docs/current/sql-insert.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "65e33394859a6c80b8a9a44335805e561b646f67cf43ad45cebf483fd901eceb",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.restore",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysql-batch-commands.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "b239f4c95640bc483b67007e4d692f9777ea9374506932ce63ac9d9dfe8b4f5b",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.select-rows",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "ead4085cb1d483b016b4b50fde643ad2554b7ef504bb55421d732b525db166d8",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.transaction",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/commit.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "352e1aecbc772c8d66de2689dbbb8f7ab7e128734fa4f0ba389a16c6626f8f53",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "sql.update-rows",
+      "title": "AegisCopilot MySQL 种子知识",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/update.html",
+      "license": "MIT (project-authored)",
+      "revision": "v2.1.0",
+      "path": "generated/mysql",
+      "sha256": "dcae42982698e0fdc060bbec969ede2629207f551a879614ca065d61e3f81af7",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "testing.gdb",
+      "title": "tldr: gdb",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gdb.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gdb.md",
+      "sha256": "64ef1231f4ee45fc3116b2837e001e8579c8db750b4c990bee088daabf11a0ae",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.jest",
+      "title": "tldr: jest",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jest.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jest.md",
+      "sha256": "66a78f8559fa1f0d594f3c8048fa45da132926823c48f5e7d5cc088ea53d104a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.k6",
+      "title": "tldr: k6",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/k6.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/k6.md",
+      "sha256": "51e0d07e71a1c77896c23298ecfa8a1de929daff2f509c3b777eb11ec866f1c9",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.lldb",
+      "title": "tldr: lldb",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/lldb.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/lldb.md",
+      "sha256": "8a522fa062affb3348c17ff0f2145e29ec0c3f49f63a3af363a3f1e8e922b00d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.mocha",
+      "title": "tldr: mocha",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mocha.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mocha.md",
+      "sha256": "e52aef83fc3c296c76a869a9e65cf40f75e78060cbd49c5374c11369cd9e72eb",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.phpunit",
+      "title": "tldr: phpunit",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/phpunit.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/phpunit.md",
+      "sha256": "a53b2ddbe49118c7319e6677e8268e1a9964578af31ac730c9a2f71a97c56d40",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.pytest",
+      "title": "tldr: pytest",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pytest.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pytest.md",
+      "sha256": "25036432727a8b14beea2031eddfb527d3a968e9efe03b2097584f2590a08cae",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.strace",
+      "title": "tldr: strace",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/strace.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/strace.md",
+      "sha256": "5fe8df22ea4345d28b776c30fcb0f84b64cc3b6bb54ba12397a479048e8c228d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.valgrind",
+      "title": "tldr: valgrind",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/valgrind.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/valgrind.md",
+      "sha256": "b8abee54bfef7e1fe8257b0285ab317a51fac2cefc404ca7774d5f4f35768954",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "testing.vitest",
+      "title": "tldr: vitest",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/vitest.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/vitest.md",
+      "sha256": "f6f87c0c0b504327d104e87aacfc85fb999119bef4f490c648a1348b9999ee03",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.choco",
+      "title": "tldr: choco",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/choco.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/choco.md",
+      "sha256": "e0dbbbe643648977e9a3788ad9c6d570978b432d1d39bd4a0fabd4ba37d53772",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.get-childitem",
+      "title": "tldr: get-childitem",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-childitem.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/get-childitem.md",
+      "sha256": "a2999d42f650f14229b6cbef510e221d6059f5d8bbcf007f6a411b546cabf798",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.get-content",
+      "title": "tldr: get-content",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-content.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/get-content.md",
+      "sha256": "798b5a40fa5d36dea80bd7610a44cda2220c35f6c5707e899615a79285075926",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.get-filehash",
+      "title": "tldr: get-filehash",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-filehash.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/get-filehash.md",
+      "sha256": "c95ac4d2a5d737497f81b660a395845132938120b281e81106efa26f2daea905",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.invoke-webrequest",
+      "title": "tldr: invoke-webrequest",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/invoke-webrequest.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/invoke-webrequest.md",
+      "sha256": "2097b854c0cf7b8345e2aeac8c957248cccf0900e5d0080643a9226e136e9566",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.move-item",
+      "title": "tldr: move-item",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/move-item.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/move-item.md",
+      "sha256": "df81179d5720deac0a1071cb21e0db52b4497429bd972f7aacafea005d30d3fb",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.netstat",
+      "title": "tldr: netstat",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/netstat.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/netstat.md",
+      "sha256": "b3736fbab73112f10a069ec24161a5c419d76f251d849169c5f2b8582fab2c17",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.new-item",
+      "title": "tldr: new-item",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/new-item.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/new-item.md",
+      "sha256": "cf940fb722f88c15a441cf628ee0495f8372b03e8f6e4d80bfc00d4eb078e0f7",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.powershell",
+      "title": "tldr: powershell",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/powershell.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/powershell.md",
+      "sha256": "17ff39e9b608bac971a7ecd92b679fd8a6e616dd39a9998e312708e369180de4",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.remove-item",
+      "title": "tldr: remove-item",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/remove-item.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/remove-item.md",
+      "sha256": "933e776f40d2ac616580cefba1d7532d9b949a44e37cc246c7c619db9b4d9f5a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.robocopy",
+      "title": "tldr: robocopy",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/robocopy.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/robocopy.md",
+      "sha256": "61a0919e52e94016978b31ff4d542e1dceb64f3802c4540070b70ef606556df8",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.scoop",
+      "title": "tldr: scoop",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/scoop.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/scoop.md",
+      "sha256": "de7a24bcd08b6a56b1cecb1e0fecdb897d462c209ddc475e69fdfb7666981eb1",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.select-string",
+      "title": "tldr: select-string",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/select-string.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/select-string.md",
+      "sha256": "6df8c621e44b5a6f7a5e92700704337428e490f4ed1658dc3810e122a2b4102f",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.set-location",
+      "title": "tldr: set-location",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/set-location.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/set-location.md",
+      "sha256": "37ec82ba46be7f3158d316f6994bf5ab8666311cb5c45606899f2d7bbc66ce06",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.start-process",
+      "title": "tldr: start-process",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/start-process.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/start-process.md",
+      "sha256": "9d5a941b1312b1761675bbb00c7c68fc7cabc1a32c50b7bfad1d6e1aa93f1854",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.start-service",
+      "title": "tldr: start-service",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/start-service.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/start-service.md",
+      "sha256": "602cb9f6256cf2915945021ac5447c5f991e44cfdd02cad4e984cdbb3e1ab3f9",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.stop-service",
+      "title": "tldr: stop-service",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/stop-service.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/stop-service.md",
+      "sha256": "ded1f2ffff7d9d100b33af75f17f83b14fc2e57ebbcffa9afb2234ef269c845a",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.taskkill",
+      "title": "tldr: taskkill",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/taskkill.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/taskkill.md",
+      "sha256": "7381c7bcc25b67b182448327f8a479b196489acfd203f7e81de51d93bec9d96d",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.test-netconnection",
+      "title": "tldr: test-netconnection",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/test-netconnection.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/test-netconnection.md",
+      "sha256": "a63691563a577a14e606933b13de71f59cd8e6f883ec5287eb0872b0836563dd",
+      "kind": "vendored"
+    },
+    {
+      "source_id": "windows.winget",
+      "title": "tldr: winget",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/winget.md",
+      "license": "CC BY 4.0",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/windows/winget.md",
+      "sha256": "57693bd044a0da8111c62b9c0067a11fd790b9e67a9f85eabd4325e6b070ea0c",
       "kind": "vendored"
     }
   ]

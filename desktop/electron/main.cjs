@@ -14,6 +14,7 @@ const {
 } = require("electron");
 
 const { clearApiKey, readApiKey, saveApiKey } = require("./model-config.cjs");
+const { testDeepSeekConnection } = require("./deepseek-connection.cjs");
 const {
   buildBackendLaunchSpec,
   buildRuntimeEnvironment,
@@ -256,26 +257,6 @@ async function loadMainWindow() {
   }
 }
 
-async function testDeepSeek(apiKey) {
-  const key = String(apiKey || secureModelKey()).trim();
-  if (!key) throw new Error("请先输入或保存 API Key");
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15_000);
-  try {
-    const response = await fetch("https://api.deepseek.com/v1/models", {
-      headers: { Authorization: `Bearer ${key}` },
-      signal: controller.signal,
-    });
-    if (!response.ok) throw new Error(response.status === 401 ? "API Key 无效" : `DeepSeek 返回 HTTP ${response.status}`);
-    return { ok: true, message: "DeepSeek 连接成功。" };
-  } catch (error) {
-    if (error.name === "AbortError") throw new Error("连接超时，请检查网络后重试");
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 function registerModelConfigIpc() {
   ipcMain.handle("model-config:status", () => ({
     configured: Boolean(secureModelKey()),
@@ -283,7 +264,9 @@ function registerModelConfigIpc() {
     provider: "DeepSeek",
     model: "deepseek-chat",
   }));
-  ipcMain.handle("model-config:test", (_, input = {}) => testDeepSeek(input.apiKey));
+  ipcMain.handle("model-config:test", (_, input = {}) => (
+    testDeepSeekConnection(String(input.apiKey || secureModelKey()).trim())
+  ));
   ipcMain.handle("model-config:save", async (_, input = {}) => {
     saveApiKey({ userDataPath: app.getPath("userData"), apiKey: input.apiKey, safeStorage });
     await restartBackend();

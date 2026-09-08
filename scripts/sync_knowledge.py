@@ -120,6 +120,37 @@ CURATED = [
 ]
 
 
+NODE_PAGES = {"node", "npm", "npx", "yarn", "pnpm", "corepack", "eslint", "prettier", "vite", "ts-node"}
+
+
+def auto_items(domain: str, pages: list[str]) -> list[dict[str, object]]:
+    return [
+        item(
+            domain,
+            page,
+            f"{page} 常用命令",
+            [f"如何使用 {page}？", f"{page} 常用操作", f"{page} 命令怎么写"],
+        )
+        for page in pages
+    ]
+
+
+EXTRA_CURATED = [
+    *auto_items("linux", ["pwd", "touch", "cat", "head", "tail", "less", "sort", "uniq", "wc", "sed"]),
+    *auto_items("git", ["git-push", "git-fetch", "git-show", "git-blame", "git-bisect", "git-clean", "git-worktree", "git-submodule", "git-config", "git-archive"]),
+    *auto_items("docker", ["docker-pull", "docker-tag", "docker-login", "docker-save", "docker-load", "docker-stats", "docker-top", "docker-start", "docker-commit", "docker-search"]),
+    *auto_items("http", ["ping", "dig", "traceroute", "nc", "ip", "ss", "tcpdump", "whois", "curlie", "aria2c"]),
+    *auto_items("python", ["poetry", "pipenv", "pyenv", "conda", "mypy", "tox", "pylint", "ipython", "jupyter", "pydoc", "flake8", "flask", "django-admin", "http-server", "gunicorn"]),
+    *auto_items("node", ["deno", "bun", "npm-run-script", "npm-install", "npm-test", "npm-publish", "npm-audit", "npm-cache", "npm-config", "tsc"]),
+    *auto_items("windows", ["powershell", "get-childitem", "set-location", "move-item", "remove-item", "new-item", "get-content", "select-string", "start-process", "taskkill", "start-service", "stop-service", "netstat", "invoke-webrequest", "winget", "choco", "scoop", "robocopy", "test-netconnection", "get-filehash"]),
+    *auto_items("kubernetes", ["kubectl", "kubectl-get", "kubectl-describe", "kubectl-logs", "kubectl-apply", "kubectl-create", "kubectl-delete", "kubectl-exec", "kubectl-port-forward", "kubectl-config", "kubectl-rollout", "kubectl-scale", "kubectl-top", "kubectl-cp", "kubectl-explain", "kubectl-expose", "kubectl-label", "kubectl-taint", "kubectl-patch", "kubectl-wait"]),
+    *auto_items("network", ["ssh", "ssh-keygen", "ssh-copy-id", "sftp", "rsync", "dig", "nslookup", "ping", "traceroute", "ip", "ss", "netstat", "lsof", "nc", "tcpdump", "nginx", "certbot", "ufw", "firewall-cmd", "hostnamectl"]),
+    *auto_items("java", ["java", "javac", "jar", "javadoc", "kotlin", "mvn", "mvn-archetype", "mvn-compile", "mvn-dependency", "mvn-package", "gradle", "gradle-build", "gradle-clean", "gradle-dependencies", "gradle-init", "gradle-tasks", "gradle-test", "gradle-wrapper", "jps", "keytool"]),
+    *auto_items("cicd", ["gh-workflow", "gh-run", "gh-cache", "gh-secret", "gh-variable", "gh-release", "gh-pr", "gh-repo", "act", "ansible-playbook", "terraform", "helm", "gitlab-runner", "jenkins", "packer"]),
+    *auto_items("testing", ["pytest", "jest", "vitest", "mocha", "phpunit", "gdb", "lldb", "strace", "valgrind", "k6"]),
+]
+
+
 SQL_TOPICS = [
     ("mysql-connect", "连接 MySQL 数据库", ["登录 MySQL", "连接远程 MySQL", "mysql 客户端"], "bash", "mysql --host=<host> --user=<user> --password <database>", ["已安装 MySQL Client", "准备好数据库账号"], "low", None, "https://dev.mysql.com/doc/refman/8.4/en/connecting.html"),
     ("create-database", "创建 MySQL 数据库", ["MySQL 新建数据库", "CREATE DATABASE"], "sql", "CREATE DATABASE `<database>` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;", ["账号具有 CREATE 权限"], "medium", "执行前确认数据库名，避免与现有库冲突。", "https://dev.mysql.com/doc/refman/8.4/en/create-database.html"),
@@ -138,6 +169,45 @@ SQL_TOPICS = [
     ("restore", "恢复 MySQL 备份", ["导入 MySQL 备份", "恢复 SQL 文件", "mysql source"], "bash", "mysql --host=<host> --user=<user> --password <database> < <backup.sql>", ["已验证备份文件", "目标数据库已创建"], "high", "恢复会写入或覆盖数据；先在隔离环境验证并备份目标库。", "https://dev.mysql.com/doc/refman/8.4/en/mysql-batch-commands.html"),
 ]
 
+SQL_TOPICS.extend(
+    [
+        ("postgres-connect", "连接 PostgreSQL 数据库", ["psql 登录数据库", "连接 PostgreSQL"], "bash", "psql --host=<host> --username=<user> --dbname=<database>", ["已安装 PostgreSQL Client"], "low", None, "https://www.postgresql.org/docs/current/app-psql.html"),
+        ("postgres-create-database", "创建 PostgreSQL 数据库", ["PostgreSQL 新建数据库", "createdb"], "bash", "createdb --host=<host> --username=<user> <database>", ["账号具有 CREATEDB 权限"], "medium", "执行前确认数据库名。", "https://www.postgresql.org/docs/current/app-createdb.html"),
+        ("postgres-create-table", "创建 PostgreSQL 数据表", ["PostgreSQL CREATE TABLE"], "sql", "CREATE TABLE <table> (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  name TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);", ["已经连接目标数据库"], "medium", None, "https://www.postgresql.org/docs/current/sql-createtable.html"),
+        ("postgres-select", "查询 PostgreSQL 数据", ["PostgreSQL SELECT 查询"], "sql", "SELECT id, name\nFROM <table>\nWHERE name ILIKE '%<keyword>%'\nORDER BY id DESC\nLIMIT 20;", ["目标表存在"], "low", None, "https://www.postgresql.org/docs/current/sql-select.html"),
+        ("postgres-insert", "插入 PostgreSQL 数据", ["PostgreSQL INSERT RETURNING"], "sql", "INSERT INTO <table> (name) VALUES ('<value>') RETURNING id;", ["目标表存在"], "medium", None, "https://www.postgresql.org/docs/current/sql-insert.html"),
+        ("postgres-upsert", "使用 PostgreSQL UPSERT", ["PostgreSQL ON CONFLICT", "插入冲突更新"], "sql", "INSERT INTO <table> (id, name) VALUES (<id>, '<value>')\nON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;", ["冲突列具有唯一约束"], "medium", "确认冲突条件和更新字段。", "https://www.postgresql.org/docs/current/sql-insert.html"),
+        ("postgres-update", "更新 PostgreSQL 数据", ["PostgreSQL UPDATE"], "sql", "UPDATE <table> SET name = '<value>' WHERE id = <id> RETURNING *;", ["先使用同一 WHERE 查询目标记录"], "high", "缺少 WHERE 会批量更新数据。", "https://www.postgresql.org/docs/current/sql-update.html"),
+        ("postgres-delete", "删除 PostgreSQL 数据", ["PostgreSQL DELETE"], "sql", "DELETE FROM <table> WHERE id = <id> RETURNING *;", ["先备份并查询目标记录"], "high", "删除数据前确认事务和备份。", "https://www.postgresql.org/docs/current/sql-delete.html"),
+        ("postgres-create-index", "创建 PostgreSQL 索引", ["PostgreSQL CREATE INDEX CONCURRENTLY"], "sql", "CREATE INDEX CONCURRENTLY idx_<table>_<column> ON <table> (<column>);", ["不能在事务块内运行 CONCURRENTLY"], "medium", "大表建索引会消耗 IO。", "https://www.postgresql.org/docs/current/sql-createindex.html"),
+        ("postgres-create-view", "创建 PostgreSQL 视图", ["PostgreSQL CREATE VIEW"], "sql", "CREATE OR REPLACE VIEW <view_name> AS\nSELECT id, name FROM <table> WHERE <condition>;", ["底层表存在"], "medium", None, "https://www.postgresql.org/docs/current/sql-createview.html"),
+        ("postgres-transaction", "使用 PostgreSQL 事务", ["PostgreSQL BEGIN COMMIT ROLLBACK"], "sql", "BEGIN;\n-- 执行需要原子提交的 SQL\nCOMMIT;\n-- 需要撤销时执行 ROLLBACK;", ["已经连接目标数据库"], "medium", "COMMIT 后不能通过 ROLLBACK 撤销。", "https://www.postgresql.org/docs/current/tutorial-transactions.html"),
+        ("postgres-explain", "分析 PostgreSQL 查询计划", ["PostgreSQL EXPLAIN ANALYZE"], "sql", "EXPLAIN (ANALYZE, BUFFERS)\nSELECT * FROM <table> WHERE <column> = '<value>';", ["确认查询在测试环境可安全执行"], "medium", "ANALYZE 会实际执行语句。", "https://www.postgresql.org/docs/current/using-explain.html"),
+        ("postgres-backup", "备份 PostgreSQL 数据库", ["pg_dump 备份"], "bash", "pg_dump --host=<host> --username=<user> --format=custom --file=<backup.dump> <database>", ["账号具有读取权限"], "low", None, "https://www.postgresql.org/docs/current/app-pgdump.html"),
+        ("postgres-restore", "恢复 PostgreSQL 备份", ["pg_restore 恢复"], "bash", "pg_restore --host=<host> --username=<user> --dbname=<database> --clean --if-exists <backup.dump>", ["已验证备份并备份目标库"], "high", "--clean 会先删除待恢复对象。", "https://www.postgresql.org/docs/current/app-pgrestore.html"),
+        ("postgres-list", "列出 PostgreSQL 数据库与表", ["psql 查看数据库", "psql 查看数据表"], "text", "\\l\n\\dt\n\\d <table>", ["在 psql 交互终端运行"], "low", None, "https://www.postgresql.org/docs/current/app-psql.html"),
+    ]
+)
+
+
+REDIS_TOPICS = [
+    ("string-set", "写入 Redis 字符串", "SET <key> '<value>' EX <seconds>", "https://redis.io/docs/latest/commands/set/"),
+    ("string-get", "读取 Redis 字符串", "GET <key>", "https://redis.io/docs/latest/commands/get/"),
+    ("delete-key", "删除 Redis 键", "DEL <key>", "https://redis.io/docs/latest/commands/del/"),
+    ("scan-keys", "渐进扫描 Redis 键", "SCAN 0 MATCH '<pattern>' COUNT 100", "https://redis.io/docs/latest/commands/scan/"),
+    ("hash", "读写 Redis Hash", "HSET <key> <field> '<value>'\nHGETALL <key>", "https://redis.io/docs/latest/develop/data-types/hashes/"),
+    ("list", "操作 Redis List", "LPUSH <key> '<value>'\nLRANGE <key> 0 -1", "https://redis.io/docs/latest/develop/data-types/lists/"),
+    ("set", "操作 Redis Set", "SADD <key> '<member>'\nSMEMBERS <key>", "https://redis.io/docs/latest/develop/data-types/sets/"),
+    ("sorted-set", "操作 Redis Sorted Set", "ZADD <key> <score> '<member>'\nZRANGE <key> 0 -1 WITHSCORES", "https://redis.io/docs/latest/develop/data-types/sorted-sets/"),
+    ("expire", "设置 Redis 过期时间", "EXPIRE <key> <seconds>\nTTL <key>", "https://redis.io/docs/latest/commands/expire/"),
+    ("transaction", "使用 Redis 事务", "MULTI\nSET <key> '<value>'\nEXEC", "https://redis.io/docs/latest/develop/interact/transactions/"),
+    ("pipeline", "使用 redis-cli 管道批量写入", "cat <commands.txt> | redis-cli --pipe", "https://redis.io/docs/latest/develop/clients/patterns/bulk-loading/"),
+    ("pubsub", "使用 Redis 发布订阅", "SUBSCRIBE <channel>\nPUBLISH <channel> '<message>'", "https://redis.io/docs/latest/develop/pubsub/"),
+    ("info", "查看 Redis 服务状态", "INFO\nINFO memory", "https://redis.io/docs/latest/commands/info/"),
+    ("slowlog", "查看 Redis 慢查询", "SLOWLOG GET 20", "https://redis.io/docs/latest/commands/slowlog-get/"),
+    ("memory-usage", "查看 Redis 键内存占用", "MEMORY USAGE <key>", "https://redis.io/docs/latest/commands/memory-usage/"),
+]
+
 
 DOMAIN_PLATFORM = {
     "linux": ["Linux", "macOS", "WSL"],
@@ -145,6 +215,15 @@ DOMAIN_PLATFORM = {
     "docker": ["Windows", "macOS", "Linux"],
     "http": ["Windows", "macOS", "Linux"],
     "toolchain": ["Windows", "macOS", "Linux"],
+    "python": ["Windows", "macOS", "Linux"],
+    "node": ["Windows", "macOS", "Linux"],
+    "windows": ["Windows 10/11", "Windows Server"],
+    "kubernetes": ["Windows", "macOS", "Linux"],
+    "network": ["Linux", "macOS", "Windows（部分命令）"],
+    "java": ["Windows", "macOS", "Linux"],
+    "cicd": ["Windows", "macOS", "Linux", "CI Runner"],
+    "testing": ["Windows", "macOS", "Linux"],
+    "redis": ["redis-cli"],
     "sql": ["MySQL 8.x"],
 }
 
@@ -154,6 +233,15 @@ DOMAIN_PREREQUISITE = {
     "docker": ["Docker Engine 或 Docker Desktop 正在运行"],
     "http": ["已安装对应的命令行工具"],
     "toolchain": ["已安装对应运行时或包管理器"],
+    "python": ["已安装 Python 或对应工具"],
+    "node": ["已安装 Node.js 或对应运行时"],
+    "windows": ["在 PowerShell 或 Windows 终端中运行"],
+    "kubernetes": ["已安装 kubectl", "当前上下文指向目标集群"],
+    "network": ["已安装对应网络工具"],
+    "java": ["已安装 JDK 或对应构建工具"],
+    "cicd": ["已安装对应 CLI 并完成认证"],
+    "testing": ["已安装对应测试或调试工具"],
+    "redis": ["已通过 redis-cli 连接目标 Redis 实例"],
 }
 
 
@@ -187,8 +275,21 @@ def risk_for(command: str) -> tuple[str, str | None]:
     return "low", None
 
 
-def parse_tldr(spec: dict[str, object], source_root: Path) -> dict[str, object]:
+def resolve_tldr_path(spec: dict[str, object], source_root: Path) -> str:
     relative_path = str(spec["path"])
+    if (source_root / relative_path).exists():
+        return relative_path
+    matches = sorted(
+        source_root.glob(f"pages/*/{spec['page']}.md"),
+        key=lambda path: (path.parent.name != "common", path.parent.name != "linux", str(path)),
+    )
+    if not matches:
+        raise FileNotFoundError(f"Missing tldr page: {spec['page']}")
+    return matches[0].relative_to(source_root).as_posix()
+
+
+def parse_tldr(spec: dict[str, object], source_root: Path) -> dict[str, object]:
+    relative_path = resolve_tldr_path(spec, source_root)
     path = source_root / relative_path
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
@@ -275,8 +376,46 @@ def build_sql_topics() -> list[dict[str, object]]:
                     "title": "AegisCopilot MySQL 种子知识",
                     "source_url": source_url,
                     "license": "MIT (project-authored)",
-                    "revision": "v2.0.0",
+                    "revision": "v2.1.0",
                     "path": "generated/mysql",
+                    "sha256": hashlib.sha256(code.encode("utf-8")).hexdigest(),
+                    "kind": "generated_seed",
+                },
+            }
+        )
+    return topics
+
+
+def build_redis_topics() -> list[dict[str, object]]:
+    topics = []
+    for topic_id, title, code, source_url in REDIS_TOPICS:
+        risk, warning = risk_for(code)
+        topics.append(
+            {
+                "id": f"redis.{topic_id}",
+                "domain": "redis",
+                "title": title,
+                "aliases": [f"Redis 怎么{title.replace('Redis', '')}？", title, f"redis {topic_id}"],
+                "summary": f"{title}的常用命令结构。",
+                "commands": [
+                    {
+                        "label": title,
+                        "language": "bash",
+                        "code": code,
+                        "platforms": DOMAIN_PLATFORM["redis"],
+                        "prerequisites": DOMAIN_PREREQUISITE["redis"],
+                        "risk": risk,
+                        "warning": warning,
+                    }
+                ],
+                "notes": ["命令在 redis-cli 中执行；将尖括号占位参数替换为实际值。"],
+                "source": {
+                    "source_id": f"redis.{topic_id}",
+                    "title": "AegisCopilot Redis 种子知识",
+                    "source_url": source_url,
+                    "license": "MIT (project-authored)",
+                    "revision": "v2.1.0",
+                    "path": "generated/redis",
                     "sha256": hashlib.sha256(code.encode("utf-8")).hexdigest(),
                     "kind": "generated_seed",
                 },
@@ -301,18 +440,41 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
         json.dumps(topics, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    domains = sorted({str(topic["domain"]) for topic in topics})
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "topic_count": len(topics),
         "domains": {
             domain: sum(1 for topic in topics if topic["domain"] == domain)
-            for domain in ("linux", "git", "sql", "docker", "http", "toolchain")
+            for domain in domains
         },
         "sources": [topic["source"] for topic in topics],
     }
     (KNOWLEDGE_DIR / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+    )
+    source_lock = {
+        "schema_version": 1,
+        "generated_for": "AegisCopilot 2.1.0",
+        "repositories": [
+            {"repository": TLDR_REPOSITORY, "revision": TLDR_REVISION, "license": TLDR_LICENSE}
+        ],
+        "sources": [
+            {
+                "source_id": topic["source"]["source_id"],
+                "repository": TLDR_REPOSITORY if topic["source"]["kind"] == "vendored" else "project-authored",
+                "revision": topic["source"]["revision"],
+                "path": topic["source"]["path"],
+                "source_url": topic["source"]["source_url"],
+                "license": topic["source"]["license"],
+                "sha256": topic["source"]["sha256"],
+            }
+            for topic in topics
+        ],
+    }
+    (KNOWLEDGE_DIR / "sources.lock.json").write_text(
+        json.dumps(source_lock, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     eval_cases = [
         {
@@ -347,7 +509,7 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 
 ## Official documentation references
 
-Project-authored MySQL seed topics link to the MySQL 8.4 Reference Manual. The manual itself is not redistributed.
+Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
 """
     (KNOWLEDGE_DIR / "THIRD_PARTY_NOTICES.md").write_text(notices, encoding="utf-8")
 
@@ -357,10 +519,17 @@ def main() -> None:
     parser.add_argument("--tldr-root", type=Path, default=ROOT / ".runtime" / "sources" / "tldr")
     args = parser.parse_args()
     source_root = ensure_source(args.tldr_root.resolve())
-    topics = [parse_tldr(spec, source_root) for spec in CURATED]
+    normalized_specs = []
+    for spec in [*CURATED, *EXTRA_CURATED]:
+        prepared = dict(spec)
+        if prepared["domain"] == "toolchain":
+            prepared["domain"] = "node" if prepared["page"] in NODE_PAGES else "python"
+        normalized_specs.append(prepared)
+    topics = [parse_tldr(spec, source_root) for spec in normalized_specs]
     topics.extend(build_sql_topics())
-    if len(topics) != 100:
-        raise RuntimeError(f"Expected 100 topics, got {len(topics)}")
+    topics.extend(build_redis_topics())
+    if len(topics) != 300:
+        raise RuntimeError(f"Expected 300 topics, got {len(topics)}")
     write_outputs(topics)
     print(f"Wrote {len(topics)} topics to {KNOWLEDGE_DIR}")
 

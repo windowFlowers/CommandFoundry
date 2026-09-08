@@ -1,4 +1,4 @@
-# AegisCopilot v2 Electron 桌面端
+# AegisCopilot v2.1 Electron 桌面端
 
 Electron 桌面版提供两条运行路径：开发模式自动启动仓库中的 FastAPI/Vite，发布模式运行内置 React 资源和 PyInstaller 后端。
 
@@ -36,7 +36,7 @@ npm.cmd run dist:win
 输出：
 
 - `dist/win-unpacked/AegisCopilot.exe`：未安装目录
-- `dist/AegisCopilot Setup 2.0.0.exe`：Windows x64 NSIS 安装包
+- `dist/AegisCopilot Setup 2.1.0.exe`：Windows x64 NSIS 安装包
 
 ## 数据与模型
 
@@ -45,7 +45,7 @@ npm.cmd run dist:win
 - `%APPDATA%\AegisCopilot\storage`
 - `%APPDATA%\AegisCopilot\logs`
 
-首次启动无需登录，可直接使用本地 RAG。DeepSeek Key 通过右下角“模型与隐私”设置抽屉输入，由 Electron `safeStorage` / Windows DPAPI 加密保存；Renderer 只能读取“是否已配置”，不能读取密钥本身。
+首次启动无需登录，可直接使用本地 RAG。DeepSeek Key 通过右下角“模型设置”抽屉输入，由 Electron `safeStorage` / Windows DPAPI 加密保存；Renderer 只能读取“是否已配置”，不能读取密钥本身。
 
 ## 当前边界
 

@@ -18,4 +18,4 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 
 ## Official documentation references
 
-Project-authored MySQL seed topics link to the MySQL 8.4 Reference Manual. The manual itself is not redistributed.
+Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
