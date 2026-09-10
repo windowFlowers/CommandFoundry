@@ -10,17 +10,18 @@ flowchart LR
     RW -->|否| RET[本地检索]
     RW -->|是| DUAL[原问题 0.35 + 上下文问题 1.0]
     DUAL --> RET
-    RET --> BM[BM25]
-    RET --> VE[BGE-small-zh 向量]
-    BM --> RRF[RRF 融合 Top 4]
+    RET --> BM[子块 BM25]
+    RET --> VE[子块 BGE-small-zh 向量]
+    BM --> RRF[RRF 候选 Top 20]
     VE --> RRF
-    RRF --> GEN{DeepSeek 可用?}
+    RRF --> PARENT[按 parent_id 聚合 / 每文档最多 2 块]
+    PARENT --> GEN{DeepSeek 可用?}
     GEN -->|是| LLM[结构化整理]
     GEN -->|否或失败| FB[确定性本地回答]
     LLM --> VAL[Pydantic 校验]
     VAL --> RISK[命令风险复核]
     FB --> RISK
-    RISK --> UI[命令卡 + 来源]
+    RISK --> UI[命令卡 + 行内精确引用]
     API <--> DB[(SQLite 会话 / 文档 / 向量)]
     MEM <--> MDB[(conversation_memory)]
     RISK --> COMPACT{超过 6 轮或 1800 token?}
@@ -35,14 +36,15 @@ flowchart LR
 ```text
 backend/app/
   knowledge.py    加载 topics.json 与 manifest 追溯校验
-  retrieval.py    分词、BM25、FastEmbed、内存余弦、RRF
+  retrieval.py    子块 BM25/FastEmbed/RRF、父块聚合与文档配额
   generation.py   DeepSeek OpenAI-compatible 调用与 JSON 校验
   memory.py       上下文预算、指代改写、双查询融合与后台摘要
   answering.py    模型/本地回答路由与引用装配
   risk.py         与模型无关的确定性风险规则
-  extraction.py   TXT / Markdown / PDF / DOCX 文本提取
-  text.py         标题、段落和代码围栏感知切分
-  documents.py    上传文件与可恢复后台索引队列
+  extraction.py   四种格式的结构化提取与页/行/段落/字符定位
+  chunking.py     章节父块、检索子块、稳定 ID 与命令证据
+  text.py         历史单层切分兼容入口
+  documents.py    上传、可恢复后台索引和事务式版本切换
   repository.py   SQLite 会话、记忆、知识库、文档与分块仓储
   main.py         多知识库 API 与 SSE 事件契约
 frontend/src/     问答工作台与知识库管理页
@@ -60,6 +62,12 @@ knowledge/        300 个结构化主题、来源锁、评测集和声明
 
 命令问题常含精确 token，例如 `git revert`、`CREATE VIEW`；BM25 对这类词稳定。中文口语改写更适合语义向量。两路结果用 RRF 按排名融合，避免比较不同分数空间。
 
+### 小块检索、受限父块生成
+
+上传文档先按标题、页和结构元素构成目标 1,800、最大 2,400 字符的父块，再构成目标 420、最大 800 字符、重叠 80 字符的子块。只有子块进入 BM25/BGE；命中后按父块最佳子块分数排序，多子块命中只作极小的同分信号。DeepSeek 看到的是受 4,800 token 总预算约束的父块上下文，引用仍绑定实际命中的子块，避免“整份 PDF 回填”和粗粒度来源。
+
+每个子块保存稳定 ID、文档哈希、索引 revision 与精确定位。模型只能引用提示内的 `citation_id`，未知引用会被移除；上传命令还必须逐字匹配完整围栏、行内代码或确定性识别的独立命令。Markdown/TXT 使用行号与字符区间，PDF 使用 1-based 页码，DOCX 使用标题路径与段落/表格序号。文档索引在内存准备完成后一次事务替换，迁移/重建失败不会破坏已有索引。
+
 ### LLM 不是单点故障
 
 DeepSeek 只重组本地命中，不能决定来源，也不能绕过风险规则。无 Key、超时、429、非法 JSON 或模型不可用时，命令仍从同一知识主题确定性生成。
@@ -76,4 +84,4 @@ Renderer 只得到 API 地址、版本号以及四个模型配置方法。密钥
 
 ## API 契约
 
-`POST /chat/stream` 从 `contextualizing` 状态开始，再进入检索与生成，随后发送 `answer`、`done`，异常使用 `error`。回答对象包含 `mode`、`summary`、`commands`、`notes`、`citations`、`generation` 和 `context`。`GET /conversations/{id}/memory` 返回当前摘要及本次使用的历史预览，`POST /conversations/{id}/memory/reset` 推进上下文边界。对话固定绑定知识库，传入不一致的 `knowledge_base_id` 返回 409。
+`POST /chat/stream` 从 `contextualizing` 状态开始，再进入检索与生成，随后发送 `answer`、`done`，异常使用 `error`。回答对象在原字段外增加 `summary_segments`；命令和段落通过 `citation_ids` 关联精确引用，引用携带 `chunk_id`、`parent_id`、文档哈希、索引 revision 和 `SourceLocator` 快照。`GET /knowledge-documents/{id}/content?chunk_id=...` 返回定位与高亮区间。`GET /conversations/{id}/memory` 返回当前摘要及本次使用的历史预览，`POST /conversations/{id}/memory/reset` 推进上下文边界。对话固定绑定知识库，传入不一致的 `knowledge_base_id` 返回 409。

@@ -30,6 +30,26 @@ class CommandBlock(BaseModel):
     prerequisites: list[str] = Field(default_factory=list)
     risk: RiskLevel = RiskLevel.low
     warning: str | None = None
+    citation_ids: list[str] = Field(default_factory=list)
+
+
+class SourceLocator(BaseModel):
+    kind: Literal["markdown", "text", "pdf", "docx"]
+    page_start: int | None = None
+    page_end: int | None = None
+    heading_path: list[str] = Field(default_factory=list)
+    line_start: int | None = None
+    line_end: int | None = None
+    paragraph_start: int | None = None
+    paragraph_end: int | None = None
+    table_start: int | None = None
+    table_end: int | None = None
+    table_row_start: int | None = None
+    table_row_end: int | None = None
+    element_start: int | None = None
+    element_end: int | None = None
+    char_start: int = 0
+    char_end: int = 0
 
 
 class SourceMetadata(BaseModel):
@@ -43,6 +63,11 @@ class SourceMetadata(BaseModel):
     kind: str = "vendored"
     document_id: str | None = None
     knowledge_base_id: str | None = None
+    chunk_id: str | None = None
+    parent_id: str | None = None
+    index_revision: str = ""
+    locator: SourceLocator | None = None
+    command_evidence: list[str] = Field(default_factory=list)
 
 
 class KnowledgeTopic(BaseModel):
@@ -54,9 +79,13 @@ class KnowledgeTopic(BaseModel):
     commands: list[CommandBlock] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
     source: SourceMetadata
+    index_text: str | None = Field(default=None, exclude=True)
+    parent_context: str | None = Field(default=None, exclude=True)
 
     @property
     def retrieval_text(self) -> str:
+        if self.index_text:
+            return self.index_text
         command_text = " ".join(f"{item.label} {item.code}" for item in self.commands)
         return " ".join([self.title, *self.aliases, self.summary, command_text])
 
@@ -66,6 +95,17 @@ class RetrievalHit(BaseModel):
     score: float
     bm25_score: float = 0.0
     vector_score: float = 0.0
+    parent_text: str | None = None
+    matched_chunks: list["MatchedChunk"] = Field(default_factory=list)
+
+
+class MatchedChunk(BaseModel):
+    chunk_id: str
+    parent_id: str | None = None
+    text: str
+    score: float = 0.0
+    locator: SourceLocator | None = None
+    command_evidence: list[str] = Field(default_factory=list)
 
 
 class Citation(BaseModel):
@@ -80,6 +120,17 @@ class Citation(BaseModel):
     document_id: str | None = None
     knowledge_base_id: str | None = None
     source_kind: str = "vendored"
+    citation_id: str | None = None
+    chunk_id: str | None = None
+    parent_id: str | None = None
+    document_sha256: str = ""
+    index_revision: str = ""
+    locator: SourceLocator | None = None
+
+
+class AnswerSegment(BaseModel):
+    text: str
+    citation_ids: list[str] = Field(default_factory=list)
 
 
 FallbackReason = Literal[
@@ -123,6 +174,7 @@ class Answer(BaseModel):
     citations: list[Citation] = Field(default_factory=list)
     generation: GenerationInfo = Field(default_factory=GenerationInfo)
     context: ContextInfo = Field(default_factory=ContextInfo)
+    summary_segments: list[AnswerSegment] = Field(default_factory=list)
 
 
 class ChatRequest(BaseModel):
@@ -259,6 +311,11 @@ class KnowledgeDocument(BaseModel):
     status: DocumentStatus = "pending"
     error: str = ""
     chunk_count: int = 0
+    parent_count: int = 0
+    index_schema_version: int = 1
+    index_revision: str = ""
+    rebuild_status: DocumentStatus = "pending"
+    rebuild_error: str = ""
     created_at: datetime
     updated_at: datetime
 
@@ -271,6 +328,13 @@ class KnowledgeDocumentContent(BaseModel):
     id: str
     filename: str
     content: str
+    chunk_id: str | None = None
+    locator: SourceLocator | None = None
+    highlight_start: int | None = None
+    highlight_end: int | None = None
+    document_sha256: str = ""
+    index_revision: str = ""
+    version_changed: bool = False
 
 
 class KnowledgeDocumentListResponse(BaseModel):

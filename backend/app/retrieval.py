@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from collections import Counter
 from pathlib import Path
@@ -11,9 +12,12 @@ from rank_bm25 import BM25Okapi
 from .knowledge import KnowledgeCatalog
 from .models import (
     DEFAULT_KNOWLEDGE_BASE_ID,
+    CommandBlock,
     KnowledgeStatus,
     KnowledgeTopic,
+    MatchedChunk,
     RetrievalHit,
+    SourceLocator,
     SourceMetadata,
 )
 from .repository import ConversationRepository
@@ -21,6 +25,15 @@ from .repository import ConversationRepository
 
 LATIN_TOKEN = re.compile(r"[a-zA-Z0-9_+.#:/-]+")
 CJK_SEQUENCE = re.compile(r"[\u3400-\u9fff]+")
+
+
+def _command_language(code: str) -> str:
+    lowered = code.strip().casefold()
+    if re.match(r"^(select|insert|update|delete|create|alter|drop|truncate|with)\b", lowered):
+        return "sql"
+    if re.match(r"^(get-|set-|new-|remove-|start-|stop-|restart-|test-)\w+", lowered):
+        return "powershell"
+    return "bash"
 
 
 def tokenize(text: str) -> list[str]:
@@ -123,8 +136,8 @@ class HybridRetriever:
         )
         self.precomputed_vectors = precomputed_vectors or {}
         self._lock = RLock()
-        corpus = [tokenize(topic.retrieval_text) for topic in self.catalog.topics]
-        self._bm25 = BM25Okapi(corpus) if corpus else None
+        self._corpus = [tokenize(topic.retrieval_text) for topic in self.catalog.topics]
+        self._bm25 = BM25Okapi(self._corpus) if self._corpus else None
         self._topic_vectors: np.ndarray | None = None
         self.embedding_error = ""
 
@@ -196,7 +209,17 @@ class HybridRetriever:
         raw_bm25 = np.asarray(self._bm25.get_scores(query_tokens), dtype=np.float32)
         normalized_query = re.sub(r"\s+", "", query.casefold())
         lexical_bonus = np.zeros(len(self.catalog.topics), dtype=np.float32)
+        token_overlap = np.zeros(len(self.catalog.topics), dtype=np.float32)
+        query_token_set = set(query_tokens)
+        small_corpus = len(self.catalog.topics) <= 4
         for index, topic in enumerate(self.catalog.topics):
+            overlap = len(query_token_set.intersection(self._corpus[index]))
+            token_overlap[index] = overlap
+            # rank-bm25 can produce negative IDF in a one-chunk corpus. Explicit
+            # token overlap is a deterministic lexical signal and keeps small
+            # offline knowledge bases usable without the embedding model.
+            if overlap and small_corpus:
+                lexical_bonus[index] += 4.0 * overlap / max(1, len(query_token_set))
             names = [topic.title, *topic.aliases]
             normalized_names = [re.sub(r"\s+", "", name.casefold()) for name in names]
             if normalized_query in normalized_names:
@@ -213,7 +236,8 @@ class HybridRetriever:
         ordered = sorted(fused, key=lambda index: (fused[index], float(bm25_scores[index])), reverse=True)
         best_bm25 = float(bm25_scores[bm25_order[0]]) if bm25_order else 0.0
         best_vector = float(np.max(vector_scores)) if vector_scores is not None else 0.0
-        if best_bm25 <= 0 and best_vector < 0.42:
+        best_overlap = float(np.max(token_overlap)) if len(token_overlap) else 0.0
+        if best_bm25 <= 0 and best_vector < 0.42 and not (small_corpus and best_overlap > 0):
             return []
         return [
             RetrievalHit(
@@ -257,12 +281,29 @@ class KnowledgeIndexManager:
         vectors: dict[str, np.ndarray] = {}
         for row in self.repository.list_chunks(knowledge_base_id):
             topic_id = f"upload.{row['id']}"
+            locator_payload = json.loads(row.get("locator_json") or "{}")
+            locator = SourceLocator.model_validate(locator_payload) if locator_payload.get("kind") else None
+            command_codes = json.loads(row.get("command_evidence_json") or "[]")
+            commands = [
+                CommandBlock(
+                    label="文档中的命令",
+                    language=_command_language(code),
+                    code=code,
+                    platforms=[],
+                    prerequisites=[],
+                )
+                for code in command_codes
+                if str(code).strip()
+            ]
             topics.append(
                 KnowledgeTopic(
                     id=topic_id,
                     domain="uploaded",
                     title=row["title"],
                     summary=row["text"],
+                    commands=commands,
+                    index_text=row.get("retrieval_text") or row["text"],
+                    parent_context=row.get("parent_text") or row["text"],
                     source=SourceMetadata(
                         source_id=f"upload.{row['document_id']}",
                         title=row["filename"],
@@ -273,6 +314,11 @@ class KnowledgeIndexManager:
                         kind="upload",
                         document_id=row["document_id"],
                         knowledge_base_id=knowledge_base_id,
+                        chunk_id=row["id"],
+                        parent_id=row.get("parent_id"),
+                        index_revision=row.get("index_revision") or "",
+                        locator=locator,
+                        command_evidence=command_codes,
                     ),
                 )
             )
@@ -309,7 +355,82 @@ class KnowledgeIndexManager:
             self._cache.pop(knowledge_base_id, None)
 
     def retrieve(self, knowledge_base_id: str, query: str, *, top_k: int) -> list[RetrievalHit]:
-        return self.get(knowledge_base_id).retrieve(query, top_k=top_k)
+        # Child chunks are ranked first, then collapsed to bounded parent evidence.
+        raw_hits = self.get(knowledge_base_id).retrieve(query, top_k=max(20, top_k))
+        grouped: dict[str, list[RetrievalHit]] = {}
+        standalone: list[RetrievalHit] = []
+        for hit in raw_hits:
+            source = hit.topic.source
+            if source.kind != "upload" or not source.parent_id:
+                standalone.append(hit)
+                continue
+            grouped.setdefault(source.parent_id, []).append(hit)
+
+        parents: list[RetrievalHit] = []
+        for parent_id, children in grouped.items():
+            children.sort(key=lambda item: (item.score, item.bm25_score, item.vector_score), reverse=True)
+            best = children[0]
+            matched = [
+                MatchedChunk(
+                    chunk_id=child.topic.source.chunk_id or child.topic.id,
+                    parent_id=parent_id,
+                    text=child.topic.summary,
+                    score=child.score,
+                    locator=child.topic.source.locator,
+                    command_evidence=child.topic.source.command_evidence,
+                )
+                for child in children
+            ]
+            parent_commands: list[CommandBlock] = []
+            seen_codes: set[str] = set()
+            for child in children:
+                for code in child.topic.source.command_evidence:
+                    if code in seen_codes:
+                        continue
+                    seen_codes.add(code)
+                    parent_commands.append(
+                        CommandBlock(
+                            label="文档中的命令",
+                            language=_command_language(code),
+                            code=code,
+                        )
+                    )
+            # Extra matches are only a deterministic tie-breaker, never a length reward.
+            tie_bonus = min(len(children) - 1, 3) * 0.000001
+            parents.append(
+                RetrievalHit(
+                    topic=best.topic.model_copy(
+                        update={
+                            "id": f"parent.{parent_id}",
+                            "summary": best.topic.parent_context or best.topic.summary,
+                            "commands": parent_commands,
+                        }
+                    ),
+                    score=round(best.score + tie_bonus, 6),
+                    bm25_score=best.bm25_score,
+                    vector_score=best.vector_score,
+                    parent_text=best.topic.parent_context or best.topic.summary,
+                    matched_chunks=matched,
+                )
+            )
+
+        ordered = sorted(
+            [*standalone, *parents],
+            key=lambda item: (item.score, item.bm25_score, item.vector_score),
+            reverse=True,
+        )
+        selected: list[RetrievalHit] = []
+        per_document: Counter[str] = Counter()
+        for hit in ordered:
+            document_id = hit.topic.source.document_id
+            if document_id and per_document[document_id] >= 2:
+                continue
+            selected.append(hit)
+            if document_id:
+                per_document[document_id] += 1
+            if len(selected) >= top_k:
+                break
+        return selected
 
     def status(self, knowledge_base_id: str) -> KnowledgeStatus:
         knowledge_base = self.repository.get_knowledge_base(knowledge_base_id)

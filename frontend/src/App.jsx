@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChatWorkspace } from "./components/chat/ChatWorkspace";
-import { KnowledgeManager } from "./components/knowledge/KnowledgeManager";
+import { DocumentPreviewModal, KnowledgeManager } from "./components/knowledge/KnowledgeManager";
 import { MemoryDrawer, SettingsDrawer } from "./components/overlays/AppDrawers";
 import { Modal } from "./components/ui/Overlays";
 import { fetchJson, streamChat } from "./lib/api";
@@ -9,7 +9,7 @@ import { appendStreamAnswer, memoryStateForAnswer, resetConversationMemory } fro
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.2.0";
+  const appVersion = window.aegisDesktop?.version || "2.3.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
@@ -141,11 +141,32 @@ export function App() {
     }
   }
 
-  async function previewDocument(documentId) {
+  async function previewDocument(source) {
+    const citation = typeof source === "string" ? null : source;
+    const documentId = citation?.document_id || source;
+    if (!documentId) return;
     try {
-      setPreview(await fetchJson(`/knowledge-documents/${documentId}/content`));
+      const chunkQuery = citation?.chunk_id ? `?chunk_id=${encodeURIComponent(citation.chunk_id)}` : "";
+      const payload = await fetchJson(`/knowledge-documents/${documentId}/content${chunkQuery}`);
+      const versionChanged = Boolean(
+        payload.version_changed
+        || (citation?.index_revision && payload.index_revision && citation.index_revision !== payload.index_revision)
+        || (citation?.document_sha256 && payload.document_sha256 && citation.document_sha256 !== payload.document_sha256),
+      );
+      setPreview({ ...payload, version_changed: versionChanged });
     } catch (previewError) {
-      setError(previewError.message);
+      if (citation) {
+        setPreview({
+          filename: citation.title,
+          content: citation.excerpt || "",
+          locator: citation.locator || null,
+          highlight_start: 0,
+          highlight_end: Array.from(citation.excerpt || "").length,
+          source_unavailable: true,
+        });
+      } else {
+        setError(previewError.message);
+      }
     }
   }
 
@@ -256,7 +277,7 @@ export function App() {
     )}
     <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} modelStatus={modelStatus} onChanged={loadModelStatus} />
     <MemoryDrawer open={memoryDrawerOpen} onClose={() => setMemoryDrawerOpen(false)} memory={memoryState} loading={memoryLoading} error={memoryError} onReset={() => setMemoryResetOpen(true)} />
-    {preview && <Modal title={preview.filename} onClose={() => setPreview(null)} dataUi="document-preview-modal"><pre className="document-preview">{preview.content}</pre></Modal>}
+    <DocumentPreviewModal preview={preview} onClose={() => setPreview(null)} />
     {memoryResetOpen && <Modal
       title="清空会话上下文"
       onClose={() => setMemoryResetOpen(false)}

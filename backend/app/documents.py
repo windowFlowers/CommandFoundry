@@ -10,10 +10,10 @@ from uuid import uuid4
 import numpy as np
 
 from .extraction import ExtractionError, ExtractionService
+from .chunking import INDEX_SCHEMA_VERSION, chunk_document
 from .models import KnowledgeDocument
 from .repository import ConversationRepository
 from .retrieval import EmbeddingEngine, KnowledgeIndexManager, tokenize
-from .text import split_into_chunks
 
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
@@ -98,7 +98,7 @@ class DocumentIndexService:
         document = self.repository.get_document(document_id)
         if document is None:
             raise KeyError(document_id)
-        self.repository.update_document(document_id, status="pending", error="")
+        self.repository.request_document_rebuild(document_id)
         self.enqueue(document_id)
         return self.repository.get_document(document_id)  # type: ignore[return-value]
 
@@ -149,33 +149,66 @@ class DocumentIndexService:
             return
         document, stored_path = source
         try:
-            self.repository.update_document(document_id, status="indexing", error="")
+            self.repository.mark_document_rebuilding(document_id)
             content = Path(stored_path).read_bytes()
-            text = self.extractor.extract(document.filename, content)
-            chunk_texts = split_into_chunks(text, chunk_size=800, overlap=120)
-            if not chunk_texts:
+            extracted = self.extractor.extract(document.filename, content)
+            chunked = chunk_document(extracted, document.sha256)
+            if not chunked.children:
                 raise ExtractionError("文档没有可索引的文本")
-            vectors = self.embeddings.embed(chunk_texts) if self.embeddings.enabled else None
+            retrieval_texts = [child.retrieval_text for child in chunked.children]
+            vectors = self.embeddings.embed(retrieval_texts) if self.embeddings.enabled else None
             version = self.embeddings.model_name if vectors is not None else ""
-            rows: list[tuple[str, str, bytes | None, int | None, str]] = []
-            for index, chunk_text in enumerate(chunk_texts):
+            parent_id_map = {
+                parent.id: f"{document_id}:{parent.id}" for parent in chunked.parents
+            }
+            parent_rows = [
+                {
+                    "id": parent_id_map[parent.id],
+                    "stable_id": parent.id,
+                    "index": parent.index,
+                    "text": parent.text,
+                    "locator": parent.locator.as_dict(),
+                    "content_hash": parent.content_hash,
+                }
+                for parent in chunked.parents
+            ]
+            child_rows: list[dict] = []
+            for index, child in enumerate(chunked.children):
                 vector = np.asarray(vectors[index], dtype=np.float32) if vectors is not None else None
-                rows.append(
-                    (
-                        chunk_text,
-                        json.dumps(tokenize(chunk_text), ensure_ascii=False),
-                        vector.tobytes() if vector is not None else None,
-                        int(vector.shape[0]) if vector is not None else None,
-                        version,
-                    )
+                child_rows.append(
+                    {
+                        "id": f"{document_id}:{child.id}",
+                        "stable_id": child.id,
+                        "parent_id": parent_id_map[child.parent_id],
+                        "index": child.index,
+                        "text": child.text,
+                        "retrieval_text": child.retrieval_text,
+                        "locator": child.locator.as_dict(),
+                        "content_hash": child.content_hash,
+                        "command_evidence": [item.code for item in child.command_evidence],
+                        "tokens_json": json.dumps(tokenize(child.retrieval_text), ensure_ascii=False),
+                        "embedding": vector.tobytes() if vector is not None else None,
+                        "embedding_dimension": int(vector.shape[0]) if vector is not None else None,
+                        "embedding_version": version,
+                    }
                 )
-            self.repository.replace_chunks(document_id, document.knowledge_base_id, rows)
-            self.repository.update_document(document_id, status="ready", content=text, error="")
+            revision_payload = "\x00".join(
+                [str(INDEX_SCHEMA_VERSION), document.sha256, *(item["stable_id"] for item in child_rows)]
+            )
+            index_revision = hashlib.sha256(revision_payload.encode("utf-8")).hexdigest()
+            self.repository.replace_document_index(
+                document_id=document_id,
+                knowledge_base_id=document.knowledge_base_id,
+                content=extracted.content,
+                index_revision=index_revision,
+                parents=parent_rows,
+                children=child_rows,
+            )
             self.indexes.invalidate(document.knowledge_base_id)
         except Exception as exc:
             message = str(exc).strip() or type(exc).__name__
             try:
-                self.repository.update_document(document_id, status="failed", error=message[:500])
+                self.repository.fail_document_rebuild(document_id, message)
             except KeyError:
                 return
             self.indexes.invalidate(document.knowledge_base_id)

@@ -383,6 +383,24 @@ a:focus-visible,
 }
 .context-badge:hover { border-color: var(--secondary); background: #ded9e0; }
 .answer-summary { max-width: 72ch; margin: 18px 0 20px 66px; color: var(--ink-secondary); font-size: 15px; line-height: 1.8; }
+.answer-segments > span { display: inline; }
+.inline-citation {
+  display: inline;
+  min-height: 0;
+  margin: 0 0.16em 0 0.22em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-family: var(--font-mono);
+  font-size: 0.76em;
+  font-weight: 700;
+  line-height: inherit;
+  text-decoration: none;
+  vertical-align: 0.18em;
+}
+.inline-citation:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.inline-citation.compact { font-size: 11px; vertical-align: baseline; }
 .commands-list { display: grid; gap: 16px; margin-left: 66px; }
 .command-card { overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: var(--paper-strong); box-shadow: var(--shadow-1); }
 .command-card.risk-high { border-color: #cbaaa7; }
@@ -402,6 +420,7 @@ code { color: var(--command-ink); font-family: var(--font-mono); font-size: 13px
 .meta-label { width: 54px; flex: 0 0 54px; color: var(--ink-muted); font-family: var(--font-mono); font-size: 11px; }
 .warning-row { color: var(--danger); }
 .warning-row svg { margin-top: 2px; flex: 0 0 auto; }
+.command-citations > span:last-child { display: inline-flex; flex-wrap: wrap; gap: 3px; }
 .notes-list { margin: 18px 0 0 66px; padding-left: 20px; color: var(--ink-secondary); font-size: 13px; line-height: 1.7; }
 .citations { margin: 20px 0 0 66px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
 .citations-toggle { min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 0; border: 0; background: transparent; color: var(--accent-strong); font-size: 13px; }
@@ -412,6 +431,8 @@ code { color: var(--command-ink); font-family: var(--font-mono); font-size: 13px
 .citation-list > button { min-width: 0; min-height: 120px; padding: 14px; border: 1px solid var(--line-soft); border-radius: 4px; background: var(--paper-strong); color: inherit; text-align: left; text-decoration: none; transition: border-color 160ms ease, background 160ms ease; }
 .citation-list a:hover,
 .citation-list > button:hover { border-color: var(--accent); background: var(--paper); }
+.citation-card-topline { display: flex; align-items: center; gap: 7px; }
+.citation-card-index { color: var(--accent-strong); font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
 .citation-domain { min-height: 24px; padding: 0 6px; background: var(--accent-soft); color: var(--accent-strong); }
 .citation-list strong { display: block; margin: 9px 0 4px; overflow: hidden; color: var(--ink); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .citation-list small { display: block; color: var(--ink-muted); font-family: var(--font-mono); font-size: 11px; }
@@ -672,7 +693,12 @@ code { color: var(--command-ink); font-family: var(--font-mono); font-size: 13px
 .modal-content { min-height: 0; overflow: auto; padding: 20px; color: var(--ink-secondary); font-size: 13px; line-height: 1.7; }
 .modal-content > p { margin: 0; }
 .modal-card > footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--line); }
+.document-preview-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
+.document-preview-meta span,
+.document-preview-meta strong { min-height: 28px; display: inline-flex; align-items: center; padding: 0 8px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper-muted); color: var(--ink-secondary); font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.document-preview-meta strong { border-color: #d8cbb6; background: var(--warning-soft); color: var(--warning); }
 .document-preview { margin: 0; padding: 0; overflow: visible; color: var(--ink-secondary); white-space: pre-wrap; word-break: break-word; font-family: var(--font-mono); font-size: 13px; line-height: 1.75; }
+.document-preview mark { margin: 0 -2px; padding: 1px 2px; border-radius: 2px; background: #f1dda2; color: var(--ink); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 
 @media (max-width: 1180px) {
   .sidebar { width: 248px; flex-basis: 248px; }

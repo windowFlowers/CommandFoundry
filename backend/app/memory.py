@@ -267,12 +267,19 @@ def merge_contextual_hits(
             scores[topic_id] = scores.get(topic_id, 0.0) + weight / (constant + rank)
             existing = representatives.get(topic_id)
             if existing is None or weight == contextual_weight:
+                if existing is not None:
+                    matched = {item.chunk_id: item for item in existing.matched_chunks}
+                    matched.update({item.chunk_id: item for item in hit.matched_chunks})
+                    hit = hit.model_copy(update={"matched_chunks": list(matched.values())})
                 representatives[topic_id] = hit
             elif existing:
+                matched = {item.chunk_id: item for item in existing.matched_chunks}
+                matched.update({item.chunk_id: item for item in hit.matched_chunks})
                 representatives[topic_id] = existing.model_copy(
                     update={
                         "bm25_score": max(existing.bm25_score, hit.bm25_score),
                         "vector_score": max(existing.vector_score, hit.vector_score),
+                        "matched_chunks": list(matched.values()),
                     }
                 )
     # A short raw follow-up (for example “第二种安全吗”) often has only generic

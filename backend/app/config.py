@@ -21,7 +21,7 @@ def _allowed_origins() -> list[str]:
 
 class Settings(BaseModel):
     app_name: str = "AegisCopilot API"
-    app_version: str = "2.2.0"
+    app_version: str = "2.3.0"
     environment: str = os.getenv("AEGIS_ENV", "local")
     storage_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_STORAGE_DIR", PROJECT_ROOT / "backend" / "storage"))
     knowledge_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_KNOWLEDGE_DIR", PROJECT_ROOT / "knowledge"))
@@ -41,7 +41,7 @@ class Settings(BaseModel):
     llm_api_key: str = os.getenv("AEGIS_LLM_API_KEY", "")
     llm_timeout_seconds: int = int(os.getenv("AEGIS_LLM_TIMEOUT_SECONDS", "45"))
     retrieval_top_k: int = int(os.getenv("AEGIS_TOP_K", "4"))
-    retrieval_candidate_k: int = int(os.getenv("AEGIS_CANDIDATE_K", "12"))
+    retrieval_candidate_k: int = int(os.getenv("AEGIS_CANDIDATE_K", "20"))
     allowed_origins: list[str] = Field(default_factory=_allowed_origins)
 
 

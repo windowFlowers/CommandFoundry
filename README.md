@@ -1,4 +1,4 @@
-# AegisCopilot v2.2
+# AegisCopilot v2.3
 
 AegisCopilot 是一个面向开发者的 Windows 命令 RAG 助手，也是一个可在面试中完整讲清楚的本地优先 AI 应用样例。输入自然语言问题后，它会检索内置知识、给出可复制命令，并明确标注平台、前置条件、风险和来源。
 
@@ -9,12 +9,14 @@ AegisCopilot 是一个面向开发者的 Windows 命令 RAG 助手，也是一�
 - 300 个内置 IT 知识主题，覆盖 Linux、Git、SQL、Docker、HTTP、Python、Node、PowerShell、Kubernetes、网络、Redis、Java、CI/CD 与测试调试。
 - 多知识库：对话固定绑定一个知识库；可创建、重命名和删除自定义库，并上传 TXT、Markdown、PDF、DOCX（20 MB）。
 - 会话内分层记忆：滚动结构化摘要与最近两轮原始对话组合，支持平台替换、代词和“第二种方法”等追问；记忆跨重启保存，但不跨会话或知识库共享。
-- 上传文档在本机后台提取、分块和索引，不发送给 DeepSeek；代码围栏不会被切断。
-- `rank-bm25` 与 FastEmbed `BAAI/bge-small-zh-v1.5`（512 维 ONNX）双路召回，RRF 融合后返回 Top 4。
+- 上传文档在本机完成结构化提取与父子分块：约 420 字符的子块负责检索，受限的章节父块负责生成；代码围栏与命令证据保持完整。
+- `rank-bm25` 与 FastEmbed `BAAI/bge-small-zh-v1.5`（512 维 ONNX）双路召回，RRF 先融合 20 个子块候选，再按父块聚合为 Top 4（每份文档最多 2 个父块）。
+- 回答正文和命令卡使用行内引用编号；上传文档引用可定位到页码、标题/行号或 DOCX 段落/表格行，并高亮精确文本区间。
 - DeepSeek `deepseek-chat` 只负责整理已检索内容，Pydantic 校验结构；回答显示真实 token、耗时或准确回退原因。
 - 对删除、强制回滚、强推、数据库破坏性操作、Docker 清理、`curl | sh` 与 `sudo` 做确定性风险复核。
 - Electron `safeStorage` / Windows DPAPI 加密 API Key；密钥不返回渲染进程、不进 SQLite、不进日志。
 - 本机 SQLite 保存会话、知识库、文本块和向量；运行时不访问 GitHub，断网仍能检索与回答。
+- SQLite 以 `PRAGMA user_version` 管理升级，v2.3 首次迁移前创建一致性备份；文档重建通过单事务原子切换，失败时旧索引仍可使用。
 - 普通问答仍只调用一次 DeepSeek；仅当历史超过 6 个完整轮次或约 1,800 token 时，才在本地即时压缩并异步优化摘要。
 
 ## 技术栈

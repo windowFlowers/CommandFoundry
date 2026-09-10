@@ -1,6 +1,6 @@
 {
   "name": "aegiscopilot-desktop",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "author": "AegisCopilot Contributors",
     "description": "Local-first developer command RAG assistant",

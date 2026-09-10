@@ -181,10 +181,15 @@ def get_document(document_id: str) -> KnowledgeDocumentDetail:
 
 
 @app.get("/knowledge-documents/{document_id}/content", response_model=KnowledgeDocumentContent)
-def get_document_content(document_id: str) -> KnowledgeDocumentContent:
-    document = repository.get_document_content(document_id)
+def get_document_content(
+    document_id: str,
+    chunk_id: str | None = Query(default=None),
+) -> KnowledgeDocumentContent:
+    document = repository.get_document_content(document_id, chunk_id=chunk_id)
     if document is None:
         raise HTTPException(status_code=404, detail="文档不存在")
+    if chunk_id and document.chunk_id is None:
+        raise HTTPException(status_code=404, detail="引用片段不存在或索引版本已变化")
     return document
 
 

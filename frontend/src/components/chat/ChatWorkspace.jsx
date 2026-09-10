@@ -69,8 +69,26 @@ function CopyButton({ value, kind = "命令", compact = false }) {
   );
 }
 
-function CommandCard({ command, index }) {
+function CitationMarker({ reference, onPreviewDocument, compact = false }) {
+  if (!reference) return null;
+  const label = `[${reference.number}]`;
+  const className = `inline-citation ${compact ? "compact" : ""}`;
+  if (reference.citation.source_url) {
+    return <a className={className} href={reference.citation.source_url} target="_blank" rel="noreferrer" aria-label={`打开引用 ${reference.number}`}>{label}</a>;
+  }
+  if (reference.citation.document_id) {
+    return <button className={className} type="button" onClick={() => onPreviewDocument(reference.citation)} aria-label={`定位引用 ${reference.number}`}>{label}</button>;
+  }
+  return <span className={className}>{label}</span>;
+}
+
+function referencesForIds(citationIds, citationMap) {
+  return [...new Set(citationIds || [])].map((id) => citationMap.get(id)).filter(Boolean);
+}
+
+function CommandCard({ command, index, citationMap, onPreviewDocument }) {
   const titleId = useId();
+  const references = referencesForIds(command.citation_ids, citationMap);
   return (
     <section className={`command-card risk-${command.risk}`} aria-labelledby={titleId}>
       <header className="command-head">
@@ -85,6 +103,7 @@ function CommandCard({ command, index }) {
         {command.platforms?.length > 0 && <div><span className="meta-label">运行平台</span><span>{command.platforms.join(" · ")}</span></div>}
         {command.prerequisites?.length > 0 && <div><span className="meta-label">执行前</span><span>{command.prerequisites.join("；")}</span></div>}
         {command.warning && <div className="warning-row"><AlertTriangle size={15} /><span>{command.warning}</span></div>}
+        {references.length > 0 && <div className="command-citations"><span className="meta-label">引用</span><span>{references.map((reference) => <CitationMarker key={reference.citation.citation_id} reference={reference} onPreviewDocument={onPreviewDocument} compact />)}</span></div>}
       </div>
     </section>
   );
@@ -112,6 +131,13 @@ function ContextBadge({ answer, onOpen }) {
 function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const titleId = useId();
+  const citations = answer.citations || [];
+  const citationMap = new Map(
+    citations
+      .map((citation, index) => [citation.citation_id, { citation, number: index + 1 }])
+      .filter(([citationId]) => Boolean(citationId)),
+  );
+  const segments = (answer.summary_segments || []).filter((segment) => segment?.text);
   return (
     <article className="answer-card" aria-labelledby={titleId} data-ui="answer-card">
       <div className="answer-topline">
@@ -121,24 +147,31 @@ function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory }) {
         <ContextBadge answer={answer} onOpen={onOpenMemory} />
         <GenerationBadge answer={answer} />
       </div>
-      <p className="answer-summary">{answer.summary}</p>
+      {segments.length > 0 ? (
+        <p className="answer-summary answer-segments">{segments.map((segment, segmentIndex) => (
+          <span key={`${segment.text}-${segmentIndex}`}>
+            {segment.text}
+            {referencesForIds(segment.citation_ids, citationMap).map((reference) => <CitationMarker key={`${segmentIndex}-${reference.citation.citation_id}`} reference={reference} onPreviewDocument={onPreviewDocument} />)}
+          </span>
+        ))}</p>
+      ) : <p className="answer-summary">{answer.summary}</p>}
       {answer.commands?.length > 0 && (
-        <div className="commands-list">{answer.commands.map((command, index) => <CommandCard key={`${command.label}-${index}`} command={command} index={index} />)}</div>
+        <div className="commands-list">{answer.commands.map((command, index) => <CommandCard key={`${command.label}-${index}`} command={command} index={index} citationMap={citationMap} onPreviewDocument={onPreviewDocument} />)}</div>
       )}
       {answer.notes?.length > 0 && <ul className="notes-list">{answer.notes.map((note, index) => <li key={`${note}-${index}`}>{note}</li>)}</ul>}
-      {answer.citations?.length > 0 && (
+      {citations.length > 0 && (
         <div className="citations">
           <button className="citations-toggle" type="button" onClick={() => setSourcesOpen((value) => !value)} aria-expanded={sourcesOpen}>
-            <BookOpen size={16} /><span>{answer.citations.length} 个可追溯来源</span><ChevronDown className={sourcesOpen ? "rotate" : ""} size={16} />
+            <BookOpen size={16} /><span>{citations.length} 个可追溯来源</span><ChevronDown className={sourcesOpen ? "rotate" : ""} size={16} />
           </button>
           {sourcesOpen && (
             <div className="citation-list">
-              {answer.citations.map((citation, index) => {
-                const content = <><span className="citation-domain">{domainText[citation.domain] || citation.domain}</span><strong>{citation.title}</strong><small>{citation.license} · {citation.revision?.slice(0, 12)}</small><p>{citation.excerpt}</p></>;
+              {citations.map((citation, index) => {
+                const content = <><div className="citation-card-topline"><span className="citation-card-index">[{index + 1}]</span><span className="citation-domain">{domainText[citation.domain] || citation.domain}</span></div><strong>{citation.title}</strong><small>{citation.license} · {citation.revision?.slice(0, 12)}</small><p>{citation.excerpt}</p></>;
                 return citation.source_url ? (
                   <a key={`${citation.source_id}-${index}`} href={citation.source_url} target="_blank" rel="noreferrer">{content}</a>
                 ) : (
-                  <button key={`${citation.source_id}-${index}`} type="button" onClick={() => citation.document_id && onPreviewDocument(citation.document_id)}>{content}</button>
+                  <button key={`${citation.source_id}-${index}`} type="button" disabled={!citation.document_id} onClick={() => citation.document_id && onPreviewDocument(citation)}>{content}</button>
                 );
               })}
             </div>

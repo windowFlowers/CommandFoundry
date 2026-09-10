@@ -16,6 +16,81 @@ import { Modal } from "../ui/Overlays";
 
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
 
+function numberedRange(start, end, unit) {
+  if (start == null) return "";
+  return start === end || end == null ? `第 ${start} ${unit}` : `第 ${start}–${end} ${unit}`;
+}
+
+export function sourceLocatorParts(locator) {
+  if (!locator) return [];
+  const parts = [];
+  if (locator.heading_path?.length) parts.push(locator.heading_path.join(" / "));
+  if (locator.kind === "pdf") {
+    const pages = numberedRange(locator.page_start, locator.page_end, "页");
+    if (pages) parts.push(pages);
+  } else if (locator.kind === "markdown" || locator.kind === "text") {
+    const lines = numberedRange(locator.line_start, locator.line_end, "行");
+    if (lines) parts.push(lines);
+  } else if (locator.kind === "docx") {
+    const paragraphs = numberedRange(locator.paragraph_start, locator.paragraph_end, "段");
+    const tables = numberedRange(locator.table_start, locator.table_end, "个表格");
+    const rows = numberedRange(locator.table_row_start, locator.table_row_end, "行");
+    if (paragraphs) parts.push(paragraphs);
+    if (tables) parts.push(rows ? `${tables} · ${rows}` : tables);
+  }
+  return parts;
+}
+
+function highlightedSlices(preview) {
+  const content = preview?.content || "";
+  const rawStart = preview?.highlight_start ?? preview?.locator?.char_start;
+  const rawEnd = preview?.highlight_end ?? preview?.locator?.char_end;
+  if (!Number.isInteger(rawStart) || !Number.isInteger(rawEnd) || rawEnd <= rawStart) {
+    return { before: content, match: "", after: "" };
+  }
+  // Backend offsets count Unicode code points; Array.from avoids UTF-16 drift after emoji/non-BMP text.
+  const points = Array.from(content);
+  const start = Math.max(0, Math.min(rawStart, points.length));
+  const end = Math.max(start, Math.min(rawEnd, points.length));
+  return {
+    before: points.slice(0, start).join(""),
+    match: points.slice(start, end).join(""),
+    after: points.slice(end).join(""),
+  };
+}
+
+export function DocumentPreviewModal({ preview, onClose }) {
+  const highlightRef = useRef(null);
+  const locatorParts = sourceLocatorParts(preview?.locator);
+  const slices = highlightedSlices(preview);
+
+  useEffect(() => {
+    if (!slices.match) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      highlightRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [preview?.chunk_id, preview?.highlight_start, preview?.highlight_end]);
+
+  if (!preview) return null;
+  return (
+    <Modal title={preview.filename} onClose={onClose} dataUi="document-preview-modal">
+      {(locatorParts.length > 0 || preview.version_changed || preview.source_unavailable) && (
+        <div className="document-preview-meta" data-ui="document-preview-locator">
+          {locatorParts.map((part, index) => <span key={`${part}-${index}`}>{part}</span>)}
+          {preview.version_changed && <strong>引用版本已变化</strong>}
+          {preview.source_unavailable && <strong>源文档已删除或不可用</strong>}
+        </div>
+      )}
+      <pre className="document-preview" data-ui="document-preview-content">
+        {slices.before}
+        {slices.match && <mark ref={highlightRef} data-ui="document-highlight">{slices.match}</mark>}
+        {slices.after}
+      </pre>
+    </Modal>
+  );
+}
+
 export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack, onSelectForChat, onKnowledgeBaseDeleted }) {
   const [activeId, setActiveId] = useState(initialId || DEFAULT_KNOWLEDGE_BASE_ID);
   const [documents, setDocuments] = useState([]);
@@ -63,7 +138,7 @@ export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack,
 
   useEffect(() => { if (activeBase) load(activeBase.id); }, [activeId, knowledgeBases.length]);
   useEffect(() => {
-    if (!documents.some((item) => item.status === "pending" || item.status === "indexing")) return undefined;
+    if (!documents.some((item) => ["pending", "indexing"].includes(item.status) || ["pending", "indexing"].includes(item.rebuild_status))) return undefined;
     const timer = window.setInterval(() => { load(); onRefresh(); }, 1200);
     return () => window.clearInterval(timer);
   }, [documents, activeId]);
@@ -220,7 +295,12 @@ export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack,
           {documents.length === 0 ? <div className="empty-documents" role="row"><span role="cell"><FileText size={24} />还没有上传文档</span></div> : documents.map((document, index) => (
             <div className="document-row" key={document.id} role="row" data-ui="document-row">
               <div role="cell"><span className="document-number">{String(index + 1).padStart(2, "0")}</span><FileText size={17} /><span><strong>{document.filename}</strong>{document.error && <small>{document.error}</small>}</span></div>
-              <span className={`document-status ${document.status}`} role="cell">{document.status === "ready" ? `${document.chunk_count} 片段` : document.status === "failed" ? "失败" : document.status === "indexing" ? "索引中" : "等待中"}</span>
+              <span className={`document-status ${document.rebuild_status || document.status}`} role="cell">{
+                document.rebuild_status === "indexing" && document.status === "ready" ? `重建中 · ${document.chunk_count} 子块` :
+                document.rebuild_status === "failed" && document.status === "ready" ? `旧索引可用 · 重建失败` :
+                document.status === "ready" ? `${document.parent_count || 0} 父块 · ${document.chunk_count} 子块` :
+                document.status === "failed" ? "失败" : document.status === "indexing" ? "索引中" : "等待中"
+              }</span>
               <span role="cell">{document.source_kind === "upload" ? "本地上传" : document.source_kind}</span>
               <span role="cell">{formatBytes(document.size_bytes)}</span><span role="cell">{formatTime(document.updated_at)}</span>
               <div role="cell">
@@ -233,7 +313,7 @@ export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack,
         </div>
       </section>
     </div>
-    {preview && <Modal title={preview.filename} onClose={() => setPreview(null)} dataUi="document-preview-modal"><pre className="document-preview">{preview.content}</pre></Modal>}
+    <DocumentPreviewModal preview={preview} onClose={() => setPreview(null)} />
     {deleteTarget && <Modal
       title={deleteTarget.type === "base" ? "删除知识库" : "删除文档"}
       onClose={closeDeleteModal}

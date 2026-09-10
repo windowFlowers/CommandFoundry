@@ -5,8 +5,9 @@ import re
 
 import httpx
 
+from .evidence import evidence_records
 from .generation import DeepSeekGenerator
-from .models import Answer, Citation, CommandBlock, ContextInfo, GenerationInfo, RetrievalHit
+from .models import Answer, AnswerSegment, Citation, CommandBlock, ContextInfo, GenerationInfo, RetrievalHit
 from .risk import review_commands
 
 
@@ -17,42 +18,88 @@ def _normalize_command_code(value: str) -> str:
     return re.sub(r"<[^<>\r\n]+>", "<placeholder>", normalized)
 
 
+def _strict_command_code(value: str) -> str:
+    return "\n".join(line.rstrip() for line in value.replace("\r\n", "\n").strip().split("\n"))
+
+
 def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) -> list[CommandBlock]:
     """Return only canonical commands that occur in the current retrieval evidence."""
-    evidence = {
-        _normalize_command_code(command.code): command
-        for hit in hits
-        for command in hit.topic.commands
-    }
+    evidence: dict[str, tuple[CommandBlock, list[str]]] = {}
+    strict_upload: dict[str, list[str]] = {}
+    records = evidence_records(hits)
+    record_ids_by_hit: dict[str, list[str]] = {}
+    for record in records:
+        record_ids_by_hit.setdefault(record["hit"].topic.id, []).append(record["citation_id"])
+        if record["hit"].topic.source.kind == "upload":
+            for code in record["command_evidence"]:
+                strict_upload.setdefault(_strict_command_code(code), []).append(record["citation_id"])
+    for hit in hits:
+        if hit.topic.source.kind == "upload":
+            continue
+        ids = record_ids_by_hit.get(hit.topic.id, [])
+        for canonical in hit.topic.commands:
+            evidence[_normalize_command_code(canonical.code)] = (canonical, ids)
     grounded = []
     seen: set[str] = set()
     for command in commands:
         normalized = _normalize_command_code(command.code)
-        canonical = evidence.get(normalized)
-        if canonical is None or normalized in seen:
+        strict = _strict_command_code(command.code)
+        upload_ids = list(dict.fromkeys(strict_upload.get(strict, [])))
+        canonical_entry = evidence.get(normalized)
+        if not upload_ids and canonical_entry is None:
             continue
-        seen.add(normalized)
-        grounded.append(canonical)
+        seen_key = f"upload:{strict}" if upload_ids else f"builtin:{normalized}"
+        if seen_key in seen:
+            continue
+        seen.add(seen_key)
+        if upload_ids:
+            grounded.append(command.model_copy(update={"citation_ids": upload_ids}))
+        else:
+            canonical, ids = canonical_entry  # type: ignore[misc]
+            grounded.append(canonical.model_copy(update={"citation_ids": list(dict.fromkeys(ids))}))
     return grounded
 
 
 def citations_from_hits(hits: list[RetrievalHit]) -> list[Citation]:
-    return [
-        Citation(
-            source_id=hit.topic.source.source_id,
-            title=hit.topic.source.title,
-            source_url=hit.topic.source.source_url,
-            license=hit.topic.source.license,
-            revision=hit.topic.source.revision,
-            excerpt=f"{hit.topic.title}：{hit.topic.summary}"[:360],
-            score=hit.score,
-            domain=hit.topic.domain,
-            document_id=hit.topic.source.document_id,
-            knowledge_base_id=hit.topic.source.knowledge_base_id,
-            source_kind=hit.topic.source.kind,
+    citations: list[Citation] = []
+    for record in evidence_records(hits):
+        hit = record["hit"]
+        source = hit.topic.source
+        citations.append(
+            Citation(
+                source_id=source.source_id,
+                title=source.title,
+                source_url=source.source_url,
+                license=source.license,
+                revision=source.revision,
+                excerpt=str(record["text"])[:360],
+                score=record.get("score", hit.score),
+                domain=hit.topic.domain,
+                document_id=source.document_id,
+                knowledge_base_id=source.knowledge_base_id,
+                source_kind=source.kind,
+                citation_id=record["citation_id"],
+                chunk_id=record["chunk_id"],
+                parent_id=record["parent_id"],
+                document_sha256=source.sha256,
+                index_revision=source.index_revision,
+                locator=record["locator"],
+            )
         )
-        for hit in hits
-    ]
+    return citations
+
+
+def _ground_segments(summary: str, segments: list[AnswerSegment], citations: list[Citation]) -> list[AnswerSegment]:
+    ordered_valid = [item.citation_id for item in citations if item.citation_id]
+    valid = set(ordered_valid)
+    grounded: list[AnswerSegment] = []
+    for segment in segments:
+        ids = [value for value in dict.fromkeys(segment.citation_ids) if value in valid]
+        if segment.text.strip() and ids:
+            grounded.append(segment.model_copy(update={"citation_ids": ids}))
+    if not grounded and summary.strip() and ordered_valid:
+        grounded.append(AnswerSegment(text=summary.strip(), citation_ids=[ordered_valid[0]]))
+    return grounded
 
 
 class AnswerService:
@@ -89,14 +136,18 @@ class AnswerService:
             summary = f"可以使用下面的命令完成“{primary.title}”。请先替换占位参数，再复制执行。"
         else:
             summary = primary.summary[:600]
+        citations = citations_from_hits(hits)
+        commands = review_commands(grounded_commands(commands, hits))
+        segments = _ground_segments(summary, [], citations)
         return Answer(
             mode="local_fallback",
             summary=summary,
             commands=commands,
             notes=list(dict.fromkeys([*primary.notes, "当前回答由本地知识确定性生成，未调用云端模型。"])),
-            citations=citations_from_hits(hits),
+            citations=citations,
             generation=generation,
             context=context or ContextInfo(),
+            summary_segments=segments,
         )
 
     def answer(
@@ -116,15 +167,20 @@ class AnswerService:
                 if memory_context
                 else self.generator.generate(query, hits)
             )
+            citations = citations_from_hits(hits)
+            commands = review_commands(grounded_commands(draft.commands, hits))
+            segments = _ground_segments(draft.summary, draft.summary_segments, citations)
+            summary = "".join(segment.text for segment in segments) or draft.summary
             return (
                 Answer(
                     mode="model",
-                    summary=draft.summary,
-                    commands=review_commands(grounded_commands(draft.commands, hits)),
+                    summary=summary,
+                    commands=commands,
                     notes=draft.notes,
-                    citations=citations_from_hits(hits),
+                    citations=citations,
                     generation=draft.generation,
                     context=context or ContextInfo(),
+                    summary_segments=segments,
                 ),
                 "model",
             )

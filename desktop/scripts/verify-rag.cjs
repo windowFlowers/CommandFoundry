@@ -53,6 +53,13 @@ app.whenReady().then(async () => {
     if (!answer || answer.mode !== "model") throw new Error(`完整链路未返回模型回答：${answer?.generation?.fallback_reason || "missing_answer"}`);
     if (!answer.generation?.request_id && !answer.generation?.total_tokens) throw new Error("模型回答缺少请求证据");
     if (!answer.commands?.length) throw new Error("模型回答没有通过当前知识证据校验的命令");
+    const citationIds = new Set((answer.citations || []).map((item) => item.citation_id).filter(Boolean));
+    if (!answer.summary_segments?.length || answer.summary_segments.some((item) => !item.citation_ids?.some((id) => citationIds.has(id)))) {
+      throw new Error("模型回答正文缺少有效精确引用");
+    }
+    if (answer.commands.some((item) => !item.citation_ids?.some((id) => citationIds.has(id)))) {
+      throw new Error("模型命令缺少有效证据引用");
+    }
     process.stdout.write(JSON.stringify({
       ok: true,
       mode: answer.mode,
@@ -63,6 +70,7 @@ app.whenReady().then(async () => {
       latencyMs: answer.generation.latency_ms,
       commandCount: answer.commands.length,
       citationCount: answer.citations.length,
+      citedSegmentCount: answer.summary_segments.length,
     }));
   } catch (error) {
     process.stdout.write(JSON.stringify({ ok: false, configured: true, error: error.message }));

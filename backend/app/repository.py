@@ -24,6 +24,8 @@ from .models import (
 
 
 BUILTIN_KNOWLEDGE_BASE_NAME = "开发者 IT 知识库"
+DATABASE_SCHEMA_VERSION = 3
+DOCUMENT_INDEX_SCHEMA_VERSION = 2
 
 
 class ConversationRepository:
@@ -33,7 +35,31 @@ class ConversationRepository:
         self.database_path = database_path
         self.database_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = RLock()
+        self._backup_before_migration()
         self._initialize()
+
+    def _backup_before_migration(self) -> None:
+        """Create one consistent SQLite backup before the first v2.3 migration."""
+        if not self.database_path.exists() or self.database_path.stat().st_size == 0:
+            return
+        backup_path = self.database_path.with_name(f"{self.database_path.name}.pre-v2.3.backup")
+        if backup_path.exists():
+            return
+        source = sqlite3.connect(self.database_path, timeout=10)
+        try:
+            version = int(source.execute("PRAGMA user_version").fetchone()[0])
+            has_tables = source.execute(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' LIMIT 1"
+            ).fetchone()
+            if version >= DATABASE_SCHEMA_VERSION or not has_tables:
+                return
+            target = sqlite3.connect(backup_path)
+            try:
+                source.backup(target)
+            finally:
+                target.close()
+        finally:
+            source.close()
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.database_path, timeout=10)
@@ -98,16 +124,27 @@ class ConversationRepository:
                     error TEXT NOT NULL DEFAULT '',
                     content TEXT NOT NULL DEFAULT '',
                     stored_path TEXT NOT NULL,
+                    index_schema_version INTEGER NOT NULL DEFAULT 1,
+                    index_revision TEXT NOT NULL DEFAULT '',
+                    rebuild_status TEXT NOT NULL DEFAULT 'pending',
+                    rebuild_error TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     UNIQUE(knowledge_base_id, sha256)
                 );
                 CREATE TABLE IF NOT EXISTS knowledge_chunks (
                     id TEXT PRIMARY KEY,
+                    stable_id TEXT NOT NULL DEFAULT '',
                     document_id TEXT NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
                     knowledge_base_id TEXT NOT NULL REFERENCES knowledge_bases(id) ON DELETE CASCADE,
+                    parent_id TEXT REFERENCES knowledge_parent_chunks(id) ON DELETE CASCADE,
                     chunk_index INTEGER NOT NULL,
                     text TEXT NOT NULL,
+                    retrieval_text TEXT NOT NULL DEFAULT '',
+                    locator_json TEXT NOT NULL DEFAULT '{}',
+                    content_hash TEXT NOT NULL DEFAULT '',
+                    index_revision TEXT NOT NULL DEFAULT '',
+                    command_evidence_json TEXT NOT NULL DEFAULT '[]',
                     tokens_json TEXT NOT NULL,
                     embedding BLOB,
                     embedding_dimension INTEGER,
@@ -115,12 +152,27 @@ class ConversationRepository:
                     created_at TEXT NOT NULL,
                     UNIQUE(document_id, chunk_index)
                 );
+                CREATE TABLE IF NOT EXISTS knowledge_parent_chunks (
+                    id TEXT PRIMARY KEY,
+                    stable_id TEXT NOT NULL,
+                    document_id TEXT NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
+                    knowledge_base_id TEXT NOT NULL REFERENCES knowledge_bases(id) ON DELETE CASCADE,
+                    parent_index INTEGER NOT NULL,
+                    text TEXT NOT NULL,
+                    locator_json TEXT NOT NULL DEFAULT '{}',
+                    content_hash TEXT NOT NULL DEFAULT '',
+                    index_revision TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    UNIQUE(document_id, stable_id)
+                );
                 CREATE INDEX IF NOT EXISTS idx_messages_conversation
                     ON messages(conversation_id, created_at);
                 CREATE INDEX IF NOT EXISTS idx_documents_knowledge_base
                     ON knowledge_documents(knowledge_base_id, updated_at);
                 CREATE INDEX IF NOT EXISTS idx_chunks_knowledge_base
                     ON knowledge_chunks(knowledge_base_id, document_id, chunk_index);
+                CREATE INDEX IF NOT EXISTS idx_parent_chunks_knowledge_base
+                    ON knowledge_parent_chunks(knowledge_base_id, document_id, parent_index);
                 """
             )
             connection.execute(
@@ -133,6 +185,29 @@ class ConversationRepository:
                 connection.execute("ALTER TABLE conversations ADD COLUMN knowledge_base_id TEXT")
             if "knowledge_base_name_snapshot" not in columns:
                 connection.execute("ALTER TABLE conversations ADD COLUMN knowledge_base_name_snapshot TEXT")
+            document_columns = self._columns(connection, "knowledge_documents")
+            document_additions = {
+                "index_schema_version": "INTEGER NOT NULL DEFAULT 1",
+                "index_revision": "TEXT NOT NULL DEFAULT ''",
+                "rebuild_status": "TEXT NOT NULL DEFAULT 'pending'",
+                "rebuild_error": "TEXT NOT NULL DEFAULT ''",
+            }
+            for name, definition in document_additions.items():
+                if name not in document_columns:
+                    connection.execute(f"ALTER TABLE knowledge_documents ADD COLUMN {name} {definition}")
+            chunk_columns = self._columns(connection, "knowledge_chunks")
+            chunk_additions = {
+                "stable_id": "TEXT NOT NULL DEFAULT ''",
+                "parent_id": "TEXT",
+                "retrieval_text": "TEXT NOT NULL DEFAULT ''",
+                "locator_json": "TEXT NOT NULL DEFAULT '{}'",
+                "content_hash": "TEXT NOT NULL DEFAULT ''",
+                "index_revision": "TEXT NOT NULL DEFAULT ''",
+                "command_evidence_json": "TEXT NOT NULL DEFAULT '[]'",
+            }
+            for name, definition in chunk_additions.items():
+                if name not in chunk_columns:
+                    connection.execute(f"ALTER TABLE knowledge_chunks ADD COLUMN {name} {definition}")
             connection.execute(
                 "UPDATE conversations SET knowledge_base_id = ? WHERE knowledge_base_id IS NULL OR knowledge_base_id = ''",
                 (DEFAULT_KNOWLEDGE_BASE_ID,),
@@ -149,8 +224,14 @@ class ConversationRepository:
                 (now,),
             )
             connection.execute(
+                "UPDATE knowledge_documents SET rebuild_status = 'pending', rebuild_error = '' "
+                "WHERE index_schema_version < ?",
+                (DOCUMENT_INDEX_SCHEMA_VERSION,),
+            )
+            connection.execute(
                 "UPDATE conversation_memory SET status = 'pending' WHERE status = 'summarizing'"
             )
+            connection.execute(f"PRAGMA user_version = {DATABASE_SCHEMA_VERSION}")
 
     @staticmethod
     def _parse_time(value: str) -> datetime:
@@ -572,9 +653,10 @@ class ConversationRepository:
     @staticmethod
     def _document_select() -> str:
         return """
-            SELECT d.*, COUNT(ch.id) AS chunk_count
+            SELECT d.*,
+                   (SELECT COUNT(*) FROM knowledge_chunks ch WHERE ch.document_id = d.id) AS chunk_count,
+                   (SELECT COUNT(*) FROM knowledge_parent_chunks p WHERE p.document_id = d.id) AS parent_count
             FROM knowledge_documents d
-            LEFT JOIN knowledge_chunks ch ON ch.document_id = d.id
         """
 
     def _document_from_row(self, row: sqlite3.Row) -> KnowledgeDocument:
@@ -590,6 +672,11 @@ class ConversationRepository:
             status=row["status"],
             error=row["error"],
             chunk_count=int(row["chunk_count"] or 0),
+            parent_count=int(row["parent_count"] or 0),
+            index_schema_version=int(row["index_schema_version"] or 1),
+            index_revision=row["index_revision"] or "",
+            rebuild_status=row["rebuild_status"] or row["status"],
+            rebuild_error=row["rebuild_error"] or "",
             created_at=self._parse_time(row["created_at"]),
             updated_at=self._parse_time(row["updated_at"]),
         )
@@ -597,7 +684,7 @@ class ConversationRepository:
     def list_documents(self, knowledge_base_id: str) -> list[KnowledgeDocument]:
         with self._lock, self._connect() as connection:
             rows = connection.execute(
-                f"{self._document_select()} WHERE d.knowledge_base_id = ? GROUP BY d.id ORDER BY d.updated_at DESC",
+                f"{self._document_select()} WHERE d.knowledge_base_id = ? ORDER BY d.updated_at DESC",
                 (knowledge_base_id,),
             ).fetchall()
             return [self._document_from_row(row) for row in rows]
@@ -605,7 +692,7 @@ class ConversationRepository:
     def get_document(self, document_id: str) -> KnowledgeDocument | None:
         with self._lock, self._connect() as connection:
             row = connection.execute(
-                f"{self._document_select()} WHERE d.id = ? GROUP BY d.id", (document_id,)
+                f"{self._document_select()} WHERE d.id = ?", (document_id,)
             ).fetchone()
             return self._document_from_row(row) if row else None
 
@@ -617,12 +704,45 @@ class ConversationRepository:
             row = connection.execute("SELECT content FROM knowledge_documents WHERE id = ?", (document_id,)).fetchone()
         return KnowledgeDocumentDetail(**document.model_dump(), content_preview=(row["content"] or "")[:2000])
 
-    def get_document_content(self, document_id: str) -> KnowledgeDocumentContent | None:
+    def get_document_content(self, document_id: str, chunk_id: str | None = None) -> KnowledgeDocumentContent | None:
         with self._lock, self._connect() as connection:
             row = connection.execute(
-                "SELECT id, filename, content FROM knowledge_documents WHERE id = ?", (document_id,)
+                "SELECT id, filename, content, sha256, index_revision FROM knowledge_documents WHERE id = ?",
+                (document_id,),
             ).fetchone()
-            return KnowledgeDocumentContent(**dict(row)) if row else None
+            if row is None:
+                return None
+            locator = None
+            highlight_start = None
+            highlight_end = None
+            resolved_chunk_id = None
+            version_changed = False
+            if chunk_id:
+                chunk = connection.execute(
+                    "SELECT id, locator_json, index_revision FROM knowledge_chunks "
+                    "WHERE document_id = ? AND (id = ? OR stable_id = ?)",
+                    (document_id, chunk_id, chunk_id),
+                ).fetchone()
+                if chunk is not None:
+                    locator = json.loads(chunk["locator_json"] or "{}")
+                    highlight_start = int(locator.get("char_start") or 0)
+                    highlight_end = int(locator.get("char_end") or highlight_start)
+                    resolved_chunk_id = chunk["id"]
+                    version_changed = bool(
+                        row["index_revision"] and chunk["index_revision"] != row["index_revision"]
+                    )
+            return KnowledgeDocumentContent(
+                id=row["id"],
+                filename=row["filename"],
+                content=row["content"],
+                chunk_id=resolved_chunk_id,
+                locator=locator,
+                highlight_start=highlight_start,
+                highlight_end=highlight_end,
+                document_sha256=row["sha256"],
+                index_revision=row["index_revision"] or "",
+                version_changed=version_changed,
+            )
 
     def get_document_source(self, document_id: str) -> tuple[KnowledgeDocument, str] | None:
         document = self.get_document(document_id)
@@ -657,6 +777,116 @@ class ConversationRepository:
             if cursor.rowcount == 0:
                 raise KeyError(document_id)
 
+    def request_document_rebuild(self, document_id: str) -> None:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT status FROM knowledge_documents WHERE id = ?", (document_id,)
+            ).fetchone()
+            if row is None:
+                raise KeyError(document_id)
+            # New uploads have no active index; existing documents stay readable while rebuilding.
+            status = "pending" if row["status"] != "ready" else "ready"
+            connection.execute(
+                "UPDATE knowledge_documents SET status = ?, rebuild_status = 'pending', "
+                "rebuild_error = '', error = CASE WHEN ? = 'ready' THEN error ELSE '' END, updated_at = ? "
+                "WHERE id = ?",
+                (status, status, now, document_id),
+            )
+
+    def mark_document_rebuilding(self, document_id: str) -> None:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT status FROM knowledge_documents WHERE id = ?", (document_id,)
+            ).fetchone()
+            if row is None:
+                raise KeyError(document_id)
+            status = "indexing" if row["status"] != "ready" else "ready"
+            connection.execute(
+                "UPDATE knowledge_documents SET status = ?, rebuild_status = 'indexing', "
+                "rebuild_error = '', updated_at = ? WHERE id = ?",
+                (status, now, document_id),
+            )
+
+    def fail_document_rebuild(self, document_id: str, error: str) -> None:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT index_revision FROM knowledge_documents WHERE id = ?", (document_id,)
+            ).fetchone()
+            if row is None:
+                raise KeyError(document_id)
+            has_active_index = bool(row["index_revision"])
+            connection.execute(
+                "UPDATE knowledge_documents SET status = ?, error = ?, rebuild_status = 'failed', "
+                "rebuild_error = ?, updated_at = ? WHERE id = ?",
+                (
+                    "ready" if has_active_index else "failed",
+                    "" if has_active_index else error[:500],
+                    error[:500],
+                    now,
+                    document_id,
+                ),
+            )
+
+    def replace_document_index(
+        self,
+        *,
+        document_id: str,
+        knowledge_base_id: str,
+        content: str,
+        index_revision: str,
+        parents: list[dict],
+        children: list[dict],
+    ) -> None:
+        """Atomically replace a document's active parent/child index."""
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT 1 FROM knowledge_documents WHERE id = ? AND knowledge_base_id = ?",
+                (document_id, knowledge_base_id),
+            ).fetchone()
+            if row is None:
+                raise KeyError(document_id)
+            connection.execute("DELETE FROM knowledge_chunks WHERE document_id = ?", (document_id,))
+            connection.execute("DELETE FROM knowledge_parent_chunks WHERE document_id = ?", (document_id,))
+            connection.executemany(
+                "INSERT INTO knowledge_parent_chunks(id, stable_id, document_id, knowledge_base_id, "
+                "parent_index, text, locator_json, content_hash, index_revision, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    (
+                        parent["id"], parent["stable_id"], document_id, knowledge_base_id,
+                        parent["index"], parent["text"], json.dumps(parent["locator"], ensure_ascii=False),
+                        parent["content_hash"], index_revision, now,
+                    )
+                    for parent in parents
+                ],
+            )
+            connection.executemany(
+                "INSERT INTO knowledge_chunks(id, stable_id, document_id, knowledge_base_id, parent_id, "
+                "chunk_index, text, retrieval_text, locator_json, content_hash, index_revision, "
+                "command_evidence_json, tokens_json, embedding, embedding_dimension, embedding_version, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    (
+                        child["id"], child["stable_id"], document_id, knowledge_base_id, child["parent_id"],
+                        child["index"], child["text"], child["retrieval_text"],
+                        json.dumps(child["locator"], ensure_ascii=False), child["content_hash"], index_revision,
+                        json.dumps(child.get("command_evidence", []), ensure_ascii=False), child["tokens_json"],
+                        child.get("embedding"), child.get("embedding_dimension"), child.get("embedding_version", ""), now,
+                    )
+                    for child in children
+                ],
+            )
+            connection.execute(
+                "UPDATE knowledge_documents SET content = ?, status = 'ready', error = '', "
+                "index_schema_version = ?, index_revision = ?, rebuild_status = 'ready', rebuild_error = '', "
+                "updated_at = ? WHERE id = ?",
+                (content, DOCUMENT_INDEX_SCHEMA_VERSION, index_revision, now, document_id),
+            )
+
     def replace_chunks(
         self,
         document_id: str,
@@ -681,8 +911,11 @@ class ConversationRepository:
     def list_chunks(self, knowledge_base_id: str) -> list[dict]:
         with self._lock, self._connect() as connection:
             rows = connection.execute(
-                "SELECT ch.*, d.filename, d.title, d.sha256 FROM knowledge_chunks ch "
+                "SELECT ch.*, d.filename, d.title, d.sha256, d.index_revision AS document_index_revision, "
+                "p.text AS parent_text, p.locator_json AS parent_locator_json "
+                "FROM knowledge_chunks ch "
                 "JOIN knowledge_documents d ON d.id = ch.document_id "
+                "LEFT JOIN knowledge_parent_chunks p ON p.id = ch.parent_id "
                 "WHERE ch.knowledge_base_id = ? AND d.status = 'ready' ORDER BY d.created_at, ch.chunk_index",
                 (knowledge_base_id,),
             ).fetchall()
@@ -693,7 +926,9 @@ class ConversationRepository:
             return [
                 row["id"]
                 for row in connection.execute(
-                    "SELECT id FROM knowledge_documents WHERE status = 'pending' ORDER BY created_at"
+                    "SELECT id FROM knowledge_documents "
+                    "WHERE status = 'pending' OR rebuild_status = 'pending' "
+                    "ORDER BY created_at"
                 ).fetchall()
             ]
 

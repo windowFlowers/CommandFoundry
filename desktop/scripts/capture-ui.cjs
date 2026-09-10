@@ -78,7 +78,7 @@ app.whenReady().then(async () => {
       sandbox: true,
       backgroundThrottling: false,
       preload: path.resolve(__dirname, "..", "electron", "preload.cjs"),
-      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.2.0"],
+      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.3.0"],
     },
   });
   await window.loadURL(frontendUrl);
@@ -201,7 +201,7 @@ app.whenReady().then(async () => {
     input.dispatchEvent(new Event('change', { bubbles: true }));
   })()`, true);
   await waitFor(() => window.webContents.executeJavaScript(
-    "Boolean(document.querySelector('[data-ui=\"document-row\"]')) && [...document.querySelectorAll('.document-status')].every((item) => item.textContent.includes('片段'))",
+    "Boolean(document.querySelector('[data-ui=\"document-row\"]')) && [...document.querySelectorAll('.document-status')].every((item) => item.textContent.includes('子块'))",
   ));
   await assertNoHorizontalOverflow(window, "knowledge-content-1440x920");
   await saveCapture(window, "knowledge-1440x920.png");
@@ -248,7 +248,7 @@ app.whenReady().then(async () => {
       `document.querySelector('.documents-head h2')?.textContent === ${JSON.stringify(uploadKnowledgeBaseName)}`,
     ));
     await waitFor(() => window.webContents.executeJavaScript(
-      "document.querySelectorAll('[data-ui=\"document-row\"]').length >= 4 && [...document.querySelectorAll('.document-status')].every((item) => item.textContent.includes('片段'))",
+      "document.querySelectorAll('[data-ui=\"document-row\"]').length >= 4 && [...document.querySelectorAll('.document-status')].every((item) => item.textContent.includes('子块'))",
     ));
     await saveCapture(window, "knowledge-upload-1440x920.png");
 
