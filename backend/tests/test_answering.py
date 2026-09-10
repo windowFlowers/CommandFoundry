@@ -63,8 +63,26 @@ def test_valid_model_output_is_structured_and_grounded() -> None:
     answer, reason = AnswerService(SuccessfulGenerator()).answer("Git 安全回滚提交", hits)
     assert answer.mode == "model"
     assert reason == "model"
-    assert answer.commands[0].code == "git revert <commit>"
+    assert answer.commands[0].code == "git revert <0c01a9>"
     assert answer.citations[0].source_id == "git.git-revert"
+
+
+def test_model_commands_not_present_in_current_evidence_are_removed() -> None:
+    class HallucinatingGenerator:
+        available = True
+        model = "deepseek-chat"
+
+        def generate(self, query, hits):
+            return ModelAnswerDraft(
+                summary="模型给出了不在当前知识证据中的命令。",
+                commands=[CommandBlock(label="危险历史命令", code="rm -rf /")],
+            )
+
+    answer, reason = AnswerService(HallucinatingGenerator()).answer("Git 安全回滚提交", _git_hits())
+
+    assert reason == "model"
+    assert answer.mode == "model"
+    assert answer.commands == []
 
 
 def test_deepseek_success_response_is_validated() -> None:

@@ -52,6 +52,7 @@ app.whenReady().then(async () => {
     const answer = parseAnswer(await response.text());
     if (!answer || answer.mode !== "model") throw new Error(`完整链路未返回模型回答：${answer?.generation?.fallback_reason || "missing_answer"}`);
     if (!answer.generation?.request_id && !answer.generation?.total_tokens) throw new Error("模型回答缺少请求证据");
+    if (!answer.commands?.length) throw new Error("模型回答没有通过当前知识证据校验的命令");
     process.stdout.write(JSON.stringify({
       ok: true,
       mode: answer.mode,
@@ -60,6 +61,7 @@ app.whenReady().then(async () => {
       requestId: answer.generation.request_id,
       totalTokens: answer.generation.total_tokens,
       latencyMs: answer.generation.latency_ms,
+      commandCount: answer.commands.length,
       citationCount: answer.citations.length,
     }));
   } catch (error) {

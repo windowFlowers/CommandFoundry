@@ -13831,13 +13831,14 @@
   {
     "id": "kubernetes.kubectl-logs",
     "domain": "kubernetes",
-    "title": "kubectl-logs 常用命令",
+    "title": "查看 Kubernetes Pod 日志",
     "aliases": [
-      "如何使用 kubectl-logs？",
-      "kubectl-logs 常用操作",
-      "kubectl-logs 命令怎么写"
+      "Kubernetes 怎么查看容器日志？",
+      "kubectl 查看 Pod 日志",
+      "Kubernetes 跟踪容器日志",
+      "kubectl logs 怎么用"
     ],
-    "summary": "Show logs for containers in a pod.",
+    "summary": "使用 kubectl logs 查看或持续跟踪 Pod 中指定容器的日志。",
     "commands": [
       {
         "label": "Show logs for a single-container pod",
@@ -19052,13 +19053,14 @@
   {
     "id": "network.lsof",
     "domain": "network",
-    "title": "lsof 常用命令",
+    "title": "使用 lsof 查看端口占用",
     "aliases": [
-      "如何使用 lsof？",
-      "lsof 常用操作",
-      "lsof 命令怎么写"
+      "lsof 查看端口占用",
+      "Linux 查找占用指定端口的进程",
+      "macOS 怎么看端口被谁占用？",
+      "lsof -i 端口"
     ],
-    "summary": "List open files and the corresponding processes. Note: Root privileges are required to list files opened by others.",
+    "summary": "使用 lsof 按端口查找打开网络套接字的进程和 PID。",
     "commands": [
       {
         "label": "Find the processes that have a given file open",
@@ -19066,8 +19068,7 @@
         "code": "lsof <path/to/file>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19081,8 +19082,7 @@
         "code": "lsof -i :<port>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19096,8 +19096,7 @@
         "code": "lsof -t <path/to/file>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19111,8 +19110,7 @@
         "code": "lsof -u <username>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19126,8 +19124,7 @@
         "code": "lsof -c <process_or_command_name>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19141,8 +19138,7 @@
         "code": "lsof -p <pid>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19156,8 +19152,7 @@
         "code": "lsof +D <path/to/directory>",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -19171,8 +19166,7 @@
         "code": "lsof -i6TCP:<port> -sTCP:LISTEN -n -P",
         "platforms": [
           "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "macOS"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20130,22 +20124,35 @@
   {
     "id": "network.ss",
     "domain": "network",
-    "title": "ss 常用命令",
+    "title": "查看 Linux 端口占用",
     "aliases": [
-      "如何使用 ss？",
-      "ss 常用操作",
-      "ss 命令怎么写"
+      "Linux 怎么查看端口占用？",
+      "Linux 查看监听端口和 PID",
+      "ss 查看端口占用",
+      "哪个进程占用了端口"
     ],
-    "summary": "Utility to investigate sockets.",
+    "summary": "使用 ss 查看 Linux TCP/UDP 监听端口、连接状态和对应进程。",
     "commands": [
+      {
+        "label": "查看 TCP 监听端口和进程",
+        "language": "bash",
+        "code": "ss -lntp",
+        "platforms": [
+          "Linux"
+        ],
+        "prerequisites": [
+          "已安装 iproute2",
+          "查看其他用户的进程信息可能需要管理员权限"
+        ],
+        "risk": "low",
+        "warning": null
+      },
       {
         "label": "Show all TCP/UDP/RAW/UNIX sockets",
         "language": "bash",
         "code": "ss --all <--tcp|--udp|--raw|--unix>",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20158,9 +20165,7 @@
         "language": "bash",
         "code": "ss <state|exclude> <bucket|big|connected|synchronized|...>",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20173,9 +20178,7 @@
         "language": "bash",
         "code": "ss --tcp src :443",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20188,9 +20191,7 @@
         "language": "bash",
         "code": "ss --listening --tcp src :8080",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20203,9 +20204,7 @@
         "language": "bash",
         "code": "ss --processes --tcp dst :ssh",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20218,9 +20217,7 @@
         "language": "bash",
         "code": "ss --udp 'sport == :<source_port> and dport == :<destination_port>'",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
@@ -20233,30 +20230,13 @@
         "language": "bash",
         "code": "ss --ipv4 --tcp src 192.168/16",
         "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
+          "Linux"
         ],
         "prerequisites": [
           "已安装对应网络工具"
         ],
         "risk": "low",
         "warning": null
-      },
-      {
-        "label": "Kill IPv4 or IPv6 Socket Connection with a specific destination IP and port",
-        "language": "bash",
-        "code": "ss --kill dst <ip_address> dport = <port>",
-        "platforms": [
-          "Linux",
-          "macOS",
-          "Windows（部分命令）"
-        ],
-        "prerequisites": [
-          "已安装对应网络工具"
-        ],
-        "risk": "medium",
-        "warning": "该命令会修改本地状态，执行前请确认目标和当前工作区。"
       }
     ],
     "notes": [
@@ -26716,10 +26696,10 @@
     ],
     "source": {
       "source_id": "sql.backup",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "60b1cddc8cbe6ef3df1aa9dda877636145b378e7b20ff7959ec07b7f18454bdf",
       "kind": "generated_seed"
@@ -26754,10 +26734,10 @@
     ],
     "source": {
       "source_id": "sql.create-database",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-database.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "8c1057619bf4cef48067aca628b5f04254e358f73e25fcd35a678d2dafb78786",
       "kind": "generated_seed"
@@ -26793,10 +26773,10 @@
     ],
     "source": {
       "source_id": "sql.create-index",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-index.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "c1af11d88b4f5de8f8499b5d5fbdd7182250ecc6aecc09caeaa908c9cfaf5c4f",
       "kind": "generated_seed"
@@ -26831,10 +26811,10 @@
     ],
     "source": {
       "source_id": "sql.create-table",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-table.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "d560851dac21a016d0e2b17ca37c48f0fb28ab2777f7218492fa937df615deac",
       "kind": "generated_seed"
@@ -26870,10 +26850,10 @@
     ],
     "source": {
       "source_id": "sql.create-user",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-user.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "7edc87aabd2ed1a107b7f32328ed456de6b51f1c92ea7e9bd66b9b35d2805560",
       "kind": "generated_seed"
@@ -26910,10 +26890,10 @@
     ],
     "source": {
       "source_id": "sql.create-view",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-view.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "1360042f7feedc681ec774e0b7bd9c0e1ee4e2329c9fee58fd304a1a5774adc3",
       "kind": "generated_seed"
@@ -26948,10 +26928,10 @@
     ],
     "source": {
       "source_id": "sql.delete-rows",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/delete.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "8ec1c48162e07b607a6c7309cac2f15d912ffca674dafc1412925ab692138e46",
       "kind": "generated_seed"
@@ -26987,10 +26967,10 @@
     ],
     "source": {
       "source_id": "sql.explain-query",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/explain.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "7e755aa590cfd84b655e3f8bd98d51f0a19c1829272476dd2d86eb534ac5d6a7",
       "kind": "generated_seed"
@@ -27025,10 +27005,10 @@
     ],
     "source": {
       "source_id": "sql.insert-row",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/insert.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "dd36e05e005cf3d1765a4fda205ebb05f996eefd3599269dc4b2c869e83ee541",
       "kind": "generated_seed"
@@ -27064,10 +27044,10 @@
     ],
     "source": {
       "source_id": "sql.join-tables",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/join.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "f4b25645565c312088c8ded6aaed0fb2b223a0e8db5ce3a07556dc5a27094bd4",
       "kind": "generated_seed"
@@ -27104,10 +27084,10 @@
     ],
     "source": {
       "source_id": "sql.mysql-connect",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "2a3ed26a27b7746f715c6d6626edae5c61265da11096b37d3f86ea02c0d76d44",
       "kind": "generated_seed"
@@ -27120,14 +27100,14 @@
     "aliases": [
       "pg_dump 备份"
     ],
-    "summary": "备份 PostgreSQL 数据库的可执行模板，适用于 MySQL 8.x。",
+    "summary": "备份 PostgreSQL 数据库的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "备份 PostgreSQL 数据库",
         "language": "bash",
         "code": "pg_dump --host=<host> --username=<user> --format=custom --file=<backup.dump> <database>",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "账号具有读取权限"
@@ -27141,11 +27121,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-backup",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/app-pgdump.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "4f52507518e44da140e3d76b77cfd54d20db4824a9d1fb62e102a3809f781cb3",
       "kind": "generated_seed"
     }
@@ -27158,14 +27138,14 @@
       "psql 登录数据库",
       "连接 PostgreSQL"
     ],
-    "summary": "连接 PostgreSQL 数据库的可执行模板，适用于 MySQL 8.x。",
+    "summary": "连接 PostgreSQL 数据库的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "连接 PostgreSQL 数据库",
         "language": "bash",
         "code": "psql --host=<host> --username=<user> --dbname=<database>",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "已安装 PostgreSQL Client"
@@ -27179,11 +27159,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-connect",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/app-psql.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "a1967c3b1bd051a1fe1e8d47dc34f0acc3beea2ab71ef1b9c45f6c766d52275f",
       "kind": "generated_seed"
     }
@@ -27196,14 +27176,14 @@
       "PostgreSQL 新建数据库",
       "createdb"
     ],
-    "summary": "创建 PostgreSQL 数据库的可执行模板，适用于 MySQL 8.x。",
+    "summary": "创建 PostgreSQL 数据库的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "创建 PostgreSQL 数据库",
         "language": "bash",
         "code": "createdb --host=<host> --username=<user> <database>",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "账号具有 CREATEDB 权限"
@@ -27217,11 +27197,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-create-database",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/app-createdb.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "97421d1bec15a991b99b6e6482bebd5cd17a4c97ec26053ceaf907d6f7833711",
       "kind": "generated_seed"
     }
@@ -27233,14 +27213,14 @@
     "aliases": [
       "PostgreSQL CREATE INDEX CONCURRENTLY"
     ],
-    "summary": "创建 PostgreSQL 索引的可执行模板，适用于 MySQL 8.x。",
+    "summary": "创建 PostgreSQL 索引的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "创建 PostgreSQL 索引",
         "language": "sql",
         "code": "CREATE INDEX CONCURRENTLY idx_<table>_<column> ON <table> (<column>);",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "不能在事务块内运行 CONCURRENTLY"
@@ -27254,11 +27234,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-create-index",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-createindex.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "f6ef86499ee13745a17478a383b05eccd0f4d54b9c5a82fadc94fc00d2dc3ac2",
       "kind": "generated_seed"
     }
@@ -27270,14 +27250,14 @@
     "aliases": [
       "PostgreSQL CREATE TABLE"
     ],
-    "summary": "创建 PostgreSQL 数据表的可执行模板，适用于 MySQL 8.x。",
+    "summary": "创建 PostgreSQL 数据表的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "创建 PostgreSQL 数据表",
         "language": "sql",
         "code": "CREATE TABLE <table> (\n  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  name TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "已经连接目标数据库"
@@ -27291,11 +27271,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-create-table",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-createtable.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "93e268305c09ef09d05b1107ff852dc58ac95d5aacd37a80c13f0027ccd542ff",
       "kind": "generated_seed"
     }
@@ -27307,14 +27287,14 @@
     "aliases": [
       "PostgreSQL CREATE VIEW"
     ],
-    "summary": "创建 PostgreSQL 视图的可执行模板，适用于 MySQL 8.x。",
+    "summary": "创建 PostgreSQL 视图的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "创建 PostgreSQL 视图",
         "language": "sql",
         "code": "CREATE OR REPLACE VIEW <view_name> AS\nSELECT id, name FROM <table> WHERE <condition>;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "底层表存在"
@@ -27328,11 +27308,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-create-view",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-createview.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "e57c9edbfdacb66803af346e9f88d24119510c90a8b59fe33eac3fd15b635b92",
       "kind": "generated_seed"
     }
@@ -27344,14 +27324,14 @@
     "aliases": [
       "PostgreSQL DELETE"
     ],
-    "summary": "删除 PostgreSQL 数据的可执行模板，适用于 MySQL 8.x。",
+    "summary": "删除 PostgreSQL 数据的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "删除 PostgreSQL 数据",
         "language": "sql",
         "code": "DELETE FROM <table> WHERE id = <id> RETURNING *;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "先备份并查询目标记录"
@@ -27365,11 +27345,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-delete",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-delete.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "e1a1e0d326ea189b7c14f90d88306a12d08b0e0aab47350f3a40a9d80798976e",
       "kind": "generated_seed"
     }
@@ -27381,14 +27361,14 @@
     "aliases": [
       "PostgreSQL EXPLAIN ANALYZE"
     ],
-    "summary": "分析 PostgreSQL 查询计划的可执行模板，适用于 MySQL 8.x。",
+    "summary": "分析 PostgreSQL 查询计划的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "分析 PostgreSQL 查询计划",
         "language": "sql",
         "code": "EXPLAIN (ANALYZE, BUFFERS)\nSELECT * FROM <table> WHERE <column> = '<value>';",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "确认查询在测试环境可安全执行"
@@ -27402,11 +27382,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-explain",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/using-explain.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "02a8a46dcd5be31cc7582525c49d5ba131a6a0d9d07ea1b00bb6e1fd5accb27a",
       "kind": "generated_seed"
     }
@@ -27418,14 +27398,14 @@
     "aliases": [
       "PostgreSQL INSERT RETURNING"
     ],
-    "summary": "插入 PostgreSQL 数据的可执行模板，适用于 MySQL 8.x。",
+    "summary": "插入 PostgreSQL 数据的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "插入 PostgreSQL 数据",
         "language": "sql",
         "code": "INSERT INTO <table> (name) VALUES ('<value>') RETURNING id;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "目标表存在"
@@ -27439,11 +27419,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-insert",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-insert.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "385590e1da57c20f8430cd6df3bcda7c2200f39bc0aefce695435a61be4c5126",
       "kind": "generated_seed"
     }
@@ -27456,14 +27436,14 @@
       "psql 查看数据库",
       "psql 查看数据表"
     ],
-    "summary": "列出 PostgreSQL 数据库与表的可执行模板，适用于 MySQL 8.x。",
+    "summary": "列出 PostgreSQL 数据库与表的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "列出 PostgreSQL 数据库与表",
         "language": "text",
         "code": "\\l\n\\dt\n\\d <table>",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "在 psql 交互终端运行"
@@ -27477,11 +27457,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-list",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/app-psql.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "70263b3300c65cc41b653ab2771fdd3c9ff5a9236c317b7c73aa094e71dd095a",
       "kind": "generated_seed"
     }
@@ -27493,14 +27473,14 @@
     "aliases": [
       "pg_restore 恢复"
     ],
-    "summary": "恢复 PostgreSQL 备份的可执行模板，适用于 MySQL 8.x。",
+    "summary": "恢复 PostgreSQL 备份的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "恢复 PostgreSQL 备份",
         "language": "bash",
         "code": "pg_restore --host=<host> --username=<user> --dbname=<database> --clean --if-exists <backup.dump>",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "已验证备份并备份目标库"
@@ -27514,11 +27494,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-restore",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/app-pgrestore.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "56ad6980cfe0ff136143e9c3add6255ebb1638dd4abd2c3c1933640c87fb9e3f",
       "kind": "generated_seed"
     }
@@ -27530,14 +27510,14 @@
     "aliases": [
       "PostgreSQL SELECT 查询"
     ],
-    "summary": "查询 PostgreSQL 数据的可执行模板，适用于 MySQL 8.x。",
+    "summary": "查询 PostgreSQL 数据的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "查询 PostgreSQL 数据",
         "language": "sql",
         "code": "SELECT id, name\nFROM <table>\nWHERE name ILIKE '%<keyword>%'\nORDER BY id DESC\nLIMIT 20;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "目标表存在"
@@ -27551,11 +27531,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-select",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-select.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "4ff2a218789b5a1ca195bc6c0edb4d3f0ece27e289acba76a80593a7dd54bbdd",
       "kind": "generated_seed"
     }
@@ -27567,14 +27547,14 @@
     "aliases": [
       "PostgreSQL BEGIN COMMIT ROLLBACK"
     ],
-    "summary": "使用 PostgreSQL 事务的可执行模板，适用于 MySQL 8.x。",
+    "summary": "使用 PostgreSQL 事务的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "使用 PostgreSQL 事务",
         "language": "sql",
         "code": "BEGIN;\n-- 执行需要原子提交的 SQL\nCOMMIT;\n-- 需要撤销时执行 ROLLBACK;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "已经连接目标数据库"
@@ -27588,11 +27568,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-transaction",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/tutorial-transactions.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "c8bfd0de96168a916b58b655a369b695d4bf8f8f31fa3887e02c13e538d029ac",
       "kind": "generated_seed"
     }
@@ -27604,14 +27584,14 @@
     "aliases": [
       "PostgreSQL UPDATE"
     ],
-    "summary": "更新 PostgreSQL 数据的可执行模板，适用于 MySQL 8.x。",
+    "summary": "更新 PostgreSQL 数据的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "更新 PostgreSQL 数据",
         "language": "sql",
         "code": "UPDATE <table> SET name = '<value>' WHERE id = <id> RETURNING *;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "先使用同一 WHERE 查询目标记录"
@@ -27625,11 +27605,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-update",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-update.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "18f3f5f3bdf9f6789ecdc4788b13176e8306b29e19b5c2a3bc5366a2b5fac3c8",
       "kind": "generated_seed"
     }
@@ -27642,14 +27622,14 @@
       "PostgreSQL ON CONFLICT",
       "插入冲突更新"
     ],
-    "summary": "使用 PostgreSQL UPSERT的可执行模板，适用于 MySQL 8.x。",
+    "summary": "使用 PostgreSQL UPSERT的可执行模板，适用于 PostgreSQL。",
     "commands": [
       {
         "label": "使用 PostgreSQL UPSERT",
         "language": "sql",
         "code": "INSERT INTO <table> (id, name) VALUES (<id>, '<value>')\nON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;",
         "platforms": [
-          "MySQL 8.x"
+          "PostgreSQL 14+"
         ],
         "prerequisites": [
           "冲突列具有唯一约束"
@@ -27663,11 +27643,11 @@
     ],
     "source": {
       "source_id": "sql.postgres-upsert",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot PostgreSQL 种子知识",
       "source_url": "https://www.postgresql.org/docs/current/sql-insert.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
-      "path": "generated/mysql",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
       "sha256": "65e33394859a6c80b8a9a44335805e561b646f67cf43ad45cebf483fd901eceb",
       "kind": "generated_seed"
     }
@@ -27703,10 +27683,10 @@
     ],
     "source": {
       "source_id": "sql.restore",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/mysql-batch-commands.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "b239f4c95640bc483b67007e4d692f9777ea9374506932ce63ac9d9dfe8b4f5b",
       "kind": "generated_seed"
@@ -27741,10 +27721,10 @@
     ],
     "source": {
       "source_id": "sql.select-rows",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "ead4085cb1d483b016b4b50fde643ad2554b7ef504bb55421d732b525db166d8",
       "kind": "generated_seed"
@@ -27780,10 +27760,10 @@
     ],
     "source": {
       "source_id": "sql.transaction",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/commit.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "352e1aecbc772c8d66de2689dbbb8f7ab7e128734fa4f0ba389a16c6626f8f53",
       "kind": "generated_seed"
@@ -27818,10 +27798,10 @@
     ],
     "source": {
       "source_id": "sql.update-rows",
-      "title": "AegisCopilot MySQL 种子知识",
+      "title": "AegisCopilot MySQL 8.x 种子知识",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/update.html",
       "license": "MIT (project-authored)",
-      "revision": "v2.1.0",
+      "revision": "v2.2.0",
       "path": "generated/mysql",
       "sha256": "dcae42982698e0fdc060bbec969ede2629207f551a879614ca065d61e3f81af7",
       "kind": "generated_seed"
@@ -29622,125 +29602,84 @@
   {
     "id": "windows.netstat",
     "domain": "windows",
-    "title": "netstat 常用命令",
+    "title": "查看 Windows 端口占用",
     "aliases": [
-      "如何使用 netstat？",
-      "netstat 常用操作",
-      "netstat 命令怎么写"
+      "Windows 怎么查看端口占用？",
+      "Windows 查看监听端口和 PID",
+      "PowerShell 查端口占用",
+      "netstat -ano 怎么用"
     ],
-    "summary": "Display network-related information such as open connections, open socket ports, etc.",
+    "summary": "使用 Get-NetTCPConnection 或 Windows netstat 查看监听端口和对应进程 PID。",
     "commands": [
       {
-        "label": "List all ports",
-        "language": "bash",
-        "code": "netstat --all",
+        "label": "查看所有 TCP 监听端口和 PID",
+        "language": "powershell",
+        "code": "Get-NetTCPConnection -State Listen | Sort-Object -Property LocalPort",
         "platforms": [
           "Windows 10/11",
           "Windows Server"
         ],
         "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
+          "在 PowerShell 5.1 或更高版本中运行"
         ],
         "risk": "low",
         "warning": null
       },
       {
-        "label": "List all listening ports",
-        "language": "bash",
-        "code": "netstat --listening",
+        "label": "查看指定端口的占用进程",
+        "language": "powershell",
+        "code": "Get-NetTCPConnection -LocalPort <port> | Select-Object LocalAddress, LocalPort, State, OwningProcess",
         "platforms": [
           "Windows 10/11",
           "Windows Server"
         ],
         "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
+          "将 <port> 替换为实际端口号"
         ],
         "risk": "low",
         "warning": null
       },
       {
-        "label": "List listening TCP ports",
-        "language": "bash",
-        "code": "netstat --tcp",
+        "label": "使用系统自带 netstat 查看端口和 PID",
+        "language": "powershell",
+        "code": "netstat -ano",
         "platforms": [
           "Windows 10/11",
           "Windows Server"
         ],
         "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
+          "在 PowerShell、命令提示符或 Windows 终端中运行"
         ],
         "risk": "low",
         "warning": null
       },
       {
-        "label": "Display PID and program names",
-        "language": "bash",
-        "code": "netstat --program",
+        "label": "根据 PID 查看进程",
+        "language": "powershell",
+        "code": "Get-Process -Id <pid>",
         "platforms": [
           "Windows 10/11",
           "Windows Server"
         ],
         "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
-        ],
-        "risk": "low",
-        "warning": null
-      },
-      {
-        "label": "List information continuously",
-        "language": "bash",
-        "code": "netstat --continuous",
-        "platforms": [
-          "Windows 10/11",
-          "Windows Server"
-        ],
-        "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
-        ],
-        "risk": "low",
-        "warning": null
-      },
-      {
-        "label": "List routes and do not resolve IP addresses to hostnames",
-        "language": "bash",
-        "code": "netstat --route --numeric",
-        "platforms": [
-          "Windows 10/11",
-          "Windows Server"
-        ],
-        "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
-        ],
-        "risk": "low",
-        "warning": null
-      },
-      {
-        "label": "List listening TCP and UDP ports (+ user and process if you're root)",
-        "language": "bash",
-        "code": "netstat --tcp --udp --listening --program --numeric --extend",
-        "platforms": [
-          "Windows 10/11",
-          "Windows Server"
-        ],
-        "prerequisites": [
-          "在 PowerShell 或 Windows 终端中运行"
+          "先从 OwningProcess 或 netstat 输出取得 PID"
         ],
         "risk": "low",
         "warning": null
       }
     ],
     "notes": [
-      "将尖括号中的占位参数替换为你的实际值。"
+      "命令只读取网络连接状态；如需查看其他用户的完整进程信息，可使用管理员终端。"
     ],
     "source": {
       "source_id": "windows.netstat",
-      "title": "tldr: netstat",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/netstat.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/netstat.md",
-      "sha256": "b3736fbab73112f10a069ec24161a5c419d76f251d849169c5f2b8582fab2c17",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 端口种子知识",
+      "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
+      "license": "MIT (project-authored)",
+      "revision": "v2.2.0",
+      "path": "generated/windows-port-usage",
+      "sha256": "efd093f262e27204736099bfa1516b3c782cec30a1c208bf2f608feaa2c86021",
+      "kind": "generated_seed"
     }
   },
   {

@@ -216,10 +216,10 @@ function createMainWindow() {
     minWidth: 1080,
     minHeight: 720,
     show: false,
-    backgroundColor: "#edf1f3",
+    backgroundColor: "#efeee9",
     icon: path.join(__dirname, "..", "assets", "icon.ico"),
     titleBarStyle: "hidden",
-    titleBarOverlay: { color: "#dbe2e6", symbolColor: "#34434d", height: 38 },
+    titleBarOverlay: { color: "#e5e2da", symbolColor: "#232626", height: 38 },
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

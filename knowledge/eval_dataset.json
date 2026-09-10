@@ -733,7 +733,7 @@
   },
   {
     "id": "case-123",
-    "query": "如何使用 kubectl-logs？",
+    "query": "Kubernetes 怎么查看容器日志？",
     "expected_topic_id": "kubernetes.kubectl-logs",
     "domain": "kubernetes"
   },
@@ -991,7 +991,7 @@
   },
   {
     "id": "case-166",
-    "query": "如何使用 lsof？",
+    "query": "lsof 查看端口占用",
     "expected_topic_id": "network.lsof",
     "domain": "network"
   },
@@ -1039,7 +1039,7 @@
   },
   {
     "id": "case-174",
-    "query": "如何使用 ss？",
+    "query": "Linux 怎么查看端口占用？",
     "expected_topic_id": "network.ss",
     "domain": "network"
   },
@@ -1717,7 +1717,7 @@
   },
   {
     "id": "case-287",
-    "query": "如何使用 netstat？",
+    "query": "Windows 怎么查看端口占用？",
     "expected_topic_id": "windows.netstat",
     "domain": "windows"
   },

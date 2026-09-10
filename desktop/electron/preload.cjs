@@ -6,7 +6,7 @@ const versionArgument = process.argv.find((argument) => argument.startsWith("--a
 contextBridge.exposeInMainWorld("aegisDesktop", {
   apiBaseUrl: apiBaseArgument ? apiBaseArgument.slice("--aegis-api-base=".length) : "",
   isPackaged: process.argv.includes("--aegis-packaged=true"),
-  version: versionArgument ? versionArgument.slice("--aegis-version=".length) : "2.1.0",
+  version: versionArgument ? versionArgument.slice("--aegis-version=".length) : "2.2.0",
   modelConfig: {
     status: () => ipcRenderer.invoke("model-config:status"),
     test: (input = {}) => ipcRenderer.invoke("model-config:test", { apiKey: input.apiKey }),

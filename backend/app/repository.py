@@ -11,11 +11,14 @@ from .models import (
     Answer,
     ChatMessage,
     Conversation,
+    ConversationMemory,
     DEFAULT_KNOWLEDGE_BASE_ID,
     KnowledgeBase,
     KnowledgeDocument,
     KnowledgeDocumentContent,
     KnowledgeDocumentDetail,
+    MemoryMessagePreview,
+    MemorySummary,
     utc_now,
 )
 
@@ -68,6 +71,19 @@ class ConversationRepository:
                     query TEXT,
                     answer_json TEXT,
                     created_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS conversation_memory (
+                    conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,
+                    summary_json TEXT NOT NULL DEFAULT '{}',
+                    summary_provider TEXT,
+                    compacted_through_message_id TEXT,
+                    reset_after_message_id TEXT,
+                    status TEXT NOT NULL DEFAULT 'idle',
+                    revision INTEGER NOT NULL DEFAULT 0,
+                    estimated_tokens INTEGER NOT NULL DEFAULT 0,
+                    pending_input_json TEXT NOT NULL DEFAULT '',
+                    last_error TEXT NOT NULL DEFAULT '',
+                    updated_at TEXT
                 );
                 CREATE TABLE IF NOT EXISTS knowledge_documents (
                     id TEXT PRIMARY KEY,
@@ -132,6 +148,9 @@ class ConversationRepository:
                 "WHERE status = 'indexing'",
                 (now,),
             )
+            connection.execute(
+                "UPDATE conversation_memory SET status = 'pending' WHERE status = 'summarizing'"
+            )
 
     @staticmethod
     def _parse_time(value: str) -> datetime:
@@ -195,6 +214,10 @@ class ConversationRepository:
                     conversation.knowledge_base_name,
                 ),
             )
+            connection.execute(
+                "INSERT INTO conversation_memory(conversation_id) VALUES (?)",
+                (conversation.id,),
+            )
         return conversation
 
     def get(self, conversation_id: str) -> Conversation | None:
@@ -255,6 +278,182 @@ class ConversationRepository:
                 (message.created_at.isoformat(), conversation_id),
             )
         return message
+
+    def _ensure_memory(self, connection: sqlite3.Connection, conversation_id: str) -> sqlite3.Row:
+        if connection.execute("SELECT 1 FROM conversations WHERE id = ?", (conversation_id,)).fetchone() is None:
+            raise KeyError(conversation_id)
+        connection.execute(
+            "INSERT OR IGNORE INTO conversation_memory(conversation_id) VALUES (?)",
+            (conversation_id,),
+        )
+        return connection.execute(
+            "SELECT * FROM conversation_memory WHERE conversation_id = ?",
+            (conversation_id,),
+        ).fetchone()
+
+    def get_memory_record(self, conversation_id: str) -> dict:
+        with self._lock, self._connect() as connection:
+            return dict(self._ensure_memory(connection, conversation_id))
+
+    def list_pending_memory_ids(self) -> list[str]:
+        with self._lock, self._connect() as connection:
+            return [
+                row["conversation_id"]
+                for row in connection.execute(
+                    "SELECT conversation_id FROM conversation_memory "
+                    "WHERE status = 'pending' AND pending_input_json != '' ORDER BY updated_at"
+                ).fetchall()
+            ]
+
+    def save_local_memory(
+        self,
+        conversation_id: str,
+        *,
+        summary: MemorySummary,
+        compacted_through_message_id: str,
+        estimated_tokens: int,
+        pending_input: dict | None,
+    ) -> int:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            current = self._ensure_memory(connection, conversation_id)
+            revision = int(current["revision"]) + 1
+            status = "pending" if pending_input else "ready"
+            connection.execute(
+                "UPDATE conversation_memory SET summary_json = ?, summary_provider = 'local', "
+                "compacted_through_message_id = ?, status = ?, revision = ?, estimated_tokens = ?, "
+                "pending_input_json = ?, last_error = '', updated_at = ? WHERE conversation_id = ?",
+                (
+                    summary.model_dump_json(),
+                    compacted_through_message_id,
+                    status,
+                    revision,
+                    estimated_tokens,
+                    json.dumps(pending_input, ensure_ascii=False) if pending_input else "",
+                    now,
+                    conversation_id,
+                ),
+            )
+            return revision
+
+    def claim_pending_memory(self, conversation_id: str) -> dict | None:
+        with self._lock, self._connect() as connection:
+            row = self._ensure_memory(connection, conversation_id)
+            if row["status"] != "pending" or not row["pending_input_json"]:
+                return None
+            connection.execute(
+                "UPDATE conversation_memory SET status = 'summarizing' WHERE conversation_id = ? AND revision = ?",
+                (conversation_id, row["revision"]),
+            )
+            claimed = dict(row)
+            claimed["status"] = "summarizing"
+            return claimed
+
+    def complete_model_memory(
+        self,
+        conversation_id: str,
+        *,
+        expected_revision: int,
+        summary: MemorySummary | None,
+        error: str = "",
+    ) -> bool:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            if summary is None:
+                cursor = connection.execute(
+                    "UPDATE conversation_memory SET status = 'ready', pending_input_json = '', last_error = ?, "
+                    "updated_at = ? WHERE conversation_id = ? AND revision = ?",
+                    (error[:160], now, conversation_id, expected_revision),
+                )
+            else:
+                cursor = connection.execute(
+                    "UPDATE conversation_memory SET summary_json = ?, summary_provider = 'deepseek', status = 'ready', "
+                    "estimated_tokens = ?, pending_input_json = '', last_error = '', updated_at = ? "
+                    "WHERE conversation_id = ? AND revision = ?",
+                    (
+                        summary.model_dump_json(),
+                        max(1, len(summary.model_dump_json()) // 3),
+                        now,
+                        conversation_id,
+                        expected_revision,
+                    ),
+                )
+            return cursor.rowcount > 0
+
+    def reset_memory(self, conversation_id: str) -> bool:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            try:
+                current = self._ensure_memory(connection, conversation_id)
+            except KeyError:
+                return False
+            last = connection.execute(
+                "SELECT id FROM messages WHERE conversation_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
+                (conversation_id,),
+            ).fetchone()
+            connection.execute(
+                "UPDATE conversation_memory SET summary_json = '{}', summary_provider = NULL, "
+                "compacted_through_message_id = NULL, reset_after_message_id = ?, status = 'idle', "
+                "revision = ?, estimated_tokens = 0, pending_input_json = '', last_error = '', updated_at = ? "
+                "WHERE conversation_id = ?",
+                (last["id"] if last else None, int(current["revision"]) + 1, now, conversation_id),
+            )
+            return True
+
+    def memory_state(self, conversation_id: str) -> ConversationMemory:
+        conversation = self.get(conversation_id)
+        if conversation is None:
+            raise KeyError(conversation_id)
+        record = self.get_memory_record(conversation_id)
+        try:
+            summary = MemorySummary.model_validate_json(record["summary_json"] or "{}")
+        except (ValueError, TypeError):
+            summary = MemorySummary()
+        visible_messages = conversation.messages
+        if record["reset_after_message_id"]:
+            boundary_index = next(
+                (
+                    index
+                    for index, message in enumerate(conversation.messages)
+                    if message.id == record["reset_after_message_id"]
+                ),
+                -1,
+            )
+            visible_messages = conversation.messages[boundary_index + 1 :]
+        last_context = next(
+            (
+                message.answer.context
+                for message in reversed(visible_messages)
+                if message.role == "assistant" and message.answer is not None
+            ),
+            None,
+        )
+        used_ids = set(last_context.used_message_ids if last_context else [])
+        previews: list[MemoryMessagePreview] = []
+        for message in conversation.messages:
+            if message.id not in used_ids:
+                continue
+            preview = message.query if message.role == "user" else message.answer.summary if message.answer else ""
+            previews.append(
+                MemoryMessagePreview(
+                    id=message.id,
+                    role=message.role,
+                    preview=(preview or "")[:240],
+                    created_at=message.created_at,
+                )
+            )
+        return ConversationMemory(
+            conversation_id=conversation_id,
+            status=record["status"],
+            summary=summary,
+            summary_provider=record["summary_provider"],
+            summary_updated_at=self._parse_time(record["updated_at"]) if record["updated_at"] else None,
+            compacted_through_message_id=record["compacted_through_message_id"],
+            reset_after_message_id=record["reset_after_message_id"],
+            estimated_tokens=last_context.estimated_tokens if last_context else int(record["estimated_tokens"]),
+            recent_messages=previews,
+            last_error=record["last_error"],
+        )
 
     def _knowledge_base_from_row(self, row: sqlite3.Row) -> KnowledgeBase:
         return KnowledgeBase(

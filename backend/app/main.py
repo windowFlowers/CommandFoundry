@@ -14,11 +14,13 @@ from .documents import MAX_UPLOAD_BYTES, DocumentIndexService
 from .extraction import ExtractionError
 from .generation import DeepSeekGenerator
 from .knowledge import KnowledgeCatalog
+from .memory import ConversationMemoryService, merge_contextual_hits
 from .models import (
     ChatRequest,
     Conversation,
     ConversationCreateRequest,
     ConversationListResponse,
+    ConversationMemory,
     DEFAULT_KNOWLEDGE_BASE_ID,
     HealthResponse,
     KnowledgeBase,
@@ -59,6 +61,7 @@ generator = DeepSeekGenerator(
     timeout_seconds=settings.llm_timeout_seconds,
 )
 answer_service = AnswerService(generator)
+memory_service = ConversationMemoryService(repository=repository, generator=generator)
 document_service = DocumentIndexService(
     repository=repository,
     indexes=index_manager,
@@ -227,6 +230,20 @@ def delete_conversation(conversation_id: str) -> None:
         raise HTTPException(status_code=404, detail="会话不存在")
 
 
+@app.get("/conversations/{conversation_id}/memory", response_model=ConversationMemory)
+def get_conversation_memory(conversation_id: str) -> ConversationMemory:
+    try:
+        return memory_service.get_state(conversation_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="会话不存在") from exc
+
+
+@app.post("/conversations/{conversation_id}/memory/reset", status_code=status.HTTP_204_NO_CONTENT)
+def reset_conversation_memory(conversation_id: str) -> None:
+    if not memory_service.reset(conversation_id):
+        raise HTTPException(status_code=404, detail="会话不存在")
+
+
 @app.post("/chat/stream")
 def chat_stream(request: ChatRequest) -> StreamingResponse:
     conversation = repository.get(request.conversation_id) if request.conversation_id else None
@@ -244,12 +261,34 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
 
     def generate_events():
         current = conversation or repository.create(knowledge_base_id=requested_base_id)
-        repository.append_user(current.id, request.query)
+        memory = memory_service.build_context(current, request.query)
+        yield sse(
+            "status",
+            {
+                "stage": "contextualizing",
+                "message": "正在整理会话上下文",
+                "memory_used": memory.info.used,
+                "recent_turn_count": memory.info.recent_turn_count,
+                "summary_used": memory.info.summary_used,
+            },
+        )
+        user_message = repository.append_user(current.id, request.query)
         try:
             yield sse("status", {"stage": "retrieving", "message": "正在检索本地知识库"})
-            hits = index_manager.retrieve(
-                requested_base_id, request.query, top_k=settings.retrieval_top_k
-            )
+            retrieval_query = memory.info.retrieval_query or request.query
+            if retrieval_query != request.query.strip():
+                candidate_k = max(settings.retrieval_top_k * 2, 8)
+                raw_hits = index_manager.retrieve(requested_base_id, request.query, top_k=candidate_k)
+                contextual_hits = index_manager.retrieve(requested_base_id, retrieval_query, top_k=candidate_k)
+                hits = merge_contextual_hits(
+                    raw_hits,
+                    contextual_hits,
+                    top_k=settings.retrieval_top_k,
+                )
+            else:
+                hits = index_manager.retrieve(
+                    requested_base_id, request.query, top_k=settings.retrieval_top_k
+                )
             use_model = generator.available and bool(hits)
             yield sse(
                 "status",
@@ -259,12 +298,19 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     "hit_count": len(hits),
                 },
             )
-            answer, _ = answer_service.answer(request.query, hits)
+            answer, _ = answer_service.answer(
+                request.query,
+                hits,
+                context=memory.info,
+                memory_context=memory.prompt_payload,
+            )
             assistant_message = repository.append_answer(current.id, answer)
+            memory_service.compact_if_needed(current.id)
             yield sse(
                 "answer",
                 {
                     "conversation_id": current.id,
+                    "user_message_id": user_message.id,
                     "message_id": assistant_message.id,
                     "answer": answer.model_dump(mode="json"),
                 },

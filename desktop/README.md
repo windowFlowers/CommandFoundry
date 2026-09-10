@@ -1,4 +1,4 @@
-# AegisCopilot v2.1 Electron 桌面端
+# AegisCopilot v2.2 Electron 桌面端
 
 Electron 桌面版提供两条运行路径：开发模式自动启动仓库中的 FastAPI/Vite，发布模式运行内置 React 资源和 PyInstaller 后端。
 
@@ -36,7 +36,7 @@ npm.cmd run dist:win
 输出：
 
 - `dist/win-unpacked/AegisCopilot.exe`：未安装目录
-- `dist/AegisCopilot Setup 2.1.0.exe`：Windows x64 NSIS 安装包
+- `dist/AegisCopilot Setup 2.2.0.exe`：Windows x64 NSIS 安装包
 
 ## 数据与模型
 

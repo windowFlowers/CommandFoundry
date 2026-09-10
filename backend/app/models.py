@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from enum import Enum
 from typing import Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 DEFAULT_KNOWLEDGE_BASE_ID = "developer-it"
@@ -104,6 +105,16 @@ class GenerationInfo(BaseModel):
     fallback_reason: FallbackReason | None = None
 
 
+class ContextInfo(BaseModel):
+    used: bool = False
+    strategy: Literal["none", "recent", "summary_recent"] = "none"
+    recent_turn_count: int = 0
+    used_message_ids: list[str] = Field(default_factory=list)
+    summary_used: bool = False
+    retrieval_query: str = ""
+    estimated_tokens: int = 0
+
+
 class Answer(BaseModel):
     mode: Literal["model", "local_fallback"]
     summary: str
@@ -111,6 +122,7 @@ class Answer(BaseModel):
     notes: list[str] = Field(default_factory=list)
     citations: list[Citation] = Field(default_factory=list)
     generation: GenerationInfo = Field(default_factory=GenerationInfo)
+    context: ContextInfo = Field(default_factory=ContextInfo)
 
 
 class ChatRequest(BaseModel):
@@ -145,6 +157,68 @@ class ConversationCreateRequest(BaseModel):
 
 class ConversationListResponse(BaseModel):
     items: list[Conversation]
+
+
+class MemorySummary(BaseModel):
+    current_goal: str = ""
+    environments: list[str] = Field(default_factory=list, max_length=12)
+    constraints: list[str] = Field(default_factory=list, max_length=12)
+    decisions: list[str] = Field(default_factory=list, max_length=12)
+    open_questions: list[str] = Field(default_factory=list, max_length=12)
+    history_topics: list[str] = Field(default_factory=list, max_length=12)
+
+    @staticmethod
+    def _sanitize(value: object, *, limit: int) -> str:
+        text = str(value or "")
+        text = re.sub(r"```[\s\S]*?```", "[代码块已省略]", text)
+        text = re.sub(r"`[^`\r\n]+`", "[命令已省略]", text)
+        text = re.sub(r"\bsk-[A-Za-z0-9_-]{8,}\b", "[REDACTED]", text, flags=re.IGNORECASE)
+        text = re.sub(
+            r"(?i)\b(password|passwd|token|api[_ -]?key)\s*[:=]\s*\S+",
+            r"\1=[REDACTED]",
+            text,
+        )
+        return re.sub(r"\s+", " ", text).strip()[:limit]
+
+    @field_validator("current_goal", mode="before")
+    @classmethod
+    def sanitize_goal(cls, value: object) -> str:
+        return cls._sanitize(value, limit=240)
+
+    @field_validator(
+        "environments",
+        "constraints",
+        "decisions",
+        "open_questions",
+        "history_topics",
+        mode="before",
+    )
+    @classmethod
+    def sanitize_lists(cls, value: object) -> list[str]:
+        if value is None:
+            return []
+        values = [value] if isinstance(value, str) else list(value)
+        return [item for item in (cls._sanitize(entry, limit=160) for entry in values) if item]
+
+
+class MemoryMessagePreview(BaseModel):
+    id: str
+    role: Literal["user", "assistant"]
+    preview: str
+    created_at: datetime
+
+
+class ConversationMemory(BaseModel):
+    conversation_id: str
+    status: Literal["idle", "pending", "summarizing", "ready"] = "idle"
+    summary: MemorySummary = Field(default_factory=MemorySummary)
+    summary_provider: Literal["local", "deepseek"] | None = None
+    summary_updated_at: datetime | None = None
+    compacted_through_message_id: str | None = None
+    reset_after_message_id: str | None = None
+    estimated_tokens: int = 0
+    recent_messages: list[MemoryMessagePreview] = Field(default_factory=list)
+    last_error: str = ""
 
 
 DocumentStatus = Literal["pending", "indexing", "ready", "failed"]

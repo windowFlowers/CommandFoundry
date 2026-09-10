@@ -1,12 +1,39 @@
 from __future__ import annotations
 
 import json
+import re
 
 import httpx
 
 from .generation import DeepSeekGenerator
-from .models import Answer, Citation, GenerationInfo, RetrievalHit
+from .models import Answer, Citation, CommandBlock, ContextInfo, GenerationInfo, RetrievalHit
 from .risk import review_commands
+
+
+def _normalize_command_code(value: str) -> str:
+    normalized = "\n".join(
+        line.rstrip() for line in value.replace("\r\n", "\n").strip().split("\n")
+    )
+    return re.sub(r"<[^<>\r\n]+>", "<placeholder>", normalized)
+
+
+def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) -> list[CommandBlock]:
+    """Return only canonical commands that occur in the current retrieval evidence."""
+    evidence = {
+        _normalize_command_code(command.code): command
+        for hit in hits
+        for command in hit.topic.commands
+    }
+    grounded = []
+    seen: set[str] = set()
+    for command in commands:
+        normalized = _normalize_command_code(command.code)
+        canonical = evidence.get(normalized)
+        if canonical is None or normalized in seen:
+            continue
+        seen.add(normalized)
+        grounded.append(canonical)
+    return grounded
 
 
 def citations_from_hits(hits: list[RetrievalHit]) -> list[Citation]:
@@ -38,6 +65,7 @@ class AnswerService:
         *,
         reason: str,
         attempted: bool = False,
+        context: ContextInfo | None = None,
     ) -> Answer:
         generation = GenerationInfo(
             attempted=attempted,
@@ -53,6 +81,7 @@ class AnswerService:
                 notes=["请补充技术栈、目标动作或报错信息后重试，例如“Docker 查看最近 100 行日志”。"],
                 citations=[],
                 generation=generation,
+                context=context or ContextInfo(),
             )
         primary = hits[0].topic
         commands = review_commands(primary.commands[:4])
@@ -67,28 +96,41 @@ class AnswerService:
             notes=list(dict.fromkeys([*primary.notes, "当前回答由本地知识确定性生成，未调用云端模型。"])),
             citations=citations_from_hits(hits),
             generation=generation,
+            context=context or ContextInfo(),
         )
 
-    def answer(self, query: str, hits: list[RetrievalHit]) -> tuple[Answer, str]:
+    def answer(
+        self,
+        query: str,
+        hits: list[RetrievalHit],
+        *,
+        context: ContextInfo | None = None,
+        memory_context: str = "",
+    ) -> tuple[Answer, str]:
         if not hits or not self.generator.available:
             reason = "no_hits" if not hits else "no_api_key"
-            return self.local_fallback(hits, reason=reason), reason
+            return self.local_fallback(hits, reason=reason, context=context), reason
         try:
-            draft = self.generator.generate(query, hits)
+            draft = (
+                self.generator.generate(query, hits, memory_context=memory_context)
+                if memory_context
+                else self.generator.generate(query, hits)
+            )
             return (
                 Answer(
                     mode="model",
                     summary=draft.summary,
-                    commands=review_commands(draft.commands),
+                    commands=review_commands(grounded_commands(draft.commands, hits)),
                     notes=draft.notes,
                     citations=citations_from_hits(hits),
                     generation=draft.generation,
+                    context=context or ContextInfo(),
                 ),
                 "model",
             )
         except Exception as exc:
             reason = self._fallback_reason(exc)
-            return self.local_fallback(hits, reason=reason, attempted=True), reason
+            return self.local_fallback(hits, reason=reason, attempted=True, context=context), reason
 
     @staticmethod
     def _fallback_reason(exc: Exception) -> str:

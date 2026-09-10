@@ -48,13 +48,15 @@ cd ..\desktop
 npm test
 ```
 
-测试覆盖检索评测、三个核心问题、来源追溯、模型失败回退、危险命令、SSE、会话 CRUD、密钥密文、preload 边界、进程路径和自定义协议。
+测试覆盖单轮/多轮检索评测、上下文预算与隔离、摘要恢复和并发、来源追溯、模型失败回退、危险命令、SSE、会话 CRUD、密钥密文、preload 边界、进程路径和自定义协议。
 
 需要复现 BM25 与 BGE + RRF 两组完整指标时运行：
 
 ```powershell
 .\backend\.venv\Scripts\python.exe scripts\evaluate_rag.py
 ```
+
+输出同时包含 300 条单轮集合与 60 组多轮集合的 BM25、混合检索 Top-1/Top-3 指标。
 
 ## Windows 构建
 

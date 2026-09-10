@@ -5,6 +5,7 @@ import json
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.models import Answer
 
 
 def _events(raw: str) -> list[tuple[str, dict]]:
@@ -19,7 +20,7 @@ def _events(raw: str) -> list[tuple[str, dict]]:
 
 def test_health_and_knowledge_status() -> None:
     with TestClient(app) as client:
-        assert client.get("/health").json() == {"status": "ok", "version": "2.1.0"}
+        assert client.get("/health").json() == {"status": "ok", "version": "2.2.0"}
         payload = client.get("/knowledge/status").json()
     assert payload["ready"] is True
     assert payload["topic_count"] == 300
@@ -42,11 +43,12 @@ def test_health_and_knowledge_status() -> None:
     assert payload["retrieval_mode"] == "bm25"
 
 
-def test_chat_stream_uses_four_event_contract_and_persists() -> None:
+def test_chat_stream_uses_context_event_contract_and_persists() -> None:
     with TestClient(app) as client:
         events = _events(client.post("/chat/stream", json={"query": "Git 怎么安全回滚一次提交？"}).text)
-        assert [name for name, _ in events] == ["status", "status", "answer", "done"]
-        answer_event = events[2][1]
+        assert [name for name, _ in events] == ["status", "status", "status", "answer", "done"]
+        assert events[0][1]["stage"] == "contextualizing"
+        answer_event = events[3][1]
         answer = answer_event["answer"]
         assert answer["mode"] == "local_fallback"
         assert "git revert" in "\n".join(item["code"] for item in answer["commands"])
@@ -72,3 +74,43 @@ def test_no_hit_returns_deterministic_empty_answer() -> None:
     assert answer["mode"] == "local_fallback"
     assert answer["commands"] == []
     assert answer["citations"] == []
+
+
+def test_memory_api_exposes_used_history_and_reset_keeps_messages() -> None:
+    with TestClient(app) as client:
+        first = _events(client.post("/chat/stream", json={"query": "Linux 怎么查看端口占用？"}).text)
+        conversation_id = next(data["conversation_id"] for event, data in first if event == "done")
+        second = _events(
+            client.post(
+                "/chat/stream",
+                json={"query": "那 Windows 呢？", "conversation_id": conversation_id},
+            ).text
+        )
+        answer = next(data["answer"] for event, data in second if event == "answer")
+        assert answer["context"]["used"] is True
+        assert answer["context"]["recent_turn_count"] == 1
+        assert answer["context"]["retrieval_query"].startswith("Windows 怎么查看端口占用")
+
+        memory = client.get(f"/conversations/{conversation_id}/memory").json()
+        assert len(memory["recent_messages"]) == 2
+        assert client.post(f"/conversations/{conversation_id}/memory/reset").status_code == 204
+        cleared = client.get(f"/conversations/{conversation_id}/memory").json()
+        conversation = client.get(f"/conversations/{conversation_id}").json()
+
+    assert cleared["recent_messages"] == []
+    assert cleared["summary"]["current_goal"] == ""
+    assert len(conversation["messages"]) == 4
+
+
+def test_old_answers_without_context_remain_compatible() -> None:
+    answer = Answer.model_validate(
+        {
+            "mode": "local_fallback",
+            "summary": "旧回答",
+            "commands": [],
+            "notes": [],
+            "citations": [],
+        }
+    )
+    assert answer.context.used is False
+    assert answer.context.strategy == "none"
