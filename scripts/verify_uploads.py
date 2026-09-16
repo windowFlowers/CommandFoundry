@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from io import BytesIO
 
@@ -13,6 +14,9 @@ from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 API_BASE = os.getenv("AEGIS_VERIFY_API", "http://127.0.0.1:8002").rstrip("/")
 KNOWLEDGE_BASE_NAME = os.getenv("AEGIS_VERIFY_KB_NAME", "格式验收知识库")
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 
 def docx_bytes() -> bytes:

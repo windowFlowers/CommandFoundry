@@ -4,9 +4,10 @@ import httpx
 import pytest
 
 from app.answering import AnswerService
+from app.evidence import evidence_records
 from app.generation import DeepSeekGenerator, ModelAnswerDraft
 from app.main import retriever
-from app.models import CommandBlock
+from app.models import AnswerSegment, CommandBlock, PersonalizationInfo
 
 
 class FailedGenerator:
@@ -20,8 +21,12 @@ class SuccessfulGenerator:
     available = True
 
     def generate(self, query, hits):
+        summary = "使用 git revert 创建一个反向提交。"
         return ModelAnswerDraft(
-            summary="使用 git revert 创建一个反向提交。",
+            summary=summary,
+            summary_segments=[
+                AnswerSegment(text=summary, citation_ids=[evidence_records(hits)[0]["citation_id"]])
+            ],
             commands=[
                 CommandBlock(
                     label="安全回滚",
@@ -73,8 +78,12 @@ def test_model_commands_not_present_in_current_evidence_are_removed() -> None:
         model = "deepseek-chat"
 
         def generate(self, query, hits):
+            summary = "模型给出了不在当前知识证据中的命令。"
             return ModelAnswerDraft(
-                summary="模型给出了不在当前知识证据中的命令。",
+                summary=summary,
+                summary_segments=[
+                    AnswerSegment(text=summary, citation_ids=[evidence_records(hits)[0]["citation_id"]])
+                ],
                 commands=[CommandBlock(label="危险历史命令", code="rm -rf /")],
             )
 
@@ -189,3 +198,43 @@ def test_http_failures_are_normalized(status_code: int, expected: str) -> None:
     answer, reason = AnswerService(Generator()).answer("Git 安全回滚", _git_hits())
     assert reason == expected
     assert answer.generation.fallback_reason == expected
+
+
+def test_local_fallback_honors_saved_and_current_presentation_preferences() -> None:
+    class OfflineGenerator:
+        available = False
+
+    saved_preferences = """[
+      {"preference": "回答语言：中文"},
+      {"preference": "回答偏好：详细说明"},
+      {"preference": "开发熟练度：新手"}
+    ]"""
+    personalization = PersonalizationInfo(
+        used=True,
+        memory_ids=["language", "detail", "level"],
+        global_count=3,
+    )
+
+    english, reason = AnswerService(OfflineGenerator()).answer(
+        "Please answer in English.",
+        _git_hits(),
+        personalization=personalization,
+        personalization_context=saved_preferences,
+    )
+
+    assert reason == "no_api_key"
+    assert english.mode == "local_fallback"
+    assert english.summary.startswith("You can use the evidence-backed command")
+    assert "Evidence detail:" in english.summary
+    assert any(note.startswith("Beginner note:") for note in english.notes)
+    assert english.summary_segments and english.summary_segments[0].citation_ids
+
+    current_request, _ = AnswerService(OfflineGenerator()).answer(
+        "这次请用中文回答，并保持简洁。",
+        _git_hits(),
+        personalization=personalization,
+        personalization_context=saved_preferences,
+    )
+    assert current_request.summary.startswith("可以使用下面的命令")
+    assert "相关本地证据：" not in current_request.summary
+    assert any(note.startswith("新手提示：") for note in current_request.notes)

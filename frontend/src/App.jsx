@@ -2,14 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChatWorkspace } from "./components/chat/ChatWorkspace";
 import { DocumentPreviewModal, KnowledgeManager } from "./components/knowledge/KnowledgeManager";
 import { MemoryDrawer, SettingsDrawer } from "./components/overlays/AppDrawers";
+import { PersonalizationDrawer } from "./components/overlays/PersonalizationDrawer";
+import { ProfileMemoryManager } from "./components/profile/ProfileMemoryManager";
 import { Modal } from "./components/ui/Overlays";
+import { ToastRegion } from "./components/ui/ToastRegion";
+import { useProfileMemory } from "./hooks/useProfileMemory";
 import { fetchJson, streamChat } from "./lib/api";
 import { appendStreamAnswer, memoryStateForAnswer, resetConversationMemory } from "./lib/memory";
 
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.3.0";
+  const appVersion = window.aegisDesktop?.version || "2.4.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
@@ -29,8 +33,19 @@ export function App() {
   const [memoryLoading, setMemoryLoading] = useState(false);
   const [memoryError, setMemoryError] = useState("");
   const [memoryResetOpen, setMemoryResetOpen] = useState(false);
+  const [personalizationDrawerOpen, setPersonalizationDrawerOpen] = useState(false);
+  const [personalizationState, setPersonalizationState] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 900);
   const [preview, setPreview] = useState(null);
+  const {
+    profile,
+    memoryRevision,
+    toast,
+    memoriesChanged,
+    notifyMemoryUpdate,
+    dismissToast,
+    undoToast,
+  } = useProfileMemory();
   const composerRef = useRef(null);
   const bottomRef = useRef(null);
   const memoryResetCancelRef = useRef(null);
@@ -98,6 +113,7 @@ export function App() {
     if (busy) return;
     setError("");
     setMemoryDrawerOpen(false);
+    setPersonalizationDrawerOpen(false);
     const conversation = await fetchJson(`/conversations/${id}`);
     setActiveId(id);
     setMessages(conversation.messages);
@@ -124,6 +140,7 @@ export function App() {
     setAnswerAnnouncement("");
     setError("");
     setMemoryDrawerOpen(false);
+    setPersonalizationDrawerOpen(false);
     setView("chat");
     window.setTimeout(() => composerRef.current?.focus(), 0);
   }
@@ -139,6 +156,7 @@ export function App() {
     if (!updatedActive || updatedActive.knowledge_base_id !== deletedId) {
       setSelectedKnowledgeBaseId(DEFAULT_KNOWLEDGE_BASE_ID);
     }
+    await memoriesChanged();
   }
 
   async function previewDocument(source) {
@@ -173,6 +191,7 @@ export function App() {
   async function openMemory(answerContext) {
     if (!activeId) return;
     setSettingsOpen(false);
+    setPersonalizationDrawerOpen(false);
     setMemoryDrawerOpen(true);
     setMemoryLoading(true);
     setMemoryError("");
@@ -184,6 +203,13 @@ export function App() {
     } finally {
       setMemoryLoading(false);
     }
+  }
+
+  function openPersonalization(personalization) {
+    setSettingsOpen(false);
+    setMemoryDrawerOpen(false);
+    setPersonalizationState(personalization);
+    setPersonalizationDrawerOpen(true);
   }
 
   async function resetMemory() {
@@ -217,7 +243,9 @@ export function App() {
             setActiveId(data.conversation_id);
             setMessages((current) => appendStreamAnswer(current, data));
             setAnswerAnnouncement(`AegisCopilot 回答已生成，共 ${data.answer?.commands?.length || 0} 条命令。`);
+            if (data.memory_update) notifyMemoryUpdate(data);
           }
+          if (event === "done" || event === "memory") notifyMemoryUpdate(data);
           if (event === "error") throw new Error(data.message);
         },
       });
@@ -244,6 +272,15 @@ export function App() {
         onSelectForChat={newConversation}
         onKnowledgeBaseDeleted={handleKnowledgeBaseDeleted}
       />
+    ) : view === "profile" ? (
+      <ProfileMemoryManager
+        profile={profile}
+        knowledgeBases={knowledgeBases}
+        initialKnowledgeBaseId={selectedKnowledgeBaseId}
+        refreshToken={memoryRevision}
+        onBack={() => setView("chat")}
+        onChanged={memoriesChanged}
+      />
     ) : (
       <ChatWorkspace
         sidebarOpen={sidebarOpen}
@@ -255,7 +292,9 @@ export function App() {
         onDeleteConversation={deleteConversation}
         onOpenKnowledge={() => setView("knowledge")}
         knowledgeBases={knowledgeBases}
-        onOpenSettings={() => { setMemoryDrawerOpen(false); setSettingsOpen(true); }}
+        onOpenProfile={() => { setSettingsOpen(false); setMemoryDrawerOpen(false); setPersonalizationDrawerOpen(false); setView("profile"); }}
+        profile={profile}
+        onOpenSettings={() => { setMemoryDrawerOpen(false); setPersonalizationDrawerOpen(false); setSettingsOpen(true); }}
         modelStatus={modelStatus}
         activeConversation={activeConversation}
         selectedKnowledgeBaseId={selectedKnowledgeBaseId}
@@ -268,6 +307,7 @@ export function App() {
         error={error}
         onPreviewDocument={previewDocument}
         onOpenMemory={openMemory}
+        onOpenPersonalization={openPersonalization}
         onSubmit={submit}
         query={query}
         onQueryChange={setQuery}
@@ -277,6 +317,7 @@ export function App() {
     )}
     <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} modelStatus={modelStatus} onChanged={loadModelStatus} />
     <MemoryDrawer open={memoryDrawerOpen} onClose={() => setMemoryDrawerOpen(false)} memory={memoryState} loading={memoryLoading} error={memoryError} onReset={() => setMemoryResetOpen(true)} />
+    <PersonalizationDrawer open={personalizationDrawerOpen} onClose={() => setPersonalizationDrawerOpen(false)} personalization={personalizationState} refreshToken={memoryRevision} />
     <DocumentPreviewModal preview={preview} onClose={() => setPreview(null)} />
     {memoryResetOpen && <Modal
       title="清空会话上下文"
@@ -286,5 +327,11 @@ export function App() {
       initialFocusRef={memoryResetCancelRef}
       actions={<><button ref={memoryResetCancelRef} className="secondary-button" type="button" onClick={() => setMemoryResetOpen(false)}>取消</button><button className="danger-button" type="button" onClick={resetMemory}>确认清空</button></>}
     ><p id="memory-reset-description">聊天记录会保留，但此前消息不会再用于后续回答。</p></Modal>}
+    <ToastRegion
+      toast={toast}
+      onDismiss={dismissToast}
+      onUndo={undoToast}
+      onView={() => { dismissToast(); setSettingsOpen(false); setMemoryDrawerOpen(false); setPersonalizationDrawerOpen(false); setView("profile"); }}
+    />
   </div>;
 }

@@ -17,7 +17,9 @@ export async function fetchJson(path, { method = "GET", body } = {}) {
     } catch {
       // The backend may intentionally return plain text for fatal startup errors.
     }
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
   return response.status === 204 ? null : response.json();
 }

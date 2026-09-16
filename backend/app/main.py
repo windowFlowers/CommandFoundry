@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import json
 from contextlib import asynccontextmanager
+from datetime import datetime
+from urllib.parse import urlsplit
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile, status
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from .answering import AnswerService
 from .config import settings
@@ -32,7 +35,15 @@ from .models import (
     KnowledgeDocumentDetail,
     KnowledgeDocumentListResponse,
     KnowledgeStatus,
+    UserMemory,
+    UserMemoryCreateRequest,
+    UserMemoryExtractionTaskStatusResponse,
+    UserMemoryListResponse,
+    UserMemoryUpdateRequest,
+    UserProfile,
+    UserProfileUpdateRequest,
 )
+from .personalization import PersonalizationService, memory_update_for_response
 from .repository import ConversationRepository
 from .retrieval import EmbeddingEngine, KnowledgeIndexManager
 
@@ -62,6 +73,11 @@ generator = DeepSeekGenerator(
 )
 answer_service = AnswerService(generator)
 memory_service = ConversationMemoryService(repository=repository, generator=generator)
+personalization_service = PersonalizationService(
+    repository=repository,
+    generator=generator,
+    embeddings=embedding_engine,
+)
 document_service = DocumentIndexService(
     repository=repository,
     indexes=index_manager,
@@ -81,14 +97,50 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title=settings.app_name, version=settings.app_version, lifespan=lifespan)
+TRUSTED_APP_ORIGINS = {"aegis://app/localhost"}
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins,
+    allow_origins=list(dict.fromkeys([*settings.allowed_origins, *TRUSTED_APP_ORIGINS])),
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=False,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
+
+
+def _is_trusted_mutation_origin(origin: str) -> bool:
+    if origin in settings.allowed_origins or origin in TRUSTED_APP_ORIGINS:
+        return True
+    try:
+        parsed = urlsplit(origin)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
+            return False
+        hostname = (parsed.hostname or "").rstrip(".").casefold()
+        # Accessing .port also rejects malformed/out-of-range ports.
+        _ = parsed.port
+        if hostname == "localhost":
+            return True
+        return bool(hostname and ipaddress.ip_address(hostname).is_loopback)
+    except (ValueError, UnicodeError):
+        return False
+
+
+@app.middleware("http")
+async def reject_untrusted_browser_mutations(request: Request, call_next):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        origin = request.headers.get("origin")
+        # Native Electron/main-process and local CLI calls do not carry Origin.
+        # A browser request does; reject it before endpoint code can mutate data.
+        if origin is not None and not _is_trusted_mutation_origin(origin.strip()):
+            return JSONResponse(status_code=403, content={"detail": "不受信任的请求来源"})
+    return await call_next(request)
 
 
 def sse(event: str, data: dict) -> str:
@@ -249,6 +301,152 @@ def reset_conversation_memory(conversation_id: str) -> None:
         raise HTTPException(status_code=404, detail="会话不存在")
 
 
+@app.get("/profile", response_model=UserProfile)
+def get_profile() -> UserProfile:
+    return repository.get_profile()
+
+
+@app.patch("/profile", response_model=UserProfile)
+def update_profile(request: UserProfileUpdateRequest) -> UserProfile:
+    return repository.update_profile(
+        personalization_enabled=request.personalization_enabled,
+        auto_memory_enabled=request.auto_memory_enabled,
+    )
+
+
+def _memory_extraction_task_response(task: dict) -> UserMemoryExtractionTaskStatusResponse:
+    """Translate a persisted task into the small status view safe for the UI.
+
+    The task table intentionally keeps the sanitized source statement private.
+    A completed task retains only result ids, so whether a result was new,
+    updated, or superseded is reconstructed from the resulting memory row.
+    """
+
+    task_status = str(task.get("status") or "cancelled")
+    result_ids = list(dict.fromkeys(str(value) for value in task.get("result_memory_ids", []) if value))
+    memories_by_id = {
+        memory.id: memory
+        for memory in repository.list_user_memories(status=None, ids=result_ids)
+    }
+    memories = [memories_by_id[memory_id] for memory_id in result_ids if memory_id in memories_by_id]
+
+    operation = "NOOP"
+    undoable_ids: list[str] = []
+    if task_status == "ready" and memories:
+        task_created_at = datetime.fromisoformat(str(task["created_at"]))
+        operations: list[str] = []
+        for memory in memories:
+            if memory.supersedes_id:
+                operations.append("SUPERSEDE")
+            elif memory.created_at >= task_created_at:
+                operations.append("ADD")
+                if memory.status == "active":
+                    undoable_ids.append(memory.id)
+            else:
+                operations.append("UPDATE")
+        if "SUPERSEDE" in operations:
+            operation = "SUPERSEDE"
+        elif operations and all(item == "ADD" for item in operations):
+            operation = "ADD"
+        else:
+            operation = "UPDATE"
+
+    return UserMemoryExtractionTaskStatusResponse(
+        id=str(task["id"]),
+        status=task_status,
+        source_message_id=str(task["source_message_id"]),
+        memory_ids=[memory.id for memory in memories] if task_status == "ready" else [],
+        undoable_memory_ids=undoable_ids,
+        operation=operation,
+        created_at=task["created_at"],
+        updated_at=task["updated_at"],
+    )
+
+
+@app.get(
+    "/profile/memory-extractions/{task_id}",
+    response_model=UserMemoryExtractionTaskStatusResponse,
+)
+def get_profile_memory_extraction(task_id: str) -> UserMemoryExtractionTaskStatusResponse:
+    task = repository.get_memory_extraction_task(task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="记忆提取任务不存在或已取消")
+    return _memory_extraction_task_response(task)
+
+
+@app.get("/profile/memories", response_model=UserMemoryListResponse)
+def list_profile_memories(
+    q: str | None = Query(default=None, max_length=160),
+    scope: str | None = Query(default=None),
+    category: str | None = Query(default=None),
+    knowledge_base_id: str | None = Query(default=None),
+    status_filter: str = Query(default="active", alias="status"),
+    ids: str | None = Query(default=None),
+    source_message_id: str | None = Query(default=None),
+) -> UserMemoryListResponse:
+    requested_ids = [value for value in (ids or "").split(",") if value] or None
+    normalized_status = status_filter.strip().casefold()
+    repository_status = None if normalized_status == "all" else normalized_status
+    try:
+        items = repository.list_user_memories(
+            q=q,
+            scope=scope,
+            category=category,
+            knowledge_base_id=knowledge_base_id,
+            status=repository_status,
+            ids=requested_ids,
+            source_message_id=source_message_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return UserMemoryListResponse(items=items)
+
+
+@app.post("/profile/memories", response_model=UserMemory, status_code=status.HTTP_201_CREATED)
+def create_profile_memory(request: UserMemoryCreateRequest) -> UserMemory:
+    try:
+        return personalization_service.create_manual(request)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="知识库不存在") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.patch("/profile/memories/{memory_id}", response_model=UserMemory)
+def update_profile_memory(memory_id: str, request: UserMemoryUpdateRequest) -> UserMemory:
+    try:
+        return personalization_service.update_manual(memory_id, request)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="记忆不存在") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.delete("/profile/memories/{memory_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_profile_memory(memory_id: str) -> None:
+    if not repository.delete_user_memory_chain(memory_id):
+        raise HTTPException(status_code=404, detail="记忆不存在")
+
+
+@app.post("/profile/memories/{memory_id}/undo", response_model=UserMemory | None)
+def undo_profile_memory(memory_id: str) -> UserMemory | None:
+    try:
+        return repository.undo_user_memory(memory_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="记忆不存在") from exc
+
+
+@app.post("/profile/memories/reset", status_code=status.HTTP_204_NO_CONTENT)
+def reset_profile_memories(
+    scope: str | None = Query(default=None),
+    knowledge_base_id: str | None = Query(default=None),
+) -> None:
+    try:
+        repository.reset_user_memories(scope=scope, knowledge_base_id=knowledge_base_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.post("/chat/stream")
 def chat_stream(request: ChatRequest) -> StreamingResponse:
     conversation = repository.get(request.conversation_id) if request.conversation_id else None
@@ -267,6 +465,11 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
     def generate_events():
         current = conversation or repository.create(knowledge_base_id=requested_base_id)
         memory = memory_service.build_context(current, request.query)
+        personalization = personalization_service.build_context(
+            query=request.query,
+            retrieval_query=memory.info.retrieval_query or request.query,
+            knowledge_base_id=requested_base_id,
+        )
         yield sse(
             "status",
             {
@@ -275,12 +478,13 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 "memory_used": memory.info.used,
                 "recent_turn_count": memory.info.recent_turn_count,
                 "summary_used": memory.info.summary_used,
+                "personalization_count": len(personalization.info.memory_ids),
             },
         )
         user_message = repository.append_user(current.id, request.query)
         try:
             yield sse("status", {"stage": "retrieving", "message": "正在检索本地知识库"})
-            retrieval_query = memory.info.retrieval_query or request.query
+            retrieval_query = personalization.retrieval_query
             if retrieval_query != request.query.strip():
                 candidate_k = max(settings.retrieval_top_k * 2, 8)
                 raw_hits = index_manager.retrieve(requested_base_id, request.query, top_k=candidate_k)
@@ -308,9 +512,27 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 hits,
                 context=memory.info,
                 memory_context=memory.prompt_payload,
+                personalization=personalization.info,
+                personalization_context=personalization.prompt_payload,
             )
             assistant_message = repository.append_answer(current.id, answer)
+            if answer.personalization.memory_ids:
+                repository.mark_user_memories_used(answer.personalization.memory_ids)
+            try:
+                memory_update = personalization_service.capture_user_message(
+                    conversation_id=current.id,
+                    source_message_id=user_message.id,
+                    knowledge_base_id=requested_base_id,
+                    text=request.query,
+                )
+            except Exception:
+                # Automatic extraction is a non-blocking side channel. It must
+                # never turn an already generated answer into an SSE failure.
+                memory_update = None
             memory_service.compact_if_needed(current.id)
+            memory_update_payload = (
+                memory_update_for_response(memory_update) if memory_update is not None else None
+            )
             yield sse(
                 "answer",
                 {
@@ -318,9 +540,17 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     "user_message_id": user_message.id,
                     "message_id": assistant_message.id,
                     "answer": answer.model_dump(mode="json"),
+                    "memory_update": memory_update_payload,
                 },
             )
-            yield sse("done", {"conversation_id": current.id, "message_id": assistant_message.id})
+            yield sse(
+                "done",
+                {
+                    "conversation_id": current.id,
+                    "message_id": assistant_message.id,
+                    "memory_update": memory_update_payload,
+                },
+            )
         except Exception as exc:
             yield sse("error", {"message": f"回答生成失败：{type(exc).__name__}"})
 

@@ -8,13 +8,19 @@ const apiBaseUrl = process.env.AEGIS_CAPTURE_API || "http://127.0.0.1:8002";
 const uploadKnowledgeBaseName = process.env.AEGIS_CAPTURE_KB_NAME || "";
 const outputRoot = path.resolve(__dirname, "..", "..", "docs", "screenshots");
 let captureConversationId = null;
+let captureConversationIds = [];
 let captureKnowledgeBaseId = null;
+let captureMemoryIds = [];
+let captureOriginalProfile = null;
 
 async function cleanupCaptureConversation() {
-  if (!captureConversationId) return;
-  const response = await fetch(`${apiBaseUrl}/conversations/${encodeURIComponent(captureConversationId)}`, { method: "DELETE" });
-  if (!response.ok && response.status !== 404) throw new Error(`Could not clean up capture conversation (${response.status})`);
+  const conversationIds = [...new Set([captureConversationId, ...captureConversationIds].filter(Boolean))];
   captureConversationId = null;
+  captureConversationIds = [];
+  for (const conversationId of conversationIds) {
+    const response = await fetch(`${apiBaseUrl}/conversations/${encodeURIComponent(conversationId)}`, { method: "DELETE" });
+    if (!response.ok && response.status !== 404) throw new Error(`Could not clean up capture conversation (${response.status})`);
+  }
 }
 
 async function cleanupCaptureKnowledgeBase() {
@@ -24,10 +30,41 @@ async function cleanupCaptureKnowledgeBase() {
   captureKnowledgeBaseId = null;
 }
 
+async function cleanupCaptureMemories() {
+  const memoryIds = captureMemoryIds;
+  captureMemoryIds = [];
+  const results = await Promise.all(memoryIds.map(async (memoryId) => {
+    const response = await fetch(`${apiBaseUrl}/profile/memories/${encodeURIComponent(memoryId)}`, {
+      method: "DELETE",
+    });
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`Could not clean up capture memory (${response.status})`);
+    }
+  }));
+  return results.length;
+}
+
+async function restoreCaptureProfile() {
+  if (!captureOriginalProfile) return;
+  const original = captureOriginalProfile;
+  captureOriginalProfile = null;
+  const response = await fetch(`${apiBaseUrl}/profile`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      personalization_enabled: original.personalization_enabled,
+      auto_memory_enabled: original.auto_memory_enabled,
+    }),
+  });
+  if (!response.ok) throw new Error(`Could not restore capture profile (${response.status})`);
+}
+
 async function cleanupCaptureArtifacts() {
   const results = await Promise.allSettled([
     cleanupCaptureConversation(),
     cleanupCaptureKnowledgeBase(),
+    cleanupCaptureMemories(),
+    restoreCaptureProfile(),
   ]);
   const failures = results.filter((result) => result.status === "rejected");
   if (failures.length) throw new Error(failures.map((result) => result.reason?.message || String(result.reason)).join("; "));
@@ -62,9 +99,63 @@ async function assertNoHorizontalOverflow(window, label) {
   }
 }
 
+async function submitChatQuery(window, query) {
+  const previousAnswerCount = await window.webContents.executeJavaScript("document.querySelectorAll('[data-ui=\"answer-card\"]').length");
+  await window.webContents.executeJavaScript(`(() => {
+    const textarea = document.querySelector('[data-ui="composer"] textarea');
+    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+    setter.call(textarea, ${JSON.stringify(query)});
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+  })()`, true);
+  await waitFor(() => window.webContents.executeJavaScript("!document.querySelector('[data-ui=\"composer\"] > button')?.disabled"));
+  await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"composer\"] textarea').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }))", true);
+  await waitFor(() => window.webContents.executeJavaScript(`document.querySelectorAll('[data-ui="answer-card"]').length > ${previousAnswerCount}`), 30_000);
+}
+
 app.whenReady().then(async () => {
   ipcMain.handle("model-config:status", () => ({ configured: false }));
   fs.mkdirSync(outputRoot, { recursive: true });
+  const captureMemorySeed = Date.now().toString(36);
+  const profileResponse = await fetch(`${apiBaseUrl}/profile`);
+  if (!profileResponse.ok) throw new Error(`Could not read capture profile (${profileResponse.status})`);
+  captureOriginalProfile = await profileResponse.json();
+  if (!captureOriginalProfile.personalization_enabled || !captureOriginalProfile.auto_memory_enabled) {
+    const enableResponse = await fetch(`${apiBaseUrl}/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ personalization_enabled: true, auto_memory_enabled: true }),
+    });
+    if (!enableResponse.ok) throw new Error(`Could not enable capture profile (${enableResponse.status})`);
+  }
+  const captureMemories = [
+    {
+      scope: "global",
+      knowledge_base_id: null,
+      category: "response_style",
+      key: `capture.detail.${captureMemorySeed}`,
+      value: "concise",
+      display_text: "回答偏好：简洁直接",
+      pinned: true,
+    },
+    {
+      scope: "knowledge_base",
+      knowledge_base_id: "developer-it",
+      category: "platform",
+      key: `capture.shell.${captureMemorySeed}`,
+      value: "PowerShell",
+      display_text: "首选 Shell：PowerShell",
+      pinned: false,
+    },
+  ];
+  for (const memory of captureMemories) {
+    const response = await fetch(`${apiBaseUrl}/profile/memories`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(memory),
+    });
+    if (!response.ok) throw new Error(`Could not create capture memory (${response.status})`);
+    captureMemoryIds.push((await response.json()).id);
+  }
   const window = new BrowserWindow({
     width: 1440,
     height: 920,
@@ -78,7 +169,7 @@ app.whenReady().then(async () => {
       sandbox: true,
       backgroundThrottling: false,
       preload: path.resolve(__dirname, "..", "electron", "preload.cjs"),
-      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.3.0"],
+      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.4.0"],
     },
   });
   await window.loadURL(frontendUrl);
@@ -104,6 +195,7 @@ app.whenReady().then(async () => {
   await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('.session-item.active[data-conversation-id]'))"));
   captureConversationId = await window.webContents.executeJavaScript("document.querySelector('.session-item.active')?.dataset.conversationId", true);
   if (!captureConversationId) throw new Error("Capture conversation id was not exposed by the UI");
+  captureConversationIds.push(captureConversationId);
   await new Promise((resolve) => setTimeout(resolve, 400));
   window.setSize(1080, 720);
   await new Promise((resolve) => setTimeout(resolve, 250));
@@ -278,6 +370,85 @@ app.whenReady().then(async () => {
     await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"back-to-chat\"]').click()", true);
     await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"chat-panel\"]'))"));
   }
+
+  await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"open-profile\"]')?.click()", true);
+  await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"profile-page\"]'))"));
+  await waitFor(() => window.webContents.executeJavaScript("document.activeElement?.matches('[data-ui=\"back-to-chat\"]')"));
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelectorAll('.profile-memory-row').length >= 2"));
+  await assertNoHorizontalOverflow(window, "profile-1440x920");
+  await saveCapture(window, "profile-1440x920.png");
+  window.setSize(1080, 720);
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  await assertNoHorizontalOverflow(window, "profile-1080x720");
+  await saveCapture(window, "profile-1080x720.png");
+  window.setSize(1440, 920);
+  await window.webContents.executeJavaScript("(() => { const trigger = document.querySelector('[data-ui=\"add-profile-memory\"]'); trigger?.focus(); trigger?.click(); })()", true);
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"profile-memory-editor\"]')?.contains(document.activeElement)"));
+  const validMemoryEditorDefaults = await window.webContents.executeJavaScript(`(() => {
+    const modal = document.querySelector('[data-ui="profile-memory-editor"]');
+    const selects = modal?.querySelectorAll('select');
+    return modal?.querySelector('textarea')?.maxLength === 160
+      && selects?.[0]?.value === 'global'
+      && selects?.[1]?.value === 'response_style'
+      && ![...selects[1].options].some((option) => option.value === 'platform');
+  })()`, true);
+  if (!validMemoryEditorDefaults) throw new Error("Profile memory editor defaults are invalid");
+  await window.webContents.executeJavaScript("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))", true);
+  await waitFor(() => window.webContents.executeJavaScript("!document.querySelector('[data-ui=\"profile-memory-editor\"]') && document.activeElement?.matches('[data-ui=\"add-profile-memory\"]')"));
+  await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"back-to-chat\"]')?.click()", true);
+  await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"chat-panel\"]'))"));
+
+  if (!await window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"personalization-badge\"]'))")) {
+    await submitChatQuery(window, "Git 怎么查看当前状态？");
+  }
+  const personalizedConversationId = await window.webContents.executeJavaScript("document.querySelector('.session-item.active')?.dataset.conversationId", true);
+  if (personalizedConversationId) {
+    captureConversationIds.push(personalizedConversationId);
+    captureConversationId = personalizedConversationId;
+  }
+  await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"personalization-badge\"]'))"));
+  await window.webContents.executeJavaScript("(() => { const trigger = [...document.querySelectorAll('[data-ui=\"personalization-badge\"]')].at(-1); trigger.focus(); trigger.click(); })()", true);
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"personalization-drawer\"]')?.getAttribute('aria-hidden') === 'false'"));
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"personalization-drawer\"]')?.contains(document.activeElement)"));
+  await waitFor(() => window.webContents.executeJavaScript(`(() => {
+    const drawer = document.querySelector('[data-ui="personalization-drawer"]');
+    if (!drawer) return false;
+    const bounds = drawer.getBoundingClientRect();
+    return bounds.right <= window.innerWidth + 1
+      && bounds.left >= -1
+      && bounds.width >= 360
+      && bounds.width <= window.innerWidth;
+  })()`));
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  await assertNoHorizontalOverflow(window, "personalization-1440x920");
+  await saveCapture(window, "personalization-1440x920.png");
+  window.setSize(1080, 720);
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  await waitFor(() => window.webContents.executeJavaScript(`(() => {
+    const bounds = document.querySelector('[data-ui="personalization-drawer"]')?.getBoundingClientRect();
+    return Boolean(bounds && bounds.right <= window.innerWidth + 1 && bounds.left >= -1 && bounds.width >= 360);
+  })()`));
+  await assertNoHorizontalOverflow(window, "personalization-1080x720");
+  await saveCapture(window, "personalization-1080x720.png");
+  await window.webContents.executeJavaScript("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))", true);
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"personalization-drawer\"]')?.getAttribute('aria-hidden') === 'true' && document.activeElement?.matches('[data-ui=\"personalization-badge\"]')"));
+  window.setSize(1440, 920);
+
+  const automaticMemoryMarker = `capture-${captureMemorySeed}`;
+  await submitChatQuery(window, `请记住，这个项目必须兼容 ${automaticMemoryMarker} 协议`);
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"memory-toast\"]')?.textContent.includes('已记住')"));
+  const automaticMemoryResponse = await fetch(`${apiBaseUrl}/profile/memories?q=${encodeURIComponent(automaticMemoryMarker)}&status=active`);
+  if (!automaticMemoryResponse.ok) throw new Error(`Could not read automatic capture memory (${automaticMemoryResponse.status})`);
+  const automaticMemories = (await automaticMemoryResponse.json()).items || [];
+  captureMemoryIds.push(...automaticMemories.map((memory) => memory.id));
+  await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"memory-toast\"] button:nth-of-type(2)')?.focus()", true);
+  await assertNoHorizontalOverflow(window, "memory-toast-1440x920");
+  await saveCapture(window, "memory-toast-1440x920.png");
+  await window.webContents.executeJavaScript("[...document.querySelectorAll('[data-ui=\"memory-toast\"] button')].find((button) => button.textContent.includes('撤销'))?.click()", true);
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"memory-toast\"]')?.textContent.includes('已撤销记忆')"));
+  await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"memory-toast\"] .toast-close')?.click()", true);
+  await waitFor(() => window.webContents.executeJavaScript("!document.querySelector('[data-ui=\"memory-toast\"]')"));
+
   window.showInactive();
   await window.webContents.executeJavaScript("(() => { const trigger = document.querySelector('[data-ui=\"open-settings\"]'); trigger.focus(); trigger.click(); })()", true);
   await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"settings-drawer\"]')?.getAttribute('aria-hidden') === 'false'"));

@@ -60,6 +60,52 @@ app.whenReady().then(async () => {
     if (answer.commands.some((item) => !item.citation_ids?.some((id) => citationIds.has(id)))) {
       throw new Error("模型命令缺少有效证据引用");
     }
+
+    const personalizationSeeds = [
+      {
+        scope: "knowledge_base",
+        knowledge_base_id: "developer-it",
+        category: "platform",
+        key: "os",
+        value: "Windows",
+        display_text: "首选系统：Windows",
+        pinned: true,
+      },
+      {
+        scope: "knowledge_base",
+        knowledge_base_id: "developer-it",
+        category: "platform",
+        key: "shell",
+        value: "PowerShell",
+        display_text: "首选 Shell：PowerShell",
+        pinned: true,
+      },
+    ];
+    for (const memory of personalizationSeeds) {
+      const memoryResponse = await fetch(`http://127.0.0.1:${port}/profile/memories`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(memory),
+      });
+      if (!memoryResponse.ok) throw new Error(`个性化种子写入失败：${memoryResponse.status}`);
+    }
+    const personalizedResponse = await fetch(`http://127.0.0.1:${port}/chat/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: "怎么查看端口占用？", knowledge_base_id: "developer-it" }),
+    });
+    const personalizedAnswer = parseAnswer(await personalizedResponse.text());
+    if (!personalizedAnswer || personalizedAnswer.mode !== "model") {
+      throw new Error(`个性化链路未返回模型回答：${personalizedAnswer?.generation?.fallback_reason || "missing_answer"}`);
+    }
+    const personalization = personalizedAnswer.personalization || {};
+    if (!personalization.used || personalization.scoped_count < 2 || !personalization.sent_to_model || !personalization.retrieval_query_enriched) {
+      throw new Error(`个性化链路缺少真实使用证据：${JSON.stringify(personalization)}`);
+    }
+    const commandText = (personalizedAnswer.commands || []).map((item) => item.code).join("\n");
+    if (!/(Get-NetTCPConnection|netstat)/i.test(commandText)) {
+      throw new Error("个性化链路没有返回通过知识证据校验的 Windows 端口命令");
+    }
     process.stdout.write(JSON.stringify({
       ok: true,
       mode: answer.mode,
@@ -71,6 +117,13 @@ app.whenReady().then(async () => {
       commandCount: answer.commands.length,
       citationCount: answer.citations.length,
       citedSegmentCount: answer.summary_segments.length,
+      personalization: {
+        used: personalization.used,
+        scopedCount: personalization.scoped_count,
+        sentToModel: personalization.sent_to_model,
+        retrievalQueryEnriched: personalization.retrieval_query_enriched,
+        commandCount: personalizedAnswer.commands.length,
+      },
     }));
   } catch (error) {
     process.stdout.write(JSON.stringify({ ok: false, configured: true, error: error.message }));

@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 DEFAULT_KNOWLEDGE_BASE_ID = "developer-it"
+LOCAL_USER_PROFILE_ID = "local-user"
 
 
 def utc_now() -> datetime:
@@ -140,6 +141,7 @@ FallbackReason = Literal[
     "rate_limit",
     "authentication",
     "invalid_json",
+    "ungrounded",
     "provider_error",
 ]
 
@@ -166,6 +168,15 @@ class ContextInfo(BaseModel):
     estimated_tokens: int = 0
 
 
+class PersonalizationInfo(BaseModel):
+    used: bool = False
+    memory_ids: list[str] = Field(default_factory=list)
+    global_count: int = 0
+    scoped_count: int = 0
+    sent_to_model: bool = False
+    retrieval_query_enriched: bool = False
+
+
 class Answer(BaseModel):
     mode: Literal["model", "local_fallback"]
     summary: str
@@ -174,6 +185,7 @@ class Answer(BaseModel):
     citations: list[Citation] = Field(default_factory=list)
     generation: GenerationInfo = Field(default_factory=GenerationInfo)
     context: ContextInfo = Field(default_factory=ContextInfo)
+    personalization: PersonalizationInfo = Field(default_factory=PersonalizationInfo)
     summary_segments: list[AnswerSegment] = Field(default_factory=list)
 
 
@@ -273,6 +285,96 @@ class ConversationMemory(BaseModel):
     last_error: str = ""
 
 
+MemoryScope = Literal["global", "knowledge_base"]
+MemoryCategory = Literal[
+    "response_style",
+    "expertise",
+    "platform",
+    "toolchain",
+    "project_constraint",
+]
+MemoryStatus = Literal["active", "superseded"]
+MemoryExtractionProvider = Literal["local", "deepseek", "manual"]
+
+
+class UserProfile(BaseModel):
+    id: str = LOCAL_USER_PROFILE_ID
+    personalization_enabled: bool = True
+    auto_memory_enabled: bool = True
+    revision: int = 0
+    extraction_epoch: int = 0
+    active_memory_count: int = 0
+    pending_task_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserProfileUpdateRequest(BaseModel):
+    personalization_enabled: bool | None = None
+    auto_memory_enabled: bool | None = None
+
+
+class UserMemory(BaseModel):
+    id: str
+    scope: MemoryScope
+    knowledge_base_id: str | None = None
+    category: MemoryCategory
+    key: str
+    value: str
+    display_text: str
+    confidence: float = Field(ge=0, le=1)
+    pinned: bool = False
+    status: MemoryStatus = "active"
+    supersedes_id: str | None = None
+    source_conversation_id: str | None = None
+    source_message_id: str | None = None
+    extraction_provider: MemoryExtractionProvider = "manual"
+    last_used_at: datetime | None = None
+    use_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserMemoryCreateRequest(BaseModel):
+    scope: MemoryScope
+    knowledge_base_id: str | None = None
+    category: MemoryCategory
+    key: str = Field(min_length=1, max_length=80)
+    value: str = Field(min_length=1, max_length=160)
+    display_text: str = Field(min_length=1, max_length=240)
+    pinned: bool = False
+
+
+class UserMemoryUpdateRequest(BaseModel):
+    value: str | None = Field(default=None, min_length=1, max_length=160)
+    display_text: str | None = Field(default=None, min_length=1, max_length=240)
+    pinned: bool | None = None
+
+
+class UserMemoryListResponse(BaseModel):
+    items: list[UserMemory]
+
+
+MemoryExtractionTaskStatus = Literal["pending", "extracting", "ready", "failed", "cancelled"]
+MemoryExtractionTaskOperation = Literal["ADD", "UPDATE", "SUPERSEDE", "NOOP"]
+
+
+class UserMemoryExtractionTaskStatusResponse(BaseModel):
+    """Public, source-text-free state for one automatic memory extraction task."""
+
+    id: str
+    status: MemoryExtractionTaskStatus
+    source_message_id: str
+    memory_ids: list[str] = Field(default_factory=list)
+    # Only genuinely new, still-active memories can safely be removed by the
+    # one-click undo affordance.  Replacements deliberately restore their
+    # predecessor through the memory manager instead.
+    undoable_memory_ids: list[str] = Field(default_factory=list)
+    operation: MemoryExtractionTaskOperation = "NOOP"
+    created_at: datetime
+    updated_at: datetime
+
+
 DocumentStatus = Literal["pending", "indexing", "ready", "failed"]
 
 
@@ -283,6 +385,7 @@ class KnowledgeBase(BaseModel):
     document_count: int = 0
     ready_document_count: int = 0
     chunk_count: int = 0
+    memory_count: int = 0
     created_at: datetime
     updated_at: datetime
 

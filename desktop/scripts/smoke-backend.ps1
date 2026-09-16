@@ -1,4 +1,6 @@
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 $desktopRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $projectRoot = Resolve-Path (Join-Path $desktopRoot "..")
@@ -52,9 +54,44 @@ try {
         throw "Packaged backend did not become ready."
     }
 
-    if ($health.version -ne "2.3.0") {
+    if ($health.version -ne "2.4.0") {
         throw "Unexpected backend version: $($health.version)"
     }
+
+    $profile = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/profile" -TimeoutSec 5
+    if ($null -eq $profile.personalization_enabled -or $null -eq $profile.auto_memory_enabled) {
+        throw "Packaged backend did not expose the v2.4 profile contract."
+    }
+
+    $memoryBody = @{
+        scope = "global"
+        knowledge_base_id = $null
+        category = "response_style"
+        key = "smoke.language"
+        value = "en"
+        display_text = "Answer in English"
+        pinned = $false
+    } | ConvertTo-Json -Compress
+    $memoryBytes = [System.Text.Encoding]::UTF8.GetBytes($memoryBody)
+    $memory = Invoke-RestMethod `
+        -UseBasicParsing `
+        -Uri "http://127.0.0.1:$port/profile/memories" `
+        -Method Post `
+        -ContentType "application/json; charset=utf-8" `
+        -Body $memoryBytes `
+        -TimeoutSec 5
+    if (-not $memory.id -or $memory.scope -ne "global" -or $memory.category -ne "response_style") {
+        throw "Packaged backend did not persist the v2.4 memory contract."
+    }
+    $memoryList = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/profile/memories?ids=$($memory.id)" -TimeoutSec 5
+    if ($memoryList.items.Count -ne 1 -or $memoryList.items[0].id -ne $memory.id) {
+        throw "Packaged backend did not read the persisted v2.4 memory."
+    }
+    Invoke-RestMethod `
+        -UseBasicParsing `
+        -Uri "http://127.0.0.1:$port/profile/memories/$($memory.id)" `
+        -Method Delete `
+        -TimeoutSec 5 | Out-Null
 
     $knowledge = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/knowledge/status" -TimeoutSec 5
     if (-not $knowledge.ready -or $knowledge.topic_count -ne 300) {
@@ -85,7 +122,18 @@ try {
         throw "Packaged backend did not return the expected offline SSE answer."
     }
 
-    @{ health = $health; knowledge = $knowledge; offline_answer = $true } | ConvertTo-Json -Compress -Depth 4
+    @{
+        health = $health
+        knowledge = @{
+            ready = $knowledge.ready
+            topic_count = $knowledge.topic_count
+            retrieval_mode = $knowledge.retrieval_mode
+            embedding_model = $knowledge.embedding_model
+        }
+        profile = $true
+        memory_crud = $true
+        offline_answer = $true
+    } | ConvertTo-Json -Compress -Depth 4
 } finally {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
 }

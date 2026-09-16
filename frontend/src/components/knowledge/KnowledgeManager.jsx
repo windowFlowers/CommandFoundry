@@ -323,6 +323,6 @@ export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack,
       returnFocusRef={deleteReturnFocusRef}
       closeDisabled={deleting}
       actions={<><button ref={deleting ? null : deleteCancelRef} className="secondary-button" type="button" onClick={closeDeleteModal} disabled={deleting}>取消</button><button className="danger-button" type="button" disabled={deleting} aria-busy={deleting} onClick={() => deleteTarget.type === "base" ? deleteBase(deleteTarget.item) : deleteDocument(deleteTarget.item)}>{deleting ? "正在删除…" : "确认删除"}</button></>}
-    ><p id="delete-confirm-description">将删除“{deleteTarget.item.name || deleteTarget.item.filename}”及其本地索引。此操作不能撤销。</p><span className="sr-only" role="status" aria-live="polite">{deleting ? "正在删除，请稍候。" : ""}</span></Modal>}
+    ><p id="delete-confirm-description">将删除“{deleteTarget.item.name || deleteTarget.item.filename}”及其本地索引。{deleteTarget.type === "base" && deleteTarget.item.memory_count > 0 ? `同时删除 ${deleteTarget.item.memory_count} 条知识库记忆。` : ""}此操作不能撤销。</p><span className="sr-only" role="status" aria-live="polite">{deleting ? "正在删除，请稍候。" : ""}</span></Modal>}
   </main>;
 }

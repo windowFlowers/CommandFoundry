@@ -22,9 +22,11 @@ import {
   Settings,
   Shell,
   Trash2,
+  UserRound,
   WifiOff,
 } from "lucide-react";
 import { contextBadgeLabel } from "../../lib/memory";
+import { personalizationBadgeLabel } from "../../lib/profile";
 
 const examples = [
   { id: "linux", label: "Linux / Shell", question: "在 Linux 中切换文件目录的指令是什么？", icon: Shell },
@@ -128,7 +130,13 @@ function ContextBadge({ answer, onOpen }) {
   return <button className="context-badge" type="button" onClick={() => onOpen(answer.context)} aria-label={`查看${label}`} data-ui="context-badge"><BrainCircuit size={13} />{label}</button>;
 }
 
-function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory }) {
+function PersonalizationBadge({ answer, onOpen }) {
+  const label = personalizationBadgeLabel(answer);
+  if (!label) return null;
+  return <button className="personalization-badge" type="button" onClick={() => onOpen(answer.personalization)} aria-label={`查看本次个性化，使用 ${answer.personalization.memory_ids.length} 条记忆`} data-ui="personalization-badge"><UserRound size={13} />{label}</button>;
+}
+
+function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOpenPersonalization }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const titleId = useId();
   const citations = answer.citations || [];
@@ -144,8 +152,11 @@ function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory }) {
         <span className="thread-index">{entryNumber}</span>
         <span className="assistant-mark"><Code2 size={17} /></span>
         <h2 className="speaker-name" id={titleId}>AegisCopilot</h2>
-        <ContextBadge answer={answer} onOpen={onOpenMemory} />
-        <GenerationBadge answer={answer} />
+        <div className="answer-signals">
+          <ContextBadge answer={answer} onOpen={onOpenMemory} />
+          <PersonalizationBadge answer={answer} onOpen={onOpenPersonalization} />
+          <GenerationBadge answer={answer} />
+        </div>
       </div>
       {segments.length > 0 ? (
         <p className="answer-summary answer-segments">{segments.map((segment, segmentIndex) => (
@@ -217,7 +228,7 @@ function EmptyState({ onExample }) {
   );
 }
 
-function Sidebar({ open, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onCollapse, collapseRef, onOpenKnowledge, knowledgeBaseCount, onOpenSettings, modelStatus }) {
+function Sidebar({ open, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onCollapse, collapseRef, onOpenKnowledge, knowledgeBaseCount, onOpenProfile, profile, onOpenSettings, modelStatus }) {
   return (
     <aside className={`sidebar ${open ? "" : "collapsed"}`} aria-hidden={!open} inert={open ? undefined : ""} data-ui="sidebar">
       <div className="sidebar-head">
@@ -240,13 +251,14 @@ function Sidebar({ open, conversations, activeId, onNewConversation, onSelectCon
       </nav>
       <div className="sidebar-status">
         <button type="button" onClick={onOpenKnowledge} data-ui="open-knowledge"><FolderCog size={17} /><span>知识库管理</span><small>{knowledgeBaseCount} 个知识库</small></button>
+        <button type="button" onClick={onOpenProfile} data-ui="open-profile"><UserRound size={17} /><span>我的记忆</span><small>{profile ? profile.personalization_enabled ? `${profile.active_memory_count || 0} 条` : "已关闭" : "读取中"}</small></button>
         <button type="button" onClick={onOpenSettings} data-ui="open-settings"><Settings size={17} /><span>模型设置</span><small>{modelStatus.configured ? "已配置" : "本地模式"}</small></button>
       </div>
     </aside>
   );
 }
 
-function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeBases, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
+function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeBases, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
   const selectedKnowledgeBase = knowledgeBases.find((item) => item.id === selectedKnowledgeBaseId);
   const deletedKnowledgeBase = activeConversation?.knowledge_base_deleted
     && activeConversation.knowledge_base_id === selectedKnowledgeBaseId;
@@ -278,7 +290,7 @@ function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation
             {messages.map((message, index) => message.role === "user" ? (
               <UserMessage key={message.id} message={message} entryNumber={String(index + 1).padStart(2, "0")} />
             ) : (
-              <AnswerCard key={message.id} answer={message.answer} entryNumber={String(index + 1).padStart(2, "0")} onPreviewDocument={onPreviewDocument} onOpenMemory={onOpenMemory} />
+              <AnswerCard key={message.id} answer={message.answer} entryNumber={String(index + 1).padStart(2, "0")} onPreviewDocument={onPreviewDocument} onOpenMemory={onOpenMemory} onOpenPersonalization={onOpenPersonalization} />
             ))}
             {busy && <div className="thinking" role="status"><LoaderCircle size={17} /><span>{statusText || "正在准备回答"}</span></div>}
             {error && <div className="error-banner" role="alert"><WifiOff size={17} /><span>{error}</span></div>}
@@ -315,7 +327,7 @@ function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation
   );
 }
 
-export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onOpenKnowledge, knowledgeBases, onOpenSettings, modelStatus, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
+export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onOpenKnowledge, knowledgeBases, onOpenProfile, profile, onOpenSettings, modelStatus, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
   const expandRef = useRef(null);
   const collapseRef = useRef(null);
 
@@ -342,6 +354,8 @@ export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations,
         collapseRef={collapseRef}
         onOpenKnowledge={onOpenKnowledge}
         knowledgeBaseCount={knowledgeBases.length}
+        onOpenProfile={onOpenProfile}
+        profile={profile}
         onOpenSettings={onOpenSettings}
         modelStatus={modelStatus}
       />
@@ -361,6 +375,7 @@ export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations,
         error={error}
         onPreviewDocument={onPreviewDocument}
         onOpenMemory={onOpenMemory}
+        onOpenPersonalization={onOpenPersonalization}
         onSubmit={onSubmit}
         query={query}
         onQueryChange={onQueryChange}

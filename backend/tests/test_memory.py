@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from app.answering import AnswerService
+from app.evidence import evidence_records
 from app.generation import DeepSeekGenerator
 from app.main import retriever
 from app.memory import (
@@ -18,7 +19,7 @@ from app.memory import (
     merge_contextual_hits,
     resolve_contextual_query,
 )
-from app.models import Answer, ChatMessage, CommandBlock, MemorySummary
+from app.models import Answer, AnswerSegment, ChatMessage, CommandBlock, MemorySummary
 from app.repository import ConversationRepository
 
 
@@ -56,7 +57,14 @@ class CountingGenerator(SummaryGenerator):
         self.answer_calls += 1
         from app.generation import ModelAnswerDraft
 
-        return ModelAnswerDraft(summary="已根据知识库整理。", commands=hits[0].topic.commands[:1])
+        summary = "已根据知识库整理。"
+        return ModelAnswerDraft(
+            summary=summary,
+            summary_segments=[
+                AnswerSegment(text=summary, citation_ids=[evidence_records(hits)[0]["citation_id"]])
+            ],
+            commands=hits[0].topic.commands[:1],
+        )
 
 
 def _answer(*labels: str, summary: str = "已找到可执行方案。") -> Answer:

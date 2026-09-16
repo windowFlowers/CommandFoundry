@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 
 from app import main as main_module
 from app.answering import AnswerService
+from app.documents import DocumentIndexService
 from app.evidence import citation_id
 from app.generation import ModelAnswerDraft
 from app.models import (
@@ -423,3 +424,101 @@ def test_uploaded_document_chat_returns_parent_context_with_precise_command_cita
         assert citation["index_revision"]
         assert citation["locator"]["heading_path"] == ["Kubernetes running pods"]
         assert client.delete(f"/knowledge-bases/{knowledge_base['id']}").status_code == 204
+
+
+def test_restart_requeues_interrupted_rebuild_while_preserving_active_index(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    database_path = tmp_path / "rebuild-recovery.sqlite3"
+    repository = ConversationRepository(database_path)
+    document = _create_document(repository, tmp_path)
+    _replace_index(
+        repository,
+        document_id=document.id,
+        content="old content remains available",
+        revision="revision-old",
+        parents=[_parent("parent-old", index=0)],
+        children=[_child("child-old", parent_id="parent-old", index=0)],
+    )
+
+    repository.request_document_rebuild(document.id)
+    repository.mark_document_rebuilding(document.id)
+    interrupted = repository.get_document(document.id)
+    assert interrupted is not None
+    assert interrupted.status == "ready"
+    assert interrupted.rebuild_status == "indexing"
+    assert [row["id"] for row in repository.list_chunks(interrupted.knowledge_base_id)] == ["child-old"]
+
+    restarted = ConversationRepository(database_path)
+    recovered = restarted.get_document(document.id)
+
+    assert recovered is not None
+    assert recovered.status == "ready"
+    assert recovered.rebuild_status == "pending"
+    assert recovered.rebuild_error == ""
+    assert restarted.list_pending_document_ids() == [document.id]
+    # The worker can safely re-index from this queue without making the old
+    # index unavailable in the meantime.
+    assert [row["id"] for row in restarted.list_chunks(recovered.knowledge_base_id)] == ["child-old"]
+
+    # DocumentIndexService reads that recovered pending state during startup.
+    # Keep its worker inert so the test can observe the enqueue itself rather
+    # than racing an actual extraction job.
+    monkeypatch.setattr(DocumentIndexService, "_worker_loop", lambda self: None)
+    service = DocumentIndexService(
+        repository=restarted,
+        indexes=object(),  # type: ignore[arg-type]
+        embeddings=object(),  # type: ignore[arg-type]
+        upload_dir=tmp_path / "uploads",
+    )
+    assert document.id in service._queued
+
+
+def test_uncitable_model_summary_uses_deterministic_grounded_fallback() -> None:
+    raw_hit = _upload_hit(
+        document_id="doc-uncitable",
+        parent_id="parent-uncitable",
+        chunk_id="chunk-uncitable",
+        score=0.9,
+    )
+    hit = raw_hit.model_copy(
+        update={
+            "matched_chunks": [
+                MatchedChunk(
+                    chunk_id="chunk-uncitable",
+                    parent_id="parent-uncitable",
+                    text="The exact, locally indexed evidence.",
+                    score=0.9,
+                    locator=SourceLocator.model_validate(_locator()),
+                )
+            ]
+        }
+    )
+    valid_citation_id = citation_id(hit.topic.source.source_id, "chunk-uncitable")
+
+    class Generator:
+        available = True
+        model = "deepseek-chat"
+
+        def generate(self, query: str, hits: list[RetrievalHit]) -> ModelAnswerDraft:
+            return ModelAnswerDraft(
+                summary="This model claim has no valid source binding.",
+                summary_segments=[
+                    AnswerSegment(
+                        text="This model claim has no valid source binding.",
+                        citation_ids=["cit-forged"],
+                    )
+                ],
+            )
+
+    answer, reason = AnswerService(Generator()).answer("explain", [hit])
+
+    assert reason == "ungrounded"
+    assert answer.mode == "local_fallback"
+    assert answer.generation.attempted is True
+    assert answer.generation.fallback_reason == "ungrounded"
+    assert answer.summary != "This model claim has no valid source binding."
+    assert answer.summary_segments == [
+        AnswerSegment(text=answer.summary, citation_ids=[valid_citation_id])
+    ]
