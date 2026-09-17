@@ -54,13 +54,13 @@ try {
         throw "Packaged backend did not become ready."
     }
 
-    if ($health.version -ne "2.4.0") {
+    if ($health.version -ne "2.5.0") {
         throw "Unexpected backend version: $($health.version)"
     }
 
     $profile = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/profile" -TimeoutSec 5
     if ($null -eq $profile.personalization_enabled -or $null -eq $profile.auto_memory_enabled) {
-        throw "Packaged backend did not expose the v2.4 profile contract."
+        throw "Packaged backend did not expose the v2.5 profile contract."
     }
 
     $memoryBody = @{
@@ -81,11 +81,11 @@ try {
         -Body $memoryBytes `
         -TimeoutSec 5
     if (-not $memory.id -or $memory.scope -ne "global" -or $memory.category -ne "response_style") {
-        throw "Packaged backend did not persist the v2.4 memory contract."
+        throw "Packaged backend did not persist the v2.5 memory contract."
     }
     $memoryList = Invoke-RestMethod -UseBasicParsing "http://127.0.0.1:$port/profile/memories?ids=$($memory.id)" -TimeoutSec 5
     if ($memoryList.items.Count -ne 1 -or $memoryList.items[0].id -ne $memory.id) {
-        throw "Packaged backend did not read the persisted v2.4 memory."
+        throw "Packaged backend did not read the persisted v2.5 memory."
     }
     Invoke-RestMethod `
         -UseBasicParsing `
@@ -120,6 +120,51 @@ try {
     if ($answer.Content -notmatch "git revert" -or $answer.Content -notmatch "event: done") {
         $answer.Content
         throw "Packaged backend did not return the expected offline SSE answer."
+    }
+
+    function Invoke-ChatAnswer([hashtable] $payload) {
+        $json = $payload | ConvertTo-Json -Compress
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+        $response = Invoke-WebRequest `
+            -UseBasicParsing `
+            -Uri "http://127.0.0.1:$port/chat/stream" `
+            -Method Post `
+            -ContentType "application/json; charset=utf-8" `
+            -Body $bytes `
+            -TimeoutSec 30
+        $frame = ($response.Content -split "`r?`n`r?`n" | Where-Object { $_ -match "event: answer" } | Select-Object -Last 1)
+        if (-not $frame) {
+            throw "Packaged planner did not return an answer event."
+        }
+        $line = ($frame -split "`r?`n" | Where-Object { $_ -like "data: *" } | Select-Object -Last 1)
+        return ($line.Substring(6) | ConvertFrom-Json)
+    }
+
+    # Exercise the packaged command planner end to end without executing any
+    # generated command.  The four requests intentionally mirror the desktop
+    # UI's one-slot-at-a-time clarification flow.
+    # Keep these planner payloads ASCII-only for Windows PowerShell 5.1 source
+    # compatibility; the same recipe is exercised by the UTF-8 backend tests
+    # with the Chinese UI wording.
+    $plannerStep = Invoke-ChatAnswer @{ query = "Python create and activate virtualenv" }
+    if ($plannerStep.answer.answer_kind -ne "clarification" -or $plannerStep.answer.clarification.slot -ne "target_path") {
+        throw "Packaged planner did not ask for the target path first."
+    }
+    $plannerConversation = $plannerStep.conversation_id
+    $plannerStep = Invoke-ChatAnswer @{ query = "C:\smoke\reports"; conversation_id = $plannerConversation }
+    if ($plannerStep.answer.clarification.slot -ne "shell") {
+        throw "Packaged planner did not ask for the shell second."
+    }
+    $plannerStep = Invoke-ChatAnswer @{ query = "PowerShell"; conversation_id = $plannerConversation }
+    if ($plannerStep.answer.clarification.slot -ne "environment_name") {
+        throw "Packaged planner did not ask for the environment name third."
+    }
+    $plannerStep = Invoke-ChatAnswer @{ query = ".venv"; conversation_id = $plannerConversation }
+    $plannedCode = [string]$plannerStep.answer.commands[0].code
+    if ($plannerStep.answer.answer_kind -ne "direct" -or $plannerStep.answer.commands.Count -ne 1 -or
+        $plannedCode -match "[<>]" -or $plannerStep.answer.commands[0].shell -ne "powershell" -or
+        $plannerStep.answer.commands[0].citation_ids.Count -lt 1) {
+        throw "Packaged planner did not render one cited PowerShell command without placeholders."
     }
 
     @{

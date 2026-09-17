@@ -26,6 +26,11 @@ class RiskLevel(str, Enum):
 class CommandBlock(BaseModel):
     label: str
     language: Literal["bash", "sql", "powershell", "text"] = "bash"
+    # ``language`` describes the syntax highlighter while ``shell`` describes
+    # the program that should receive the copied command.  They are deliberately
+    # separate: a command from a tldr page is often labelled bash even when the
+    # executable variant is PowerShell or cmd.exe.
+    shell: Literal["bash", "powershell", "cmd", "posix", "sql", "text"] | None = None
     code: str = Field(min_length=1)
     platforms: list[str] = Field(default_factory=list)
     prerequisites: list[str] = Field(default_factory=list)
@@ -177,8 +182,50 @@ class PersonalizationInfo(BaseModel):
     retrieval_query_enriched: bool = False
 
 
+AnswerKind = Literal["direct", "clarification", "template"]
+ClarificationInputType = Literal["text", "path", "number", "select"]
+
+
+class ClarificationOption(BaseModel):
+    label: str = Field(min_length=1, max_length=80)
+    value: str = Field(min_length=1, max_length=240)
+
+
+class ClarificationInfo(BaseModel):
+    """One safe, user-visible question in a command plan.
+
+    The backend intentionally exposes only the current slot.  The remaining
+    slots stay server-side so model output or a stale UI cannot skip required
+    values.
+    """
+
+    plan_id: str = Field(min_length=1)
+    slot: str = Field(min_length=1, max_length=80)
+    question: str = Field(min_length=1, max_length=600)
+    input_type: ClarificationInputType = "text"
+    options: list[ClarificationOption] = Field(default_factory=list, max_length=12)
+    attempt: int = Field(default=1, ge=1, le=10)
+    max_attempts: int = Field(default=1, ge=1, le=10)
+    total_slots: int = Field(default=1, ge=1, le=20)
+
+
+class CommandPlanInfo(BaseModel):
+    """Public, non-sensitive snapshot of the command planner state."""
+
+    plan_id: str = Field(min_length=1)
+    template_id: str = Field(min_length=1)
+    source_revision: str = ""
+    citation_ids: list[str] = Field(default_factory=list)
+    collected_slots: dict[str, str] = Field(default_factory=dict)
+    unresolved_slots: list[str] = Field(default_factory=list)
+
+
 class Answer(BaseModel):
     mode: Literal["model", "local_fallback"]
+    # Old answer_json rows do not contain this field.  ``template`` is the
+    # conservative default so loading a v2.4 row can never make an old command
+    # look like a fully rendered direct command.
+    answer_kind: AnswerKind = "template"
     summary: str
     commands: list[CommandBlock]
     notes: list[str] = Field(default_factory=list)
@@ -187,6 +234,8 @@ class Answer(BaseModel):
     context: ContextInfo = Field(default_factory=ContextInfo)
     personalization: PersonalizationInfo = Field(default_factory=PersonalizationInfo)
     summary_segments: list[AnswerSegment] = Field(default_factory=list)
+    clarification: ClarificationInfo | None = None
+    command_plan: CommandPlanInfo | None = None
 
 
 class ChatRequest(BaseModel):

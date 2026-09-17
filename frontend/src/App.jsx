@@ -13,7 +13,7 @@ import { appendStreamAnswer, memoryStateForAnswer, resetConversationMemory } fro
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.4.0";
+  const appVersion = window.aegisDesktop?.version || "2.5.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
@@ -242,7 +242,11 @@ export function App() {
           if (event === "answer") {
             setActiveId(data.conversation_id);
             setMessages((current) => appendStreamAnswer(current, data));
-            setAnswerAnnouncement(`AegisCopilot 回答已生成，共 ${data.answer?.commands?.length || 0} 条命令。`);
+            if (data.answer?.answer_kind === "clarification") {
+              setAnswerAnnouncement(`需要补充信息：${data.answer?.clarification?.question || "请回答澄清问题"}。`);
+            } else {
+              setAnswerAnnouncement(`AegisCopilot 回答已生成，共 ${Math.min(data.answer?.commands?.length || 0, 1)} 条命令。`);
+            }
             if (data.memory_update) notifyMemoryUpdate(data);
           }
           if (event === "done" || event === "memory") notifyMemoryUpdate(data);

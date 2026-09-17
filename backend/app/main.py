@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from .answering import AnswerService
+from .command_planner import CommandPlanner, contains_sensitive_input, redact_sensitive_input
 from .config import settings
 from .documents import MAX_UPLOAD_BYTES, DocumentIndexService
 from .extraction import ExtractionError
@@ -72,6 +73,7 @@ generator = DeepSeekGenerator(
     timeout_seconds=settings.llm_timeout_seconds,
 )
 answer_service = AnswerService(generator)
+command_planner = CommandPlanner(catalog=catalog, repository=repository)
 memory_service = ConversationMemoryService(repository=repository, generator=generator)
 personalization_service = PersonalizationService(
     repository=repository,
@@ -464,10 +466,20 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
 
     def generate_events():
         current = conversation or repository.create(knowledge_base_id=requested_base_id)
-        memory = memory_service.build_context(current, request.query)
+        # Read the pending plan before building contextual retrieval input.  The
+        # planner owns the next slot; conversational memory must not silently
+        # fill it or let an unrelated model answer replace it.
+        pending_plan = repository.get_pending_command_plan(
+            current.id,
+            knowledge_base_id=requested_base_id,
+        )
+        credential_reply = command_planner.pending_slot_is_sensitive(pending_plan)
+        sensitive_input = credential_reply or contains_sensitive_input(request.query)
+        safe_query = redact_sensitive_input(request.query, whole=credential_reply)
+        memory = memory_service.build_context(current, safe_query)
         personalization = personalization_service.build_context(
-            query=request.query,
-            retrieval_query=memory.info.retrieval_query or request.query,
+            query=safe_query,
+            retrieval_query=memory.info.retrieval_query or safe_query,
             knowledge_base_id=requested_base_id,
         )
         yield sse(
@@ -481,13 +493,17 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 "personalization_count": len(personalization.info.memory_ids),
             },
         )
-        user_message = repository.append_user(current.id, request.query)
+        # Keep credential values out of conversation history as well as the
+        # command-plan table.  The planner still receives the raw turn below
+        # only long enough to decide whether to reject it or render a safe
+        # command; no cloud call receives it.
+        user_message = repository.append_user(current.id, safe_query)
         try:
             yield sse("status", {"stage": "retrieving", "message": "正在检索本地知识库"})
             retrieval_query = personalization.retrieval_query
-            if retrieval_query != request.query.strip():
+            if retrieval_query != safe_query.strip():
                 candidate_k = max(settings.retrieval_top_k * 2, 8)
-                raw_hits = index_manager.retrieve(requested_base_id, request.query, top_k=candidate_k)
+                raw_hits = index_manager.retrieve(requested_base_id, safe_query, top_k=candidate_k)
                 contextual_hits = index_manager.retrieve(requested_base_id, retrieval_query, top_k=candidate_k)
                 hits = merge_contextual_hits(
                     raw_hits,
@@ -496,9 +512,14 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 )
             else:
                 hits = index_manager.retrieve(
-                    requested_base_id, request.query, top_k=settings.retrieval_top_k
+                    requested_base_id, safe_query, top_k=settings.retrieval_top_k
                 )
-            use_model = generator.available and bool(hits)
+            # Curated command plans are local-first.  Do not advertise or call
+            # DeepSeek for a pending/recognised recipe, and keep explicit
+            # template requests deterministic as well.
+            planner_recipe = command_planner._recipe_for(request.query, hits, pending_plan)
+            planner_owned = planner_recipe is not None or command_planner.is_template_request(request.query)
+            use_model = generator.available and bool(hits) and not planner_owned and not sensitive_input
             yield sse(
                 "status",
                 {
@@ -507,14 +528,51 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     "hit_count": len(hits),
                 },
             )
-            answer, _ = answer_service.answer(
+            planned_answer = command_planner.handle(
                 request.query,
                 hits,
+                conversation_id=current.id,
+                knowledge_base_id=requested_base_id,
                 context=memory.info,
-                memory_context=memory.prompt_payload,
                 personalization=personalization.info,
-                personalization_context=personalization.prompt_payload,
             )
+            if planned_answer is not None:
+                answer = planned_answer
+            elif command_planner.is_template_request(request.query):
+                # An explicit request for a template is always deterministic;
+                # it must not spend a cloud call merely to repeat source text.
+                answer = answer_service.local_fallback(
+                    hits,
+                    reason="no_api_key",
+                    context=memory.info,
+                    personalization=personalization.info,
+                    query=safe_query,
+                    personalization_context=personalization.prompt_payload,
+                    single_template=True,
+                )
+            elif planner_owned or sensitive_input:
+                # A recognised plan can intentionally return ``None`` for a
+                # cancellation or a stale/unsafe slot.  Keep that path local;
+                # the cloud model must never receive a credential-bearing turn
+                # or replace the planner's deterministic fallback.
+                answer = answer_service.local_fallback(
+                    hits,
+                    reason="no_api_key",
+                    context=memory.info,
+                    personalization=personalization.info,
+                    query=safe_query,
+                    personalization_context=personalization.prompt_payload,
+                    single_template=bool(planner_owned or sensitive_input),
+                )
+            else:
+                answer, _ = answer_service.answer(
+                    safe_query,
+                    hits,
+                    context=memory.info,
+                    memory_context=memory.prompt_payload,
+                    personalization=personalization.info,
+                    personalization_context=personalization.prompt_payload,
+                )
             assistant_message = repository.append_answer(current.id, answer)
             if answer.personalization.memory_ids:
                 repository.mark_user_memories_used(answer.personalization.memory_ids)
@@ -523,7 +581,7 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     conversation_id=current.id,
                     source_message_id=user_message.id,
                     knowledge_base_id=requested_base_id,
-                    text=request.query,
+                    text=safe_query,
                 )
             except Exception:
                 # Automatic extraction is a non-blocking side channel. It must

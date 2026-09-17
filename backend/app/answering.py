@@ -19,6 +19,7 @@ from .models import (
     RetrievalHit,
 )
 from .risk import review_commands
+from .recipes import has_unresolved_placeholders
 
 
 def _normalize_command_code(value: str) -> str:
@@ -245,6 +246,7 @@ class AnswerService:
         personalization: PersonalizationInfo | None = None,
         query: str = "",
         personalization_context: str = "",
+        single_template: bool = False,
     ) -> Answer:
         language, detail, expertise = _fallback_presentation(query, personalization_context)
         generation = GenerationInfo(
@@ -277,7 +279,18 @@ class AnswerService:
                 personalization=personalization or PersonalizationInfo(),
             )
         primary = hits[0].topic
-        commands = review_commands(primary.commands[:4])
+        candidate_commands = primary.commands[:4]
+        # A generic template answer should remain useful but unambiguous.  If
+        # the selected evidence contains parameters, expose one representative
+        # source command instead of four mutually incompatible variants.  The
+        # command planner takes over when a curated recipe can fill it.
+        if single_template and candidate_commands:
+            candidate_commands = [candidate_commands[0]]
+        elif any(has_unresolved_placeholders(item.code) for item in candidate_commands):
+            candidate_commands = [
+                next(item for item in candidate_commands if has_unresolved_placeholders(item.code))
+            ]
+        commands = review_commands(candidate_commands)
         if language == "en":
             if commands:
                 summary = (

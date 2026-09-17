@@ -30,7 +30,7 @@ class ModelAnswerDraft(BaseModel):
         language_aliases = {
             "sh": "bash", "shell": "bash", "zsh": "bash", "console": "bash",
             "mysql": "sql", "postgresql": "sql", "postgres": "sql",
-            "ps1": "powershell", "pwsh": "powershell", "cmd": "powershell",
+            "ps1": "powershell", "pwsh": "powershell", "cmd": "text",
         }
         for item in value:
             if isinstance(item, BaseModel):
@@ -49,6 +49,17 @@ class ModelAnswerDraft(BaseModel):
                     command[field] = [command[field]]
             if command.get("risk") not in {"low", "medium", "high"}:
                 command["risk"] = "low"
+            shell = str(command.get("shell") or "").strip().lower()
+            if shell in {"pwsh", "ps1", "powershell"}:
+                command["shell"] = "powershell"
+            elif shell in {"cmd", "cmd.exe"}:
+                command["shell"] = "cmd"
+            elif shell in {"bash", "sh", "zsh"}:
+                command["shell"] = "bash"
+            elif shell == "posix":
+                command["shell"] = "posix"
+            elif command["language"] == "powershell":
+                command["shell"] = "powershell"
             command["label"] = str(command.get("label") or "可复制命令")
             command["warning"] = command.get("warning") or None
             normalized.append(command)

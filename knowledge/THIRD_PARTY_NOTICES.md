@@ -19,3 +19,4 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 ## Official documentation references
 
 Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
+The Python virtual-environment recipes link to the Python `venv` documentation for the platform-specific activation variants. The documentation itself is not redistributed.

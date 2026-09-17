@@ -35,7 +35,7 @@ def test_v24_migration_creates_independent_backup_and_secure_schema(tmp_path: Pa
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
         assert connection.execute("SELECT value FROM sentinel").fetchone()[0] == "v2.3-data"
     with repository._connect() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == DATABASE_SCHEMA_VERSION == 4
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == DATABASE_SCHEMA_VERSION == 5
         assert connection.execute("PRAGMA secure_delete").fetchone()[0] == 1
         tables = {
             row[0]

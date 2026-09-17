@@ -209,6 +209,304 @@ REDIS_TOPICS = [
 ]
 
 
+# Derived, executable command recipes.  The regular tldr-derived topic data
+# remains untouched: recipes are an explicit allow-list of variants which the
+# command planner may render after every required slot has been confirmed.
+# ``templates`` use ``{{slot_name}}`` markers and are never copied to a user
+# as direct output while a marker remains unresolved.
+RECIPE_DEFINITIONS: list[dict[str, object]] = [
+    {
+        "recipe_id": "python.virtualenv.create_activate",
+        "topic_id": "python.virtualenv",
+        "title": "创建并激活 Python 虚拟环境",
+        "description": "在目标目录下创建虚拟环境并在同一 Shell 中激活。",
+        "required_slots": [
+            {
+                "name": "target_path",
+                "label": "目标目录",
+                "type": "path",
+                "question": "虚拟环境要创建在哪个目标目录？",
+                "validation": "non_empty_path",
+            },
+        ],
+        "optional_slots": [
+            {
+                "name": "environment_name",
+                "label": "虚拟环境目录名",
+                "type": "identifier",
+                "question": "虚拟环境目录名用什么？",
+                "prompt_if_absent": True,
+                "options": [{"label": ".venv（推荐）", "value": ".venv"}],
+                "validation": "safe_directory_name",
+            },
+            {
+                "name": "shell",
+                "label": "Shell",
+                "type": "choice",
+                "question": "你准备在哪个 Shell 中运行？",
+                "prompt_if_absent": True,
+                "options": [
+                    {"label": "PowerShell", "value": "powershell"},
+                    {"label": "CMD", "value": "cmd"},
+                    {"label": "POSIX Shell", "value": "posix"},
+                ],
+                "validation": "shell",
+            },
+        ],
+        "derived_slots": [
+            {
+                "name": "environment_path",
+                "type": "path",
+                "expression": "join_path(target_path, environment_name)",
+            },
+        ],
+        "platforms": ["Windows", "macOS", "Linux"],
+        "shells": ["powershell", "cmd", "posix"],
+        "steps": [
+            {
+                "id": "create",
+                "label": "创建虚拟环境",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "python -m venv '{{environment_path}}'",
+                    "cmd": "python -m venv \"{{environment_path}}\"",
+                    "posix": "python3 -m venv '{{environment_path}}'",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            },
+            {
+                "id": "activate",
+                "label": "激活虚拟环境",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "& '{{environment_path}}\\Scripts\\Activate.ps1'",
+                    "cmd": "call \"{{environment_path}}\\Scripts\\activate.bat\"",
+                    "posix": "source '{{environment_path}}/bin/activate'",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            },
+        ],
+    },
+    {
+        "recipe_id": "git.git-revert.specific_commit",
+        "topic_id": "git.git-revert",
+        "title": "安全撤销指定 Git 提交",
+        "description": "创建一个反向提交来安全撤销指定提交，不改写已有历史。",
+        "required_slots": [
+            {
+                "name": "commit",
+                "label": "提交哈希",
+                "type": "identifier",
+                "question": "要撤销哪个提交？请提供提交哈希。",
+                "validation": "git_object",
+            },
+        ],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["Windows", "macOS", "Linux"],
+        "shells": ["powershell", "cmd", "posix"],
+        "steps": [
+            {
+                "id": "revert",
+                "label": "撤销指定提交",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "git revert {{commit}}",
+                    "cmd": "git revert {{commit}}",
+                    "posix": "git revert {{commit}}",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "git.git-revert.latest",
+        "topic_id": "git.git-revert",
+        "title": "安全撤销最近一次 Git 提交",
+        "description": "撤销 HEAD 指向的最近一次提交。",
+        "required_slots": [],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["Windows", "macOS", "Linux"],
+        "shells": ["powershell", "cmd", "posix"],
+        "steps": [
+            {
+                "id": "revert",
+                "label": "撤销最近一次提交",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "git revert HEAD",
+                    "cmd": "git revert HEAD",
+                    "posix": "git revert HEAD",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "docker.docker-run.image",
+        "topic_id": "docker.docker-run",
+        "title": "运行 Docker 镜像",
+        "description": "以前台方式启动指定镜像，便于快速验证镜像是否可用。",
+        "required_slots": [
+            {
+                "name": "image",
+                "label": "镜像名",
+                "type": "identifier",
+                "question": "要运行哪个 Docker 镜像？",
+                "validation": "docker_image",
+            }
+        ],
+        "optional_slots": [
+            {
+                "name": "container_name",
+                "label": "容器名",
+                "type": "identifier",
+                "question": "容器名是什么？",
+                # Docker assigns a safe random name when this optional value
+                # is omitted.  We still capture an explicitly supplied
+                # ``--name``/“容器名” fact, but do not block a runnable
+                # command on a cosmetic label.
+                "prompt_if_absent": False,
+                "validation": "docker_name",
+            }
+        ],
+        "derived_slots": [],
+        "platforms": ["Windows", "macOS", "Linux"],
+        "shells": ["powershell", "cmd", "posix"],
+        "steps": [
+            {
+                "id": "run",
+                "label": "启动容器",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "docker run --name '{{container_name}}' {{image}}",
+                    "cmd": "docker run --name \"{{container_name}}\" {{image}}",
+                    "posix": "docker run --name '{{container_name}}' {{image}}",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "windows.netstat.port",
+        "topic_id": "windows.netstat",
+        "title": "查看 Windows 指定端口占用",
+        "description": "查询指定 TCP 端口的连接状态和所属进程。",
+        "required_slots": [
+            {
+                "name": "port",
+                "label": "端口号",
+                "type": "port",
+                "question": "要查看哪个端口？",
+                "validation": "tcp_port",
+            }
+        ],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["Windows 10/11", "Windows Server"],
+        "shells": ["powershell"],
+        "steps": [
+            {
+                "id": "query",
+                "label": "查询端口占用进程",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "Get-NetTCPConnection -LocalPort {{port}} | Select-Object LocalAddress, LocalPort, State, OwningProcess",
+                },
+                "languages": {"powershell": "powershell"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "windows.new-item.file",
+        "topic_id": "windows.new-item",
+        "title": "创建 Windows 文件",
+        "description": "在指定路径创建一个空文件；父目录必须已经存在。",
+        "required_slots": [
+            {
+                "name": "path",
+                "label": "文件路径",
+                "type": "path",
+                "question": "要创建的文件完整路径是什么？",
+                "validation": "windows_path",
+            }
+        ],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["Windows PowerShell"],
+        "shells": ["powershell"],
+        "steps": [
+            {
+                "id": "create",
+                "label": "创建文件",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "New-Item -ItemType File -Path {{path}}",
+                },
+                "languages": {"powershell": "powershell"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "sql.mysql-connect.client",
+        "topic_id": "sql.mysql-connect",
+        "title": "连接 MySQL 数据库",
+        "description": "使用 mysql 客户端连接指定主机、账号和数据库；密码由客户端安全提示输入。",
+        "required_slots": [
+            {"name": "host", "label": "数据库主机", "type": "identifier", "question": "MySQL 主机名或 IP 是什么？", "validation": "hostname"},
+            {"name": "user", "label": "数据库用户", "type": "identifier", "question": "使用哪个 MySQL 用户？", "validation": "db_identifier"},
+            {"name": "database", "label": "数据库名", "type": "identifier", "question": "要连接哪个数据库？", "validation": "db_identifier"},
+        ],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["MySQL 8.x"],
+        "shells": ["powershell", "cmd", "posix"],
+        "steps": [
+            {
+                "id": "connect",
+                "label": "连接数据库",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "mysql --host={{host}} --user={{user}} --password {{database}}",
+                    "cmd": "mysql --host={{host}} --user={{user}} --password {{database}}",
+                    "posix": "mysql --host={{host}} --user={{user}} --password {{database}}",
+                },
+                "languages": {"powershell": "powershell", "cmd": "text", "posix": "bash"},
+            }
+        ],
+    },
+    {
+        "recipe_id": "redis.string-set.cli",
+        "topic_id": "redis.string-set",
+        "title": "写入 Redis 字符串",
+        "description": "在已连接的 redis-cli 中写入键值并设置过期秒数。",
+        "required_slots": [
+            {"name": "key", "label": "Redis 键", "type": "identifier", "question": "要写入哪个 Redis 键？", "validation": "redis_key"},
+            {"name": "value", "label": "字符串值", "type": "value", "question": "要写入的字符串值是什么？", "validation": "non_empty_value"},
+            {"name": "seconds", "label": "过期秒数", "type": "value", "question": "过期时间是多少秒？", "validation": "positive_integer"},
+        ],
+        "optional_slots": [],
+        "derived_slots": [],
+        "platforms": ["redis-cli"],
+        "shells": ["posix", "powershell", "cmd"],
+        "steps": [
+            {
+                "id": "set",
+                "label": "写入字符串",
+                "merge": "newline",
+                "templates": {
+                    "powershell": "SET {{key}} '{{value}}' EX {{seconds}}",
+                    "cmd": "SET {{key}} \"{{value}}\" EX {{seconds}}",
+                    "posix": "SET {{key}} '{{value}}' EX {{seconds}}",
+                },
+                "languages": {"powershell": "text", "cmd": "text", "posix": "bash"},
+            }
+        ],
+    },
+]
+
+
 MEMORY_EVAL_TOPIC_IDS = [
     "linux.cd",
     "git.git-revert",
@@ -651,6 +949,73 @@ def build_redis_topics() -> list[dict[str, object]]:
     return topics
 
 
+RECIPE_OFFICIAL_PROVENANCE: dict[str, list[dict[str, object]]] = {
+    "python.virtualenv.create_activate": [
+        {
+            "source_id": "python.venv.official",
+            "title": "Python venv 官方文档",
+            "source_url": "https://docs.python.org/3/library/venv.html",
+            "license": "Python Software Foundation License",
+            "revision": "python-3.x",
+            "path": "library/venv",
+            "kind": "official_reference",
+            "role": "variant_reference",
+        }
+    ],
+}
+
+
+def build_recipe_catalog(topics: list[dict[str, object]]) -> tuple[list[dict[str, object]], str]:
+    """Attach topic provenance to the derived executable recipe allow-list.
+
+    The topic source is always retained as the recipe's first provenance
+    record.  Official references are additive and describe why a platform or
+    shell variant is valid; they never replace the citation for the original
+    command example.  Hashes are over the deterministic recipe/provenance
+    payload because project-authored variants are generated metadata rather
+    than vendored source files.
+    """
+
+    source_by_topic = {str(topic["id"]): dict(topic["source"]) for topic in topics}
+    recipes: list[dict[str, object]] = []
+    for definition in RECIPE_DEFINITIONS:
+        payload = json.loads(json.dumps(definition, ensure_ascii=False))
+        topic_id = str(payload["topic_id"])
+        topic_source = source_by_topic.get(topic_id)
+        if topic_source is None:
+            raise RuntimeError(f"Recipe references missing topic: {topic_id}")
+        basis = {
+            "source_id": topic_source.get("source_id", topic_id),
+            "title": topic_source.get("title", topic_id),
+            "source_url": topic_source.get("source_url"),
+            "license": topic_source.get("license", ""),
+            "revision": topic_source.get("revision", ""),
+            "path": topic_source.get("path", ""),
+            "sha256": topic_source.get("sha256", ""),
+            "kind": topic_source.get("kind", "vendored"),
+            "role": "topic_basis",
+        }
+        provenance = [basis, *RECIPE_OFFICIAL_PROVENANCE.get(str(payload["recipe_id"]), [])]
+        for record in provenance:
+            if not record.get("sha256"):
+                canonical_record = json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                record["sha256"] = hashlib.sha256(canonical_record.encode("utf-8")).hexdigest()
+        payload["provenance"] = provenance
+        recipe_without_revision = dict(payload)
+        recipe_without_revision.pop("source_revision", None)
+        canonical_recipe = json.dumps(
+            recipe_without_revision,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        payload["source_revision"] = hashlib.sha256(canonical_recipe.encode("utf-8")).hexdigest()
+        recipes.append(payload)
+    recipes.sort(key=lambda entry: str(entry["recipe_id"]))
+    canonical_bundle = json.dumps(recipes, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return recipes, hashlib.sha256(canonical_bundle.encode("utf-8")).hexdigest()
+
+
 def ensure_source(source_root: Path) -> Path:
     if not (source_root / ".git").exists():
         source_root.parent.mkdir(parents=True, exist_ok=True)
@@ -663,19 +1028,47 @@ def ensure_source(source_root: Path) -> Path:
 def write_outputs(topics: list[dict[str, object]]) -> None:
     KNOWLEDGE_DIR.mkdir(parents=True, exist_ok=True)
     topics.sort(key=lambda entry: str(entry["id"]))
+    recipes, recipe_revision = build_recipe_catalog(topics)
     (KNOWLEDGE_DIR / "topics.json").write_text(
         json.dumps(topics, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    (KNOWLEDGE_DIR / "recipes.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "generated_for": "AegisCopilot 2.5.0",
+                "recipe_count": len(recipes),
+                "recipe_revision": recipe_revision,
+                "recipes": recipes,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     domains = sorted({str(topic["domain"]) for topic in topics})
     manifest = {
-        "schema_version": 2,
+        "schema_version": 3,
         "topic_count": len(topics),
+        "recipe_count": len(recipes),
+        "recipe_schema_version": 1,
+        "recipe_revision": recipe_revision,
         "domains": {
             domain: sum(1 for topic in topics if topic["domain"] == domain)
             for domain in domains
         },
         "sources": [topic["source"] for topic in topics],
+        "recipes": [
+            {
+                "recipe_id": recipe["recipe_id"],
+                "topic_id": recipe["topic_id"],
+                "source_revision": recipe["source_revision"],
+                "provenance": recipe["provenance"],
+            }
+            for recipe in recipes
+        ],
     }
     (KNOWLEDGE_DIR / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
@@ -683,7 +1076,9 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
     )
     source_lock = {
         "schema_version": 1,
-        "generated_for": "AegisCopilot 2.2.0",
+        "generated_for": "AegisCopilot 2.5.0",
+        "recipe_schema_version": 1,
+        "recipe_revision": recipe_revision,
         "repositories": [
             {"repository": TLDR_REPOSITORY, "revision": TLDR_REVISION, "license": TLDR_LICENSE}
         ],
@@ -698,6 +1093,15 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
                 "sha256": topic["source"]["sha256"],
             }
             for topic in topics
+        ],
+        "recipes": [
+            {
+                "recipe_id": recipe["recipe_id"],
+                "topic_id": recipe["topic_id"],
+                "source_revision": recipe["source_revision"],
+                "provenance": recipe["provenance"],
+            }
+            for recipe in recipes
         ],
     }
     (KNOWLEDGE_DIR / "sources.lock.json").write_text(
@@ -742,6 +1146,7 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 ## Official documentation references
 
 Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
+The Python virtual-environment recipes link to the Python `venv` documentation for the platform-specific activation variants. The documentation itself is not redistributed.
 """
     (KNOWLEDGE_DIR / "THIRD_PARTY_NOTICES.md").write_text(notices, encoding="utf-8")
 

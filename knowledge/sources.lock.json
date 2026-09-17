@@ -1,6 +1,8 @@
 {
   "schema_version": 1,
-  "generated_for": "AegisCopilot 2.2.0",
+  "generated_for": "AegisCopilot 2.5.0",
+  "recipe_schema_version": 1,
+  "recipe_revision": "3af841c515e2df6c009868a0ce298485d45439583fd4e8aada4ab69fe417c19d",
   "repositories": [
     {
       "repository": "https://github.com/tldr-pages/tldr.git",
@@ -2708,6 +2710,163 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/winget.md",
       "license": "CC BY 4.0",
       "sha256": "57693bd044a0da8111c62b9c0067a11fd790b9e67a9f85eabd4325e6b070ea0c"
+    }
+  ],
+  "recipes": [
+    {
+      "recipe_id": "docker.docker-run.image",
+      "topic_id": "docker.docker-run",
+      "source_revision": "2050c056fb96243f63dba13589cf2e0bb0d2d30f2016f41cf68d2c3f7af00a4c",
+      "provenance": [
+        {
+          "source_id": "docker.docker-run",
+          "title": "tldr: docker-run",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-run.md",
+          "license": "CC BY 4.0",
+          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+          "path": "pages/common/docker-run.md",
+          "sha256": "9c16e341a6e79389d9258e3814751929fc6e9bca4177c46beb6b859201f4b793",
+          "kind": "vendored",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "git.git-revert.latest",
+      "topic_id": "git.git-revert",
+      "source_revision": "93351d90c4ff784c03bb98e0c7890c569f2822576c4a25855490867faaa4a1fc",
+      "provenance": [
+        {
+          "source_id": "git.git-revert",
+          "title": "tldr: git-revert",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-revert.md",
+          "license": "CC BY 4.0",
+          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+          "path": "pages/common/git-revert.md",
+          "sha256": "04fecb748b9fcf731225fc90e6ad527f9368c5e26192dc2988ed2e4401f221ac",
+          "kind": "vendored",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "git.git-revert.specific_commit",
+      "topic_id": "git.git-revert",
+      "source_revision": "59c449756af562dbac2c39ad849bd9e248997f0cf54710f3198fdccbfc8bf737",
+      "provenance": [
+        {
+          "source_id": "git.git-revert",
+          "title": "tldr: git-revert",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-revert.md",
+          "license": "CC BY 4.0",
+          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+          "path": "pages/common/git-revert.md",
+          "sha256": "04fecb748b9fcf731225fc90e6ad527f9368c5e26192dc2988ed2e4401f221ac",
+          "kind": "vendored",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "python.virtualenv.create_activate",
+      "topic_id": "python.virtualenv",
+      "source_revision": "eb32abda4e95f2ee5d0df7abace755e56347c3bf0d2c2dc2e606bf190a606a4d",
+      "provenance": [
+        {
+          "source_id": "python.virtualenv",
+          "title": "tldr: virtualenv",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/virtualenv.md",
+          "license": "CC BY 4.0",
+          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+          "path": "pages/common/virtualenv.md",
+          "sha256": "6b37a231f21147655890b9b3dbc3329eb5f0026f96846d6ed7c26be17d76037f",
+          "kind": "vendored",
+          "role": "topic_basis"
+        },
+        {
+          "source_id": "python.venv.official",
+          "title": "Python venv 官方文档",
+          "source_url": "https://docs.python.org/3/library/venv.html",
+          "license": "Python Software Foundation License",
+          "revision": "python-3.x",
+          "path": "library/venv",
+          "kind": "official_reference",
+          "role": "variant_reference",
+          "sha256": "bb004f79f8329434ed0ddc9b93cb69ede53bca403e231c07e387532e9dba1b88"
+        }
+      ]
+    },
+    {
+      "recipe_id": "redis.string-set.cli",
+      "topic_id": "redis.string-set",
+      "source_revision": "c8c2c5db22b80cacc2a7789219034d9d901ccd239b02f3c01e8837c81d3cf33f",
+      "provenance": [
+        {
+          "source_id": "redis.string-set",
+          "title": "AegisCopilot Redis 种子知识",
+          "source_url": "https://redis.io/docs/latest/commands/set/",
+          "license": "MIT (project-authored)",
+          "revision": "v2.1.0",
+          "path": "generated/redis",
+          "sha256": "841dbf99bda8cba0cd17cebf728be8c977cdfb870c5cd4e2653092e3103978b0",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "sql.mysql-connect.client",
+      "topic_id": "sql.mysql-connect",
+      "source_revision": "94080eef0c5e8ddb2c0289e0c59aeab76a53ee2fbfedea3dbde9046f6fd1dc00",
+      "provenance": [
+        {
+          "source_id": "sql.mysql-connect",
+          "title": "AegisCopilot MySQL 8.x 种子知识",
+          "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
+          "license": "MIT (project-authored)",
+          "revision": "v2.2.0",
+          "path": "generated/mysql",
+          "sha256": "2a3ed26a27b7746f715c6d6626edae5c61265da11096b37d3f86ea02c0d76d44",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.netstat.port",
+      "topic_id": "windows.netstat",
+      "source_revision": "b3d70a8e54869db494da146383ebe7a6ad5db49df9724ee9cfe0a112afde90b3",
+      "provenance": [
+        {
+          "source_id": "windows.netstat",
+          "title": "AegisCopilot Windows 端口种子知识",
+          "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
+          "license": "MIT (project-authored)",
+          "revision": "v2.2.0",
+          "path": "generated/windows-port-usage",
+          "sha256": "efd093f262e27204736099bfa1516b3c782cec30a1c208bf2f608feaa2c86021",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.new-item.file",
+      "topic_id": "windows.new-item",
+      "source_revision": "1e70f8a176b857d95bb0ce889a78e00a0a756b806495f58914d829ddb8cd0198",
+      "provenance": [
+        {
+          "source_id": "windows.new-item",
+          "title": "tldr: new-item",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/new-item.md",
+          "license": "CC BY 4.0",
+          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+          "path": "pages/windows/new-item.md",
+          "sha256": "cf940fb722f88c15a441cf628ee0495f8372b03e8f6e4d80bfc00d4eb078e0f7",
+          "kind": "vendored",
+          "role": "topic_basis"
+        }
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "AegisCopilot 60 组跨对话个性化评测：每组验证提取、持久化、新会话使用、作用域、显式覆盖或安全拒绝，并在末尾验证物理清空",
   "cases": [
     {"id":"style-01","message":"以后请用中文回答。","expect":"extract","scope":"global","category":"response_style","key":"language","value":"zh-CN"},

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from threading import RLock
 from uuid import uuid4
@@ -28,7 +28,7 @@ from .models import (
 
 
 BUILTIN_KNOWLEDGE_BASE_NAME = "开发者 IT 知识库"
-DATABASE_SCHEMA_VERSION = 4
+DATABASE_SCHEMA_VERSION = 5
 DOCUMENT_INDEX_SCHEMA_VERSION = 2
 GLOBAL_MEMORY_CATEGORIES = {"response_style", "expertise"}
 SCOPED_MEMORY_CATEGORIES = {"platform", "toolchain", "project_constraint"}
@@ -62,6 +62,8 @@ class ConversationRepository:
                 labels.append("v2.3")
             if version < 4:
                 labels.append("v2.4")
+            if version < 5:
+                labels.append("v2.5")
             for label in labels:
                 backup_path = self.database_path.with_name(
                     f"{self.database_path.name}.pre-{label}.backup"
@@ -160,6 +162,23 @@ class ConversationRepository:
                     pending_input_json TEXT NOT NULL DEFAULT '',
                     last_error TEXT NOT NULL DEFAULT '',
                     updated_at TEXT
+                );
+                CREATE TABLE IF NOT EXISTS conversation_command_plans (
+                    id TEXT PRIMARY KEY,
+                    conversation_id TEXT NOT NULL UNIQUE REFERENCES conversations(id) ON DELETE CASCADE,
+                    knowledge_base_id TEXT NOT NULL REFERENCES knowledge_bases(id) ON DELETE CASCADE,
+                    template_id TEXT NOT NULL,
+                    source_revision TEXT NOT NULL DEFAULT '',
+                    citation_ids_json TEXT NOT NULL DEFAULT '[]',
+                    slots_json TEXT NOT NULL DEFAULT '{}',
+                    values_json TEXT NOT NULL DEFAULT '{}',
+                    next_slot TEXT,
+                    status TEXT NOT NULL DEFAULT 'pending'
+                        CHECK(status IN ('pending', 'completed', 'cancelled', 'expired')),
+                    state_version INTEGER NOT NULL DEFAULT 1,
+                    expires_at TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
                 );
                 CREATE TABLE IF NOT EXISTS user_profiles (
                     id TEXT PRIMARY KEY,
@@ -276,6 +295,8 @@ class ConversationRepository:
                 );
                 CREATE INDEX IF NOT EXISTS idx_messages_conversation
                     ON messages(conversation_id, created_at);
+                CREATE INDEX IF NOT EXISTS idx_command_plans_status
+                    ON conversation_command_plans(status, expires_at, updated_at);
                 CREATE INDEX IF NOT EXISTS idx_documents_knowledge_base
                     ON knowledge_documents(knowledge_base_id, updated_at);
                 CREATE INDEX IF NOT EXISTS idx_chunks_knowledge_base
@@ -333,6 +354,11 @@ class ConversationRepository:
             for name, definition in chunk_additions.items():
                 if name not in chunk_columns:
                     connection.execute(f"ALTER TABLE knowledge_chunks ADD COLUMN {name} {definition}")
+            plan_columns = self._columns(connection, "conversation_command_plans")
+            if "citation_ids_json" not in plan_columns:
+                connection.execute(
+                    "ALTER TABLE conversation_command_plans ADD COLUMN citation_ids_json TEXT NOT NULL DEFAULT '[]'"
+                )
             connection.execute(
                 "UPDATE conversations SET knowledge_base_id = ? WHERE knowledge_base_id IS NULL OR knowledge_base_id = ''",
                 (DEFAULT_KNOWLEDGE_BASE_ID,),
@@ -505,6 +531,271 @@ class ConversationRepository:
                 (message.created_at.isoformat(), conversation_id),
             )
         return message
+
+    # ------------------------------------------------------------------
+    # Command-plan persistence
+    # ------------------------------------------------------------------
+    # Plans are deliberately stored separately from assistant answer_json.
+    # This makes a browser refresh/resume deterministic while keeping the
+    # current question and its answer history immutable.  Only non-sensitive
+    # values should reach this table; the defensive key filter below also
+    # protects callers that use the repository directly.
+    _SENSITIVE_PLAN_KEY = re.compile(
+        r"(?:password|passwd|token|secret|api[_ -]?key|private[_ -]?key|credential|auth|authorization|"
+        r"令牌|密钥|私钥|口令|密码|凭证)",
+        re.IGNORECASE,
+    )
+    _SENSITIVE_PLAN_VALUE = (
+        re.compile(
+            r"(?i)(?:password|passwd|token|api[_ -]?key|secret|private[_ -]?key|credential|"
+            r"authorization|令牌|密钥|私钥|口令|密码|凭证)\s*(?:[:：=]|是|为|叫)\s*\S+"
+        ),
+        re.compile(r"(?i)(?:bearer|basic)\s+[A-Za-z0-9._~+/=-]{8,}"),
+        re.compile(r"(?i)(?:postgres(?:ql)?|mysql|redis|mongodb)://[^\s:/]+:[^\s@]+@"),
+        re.compile(r"(?i)\b(?:sk|gh[pousr])[-_][A-Za-z0-9_-]{8,}\b|\bAKIA[A-Z0-9]{16}\b"),
+        re.compile(r"(?i)\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b"),
+        re.compile(r"(?i)-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    )
+
+    @classmethod
+    def _safe_plan_values(cls, values: object) -> dict[str, str]:
+        if not isinstance(values, dict):
+            return {}
+        safe: dict[str, str] = {}
+        for key, value in values.items():
+            slot = str(key).strip()[:80]
+            if not slot or cls._SENSITIVE_PLAN_KEY.search(slot):
+                continue
+            if isinstance(value, (str, int, float, bool)):
+                text = str(value).strip()
+                if text and len(text) <= 1000 and not any(pattern.search(text) for pattern in cls._SENSITIVE_PLAN_VALUE):
+                    safe[slot] = text
+        return safe
+
+    @staticmethod
+    def _json_object(value: object, default: dict | list) -> dict | list:
+        try:
+            parsed = json.loads(value) if isinstance(value, str) else value
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return default
+        return parsed if isinstance(parsed, (dict, list)) else default
+
+    @classmethod
+    def _command_plan_record(cls, row: sqlite3.Row | dict | None) -> dict | None:
+        if row is None:
+            return None
+        record = dict(row)
+        slots = cls._json_object(record.pop("slots_json", "{}"), {})
+        values = cls._json_object(record.pop("values_json", "{}"), {})
+        citation_ids = cls._json_object(record.pop("citation_ids_json", "[]"), [])
+        record["slots"] = slots if isinstance(slots, dict) else {}
+        record["values"] = cls._safe_plan_values(values)
+        record["citation_ids"] = [
+            str(value)[:240]
+            for value in citation_ids
+            if isinstance(value, (str, int)) and str(value).strip()
+        ] if isinstance(citation_ids, list) else []
+        record["state_version"] = int(record.get("state_version") or 1)
+        return record
+
+    def get_command_plan(self, conversation_id: str) -> dict | None:
+        """Return the latest plan for a conversation, expiring stale plans."""
+        now = utc_now()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM conversation_command_plans WHERE conversation_id = ?",
+                (conversation_id,),
+            ).fetchone()
+            if row is None:
+                return None
+            if row["status"] == "pending":
+                try:
+                    expired = self._parse_time(row["expires_at"]) <= now
+                except (TypeError, ValueError):
+                    expired = True
+                if expired:
+                    connection.execute(
+                        "UPDATE conversation_command_plans SET status = 'expired', state_version = state_version + 1, updated_at = ? WHERE id = ? AND status = 'pending'",
+                        (now.isoformat(), row["id"]),
+                    )
+                    row = connection.execute(
+                        "SELECT * FROM conversation_command_plans WHERE id = ?", (row["id"],)
+                    ).fetchone()
+            return self._command_plan_record(row)
+
+    def get_pending_command_plan(
+        self,
+        conversation_id: str,
+        *,
+        knowledge_base_id: str | None = None,
+        source_revision: str | None = None,
+    ) -> dict | None:
+        plan = self.get_command_plan(conversation_id)
+        if not plan or plan.get("status") != "pending":
+            return None
+        if knowledge_base_id and plan.get("knowledge_base_id") != knowledge_base_id:
+            self.cancel_command_plan(conversation_id, status="cancelled")
+            return None
+        if source_revision is not None and plan.get("source_revision", "") != source_revision:
+            self.cancel_command_plan(conversation_id, status="expired")
+            return None
+        return plan
+
+    def create_command_plan(
+        self,
+        conversation_id: str,
+        knowledge_base_id: str,
+        template_id: str,
+        slots: dict,
+        *,
+        values: dict | None = None,
+        next_slot: str | None = None,
+        source_revision: str = "",
+        citation_ids: list[str] | None = None,
+        plan_id: str | None = None,
+        expires_at: datetime | None = None,
+    ) -> dict:
+        """Create or replace the pending plan for a conversation.
+
+        A conversation can have only one active plan.  Replacing it is the
+        explicit "new task" operation and prevents stale UI retries from
+        merging unrelated parameters.
+        """
+        plan_id = plan_id or str(uuid4())
+        now = utc_now()
+        expires = expires_at or (now + timedelta(hours=24))
+        safe_values = self._safe_plan_values(values)
+        safe_citation_ids = list(dict.fromkeys(
+            str(value).strip()[:240]
+            for value in (citation_ids or [])
+            if str(value).strip()
+        ))[:64]
+        normalized_slots = slots if isinstance(slots, dict) else {}
+        with self._lock, self._connect() as connection:
+            if connection.execute(
+                "SELECT 1 FROM conversations WHERE id = ?", (conversation_id,)
+            ).fetchone() is None:
+                raise KeyError(conversation_id)
+            if connection.execute(
+                "SELECT 1 FROM knowledge_bases WHERE id = ?", (knowledge_base_id,)
+            ).fetchone() is None:
+                raise KeyError(knowledge_base_id)
+            connection.execute(
+                "DELETE FROM conversation_command_plans WHERE conversation_id = ?", (conversation_id,)
+            )
+            connection.execute(
+                "INSERT INTO conversation_command_plans(id, conversation_id, knowledge_base_id, template_id, source_revision, citation_ids_json, slots_json, values_json, next_slot, status, state_version, expires_at, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 1, ?, ?, ?)",
+                (
+                    plan_id,
+                    conversation_id,
+                    knowledge_base_id,
+                    str(template_id)[:160],
+                    str(source_revision)[:1000],
+                    json.dumps(safe_citation_ids, ensure_ascii=False),
+                    json.dumps(normalized_slots, ensure_ascii=False),
+                    json.dumps(safe_values, ensure_ascii=False),
+                    next_slot,
+                    expires.isoformat(),
+                    now.isoformat(),
+                    now.isoformat(),
+                ),
+            )
+            row = connection.execute(
+                "SELECT * FROM conversation_command_plans WHERE id = ?", (plan_id,)
+            ).fetchone()
+        assert row is not None
+        return self._command_plan_record(row)  # type: ignore[return-value]
+
+    def update_command_plan(
+        self,
+        plan_id: str,
+        *,
+        values: dict | None = None,
+        next_slot: str | None = None,
+        status: str = "pending",
+        source_revision: str | None = None,
+        citation_ids: list[str] | None = None,
+        expected_state_version: int | None = None,
+        expires_at: datetime | None = None,
+    ) -> dict | None:
+        if status not in {"pending", "completed", "cancelled", "expired"}:
+            raise ValueError("无效的命令计划状态")
+        now = utc_now()
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM conversation_command_plans WHERE id = ?", (plan_id,)
+            ).fetchone()
+            if row is None:
+                return None
+            old_values = self._json_object(row["values_json"], {})
+            merged_values = dict(old_values) if isinstance(old_values, dict) else {}
+            if values is not None:
+                merged_values.update(values)
+            safe_values = self._safe_plan_values(merged_values)
+            old_citation_ids = self._json_object(row["citation_ids_json"] if "citation_ids_json" in row.keys() else "[]", [])
+            merged_citation_ids = list(old_citation_ids) if isinstance(old_citation_ids, list) else []
+            if citation_ids is not None:
+                merged_citation_ids = citation_ids
+            safe_citation_ids = list(dict.fromkeys(
+                str(value).strip()[:240]
+                for value in merged_citation_ids
+                if str(value).strip()
+            ))[:64]
+            version = int(row["state_version"] or 1)
+            if expected_state_version is not None and version != expected_state_version:
+                return None
+            new_expiry = expires_at.isoformat() if expires_at else row["expires_at"]
+            query = (
+                "UPDATE conversation_command_plans SET values_json = ?, citation_ids_json = ?, next_slot = ?, status = ?, "
+                "source_revision = COALESCE(?, source_revision), state_version = state_version + 1, "
+                "expires_at = ?, updated_at = ? WHERE id = ?"
+            )
+            params = (
+                json.dumps(safe_values, ensure_ascii=False),
+                json.dumps(safe_citation_ids, ensure_ascii=False),
+                next_slot,
+                status,
+                source_revision,
+                new_expiry,
+                now.isoformat(),
+                plan_id,
+            )
+            if expected_state_version is not None:
+                query += " AND state_version = ?"
+                params += (expected_state_version,)
+            cursor = connection.execute(query, params)
+            if cursor.rowcount == 0:
+                return None
+            updated = connection.execute(
+                "SELECT * FROM conversation_command_plans WHERE id = ?", (plan_id,)
+            ).fetchone()
+        return self._command_plan_record(updated)
+
+    def cancel_command_plan(self, conversation_id: str, *, status: str = "cancelled") -> bool:
+        if status not in {"cancelled", "expired", "completed"}:
+            raise ValueError("无效的命令计划终止状态")
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            cursor = connection.execute(
+                "UPDATE conversation_command_plans SET status = ?, next_slot = NULL, state_version = state_version + 1, updated_at = ? WHERE conversation_id = ? AND status = 'pending'",
+                (status, now, conversation_id),
+            )
+            return cursor.rowcount > 0
+
+    def list_pending_command_plan_ids(self) -> list[str]:
+        now = utc_now().isoformat()
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                "UPDATE conversation_command_plans SET status = 'expired', state_version = state_version + 1, updated_at = ? WHERE status = 'pending' AND expires_at <= ?",
+                (now, now),
+            )
+            return [
+                row["conversation_id"]
+                for row in connection.execute(
+                    "SELECT conversation_id FROM conversation_command_plans WHERE status = 'pending' ORDER BY updated_at"
+                ).fetchall()
+            ]
 
     def _ensure_memory(self, connection: sqlite3.Connection, conversation_id: str) -> sqlite3.Row:
         if connection.execute("SELECT 1 FROM conversations WHERE id = ?", (conversation_id,)).fetchone() is None:
@@ -1864,10 +2155,20 @@ class ConversationRepository:
         now = utc_now().isoformat()
         with self._lock, self._connect() as connection:
             row = connection.execute(
-                "SELECT status FROM knowledge_documents WHERE id = ?", (document_id,)
+                "SELECT status, knowledge_base_id FROM knowledge_documents WHERE id = ?", (document_id,)
             ).fetchone()
             if row is None:
                 raise KeyError(document_id)
+            # A rebuild can leave the old index searchable while the worker is
+            # running.  Pending command plans must nevertheless stop using
+            # that snapshot immediately; otherwise a user could finish a
+            # clarification against evidence that is already being replaced.
+            connection.execute(
+                "UPDATE conversation_command_plans SET status = 'expired', next_slot = NULL, "
+                "state_version = state_version + 1, updated_at = ? "
+                "WHERE knowledge_base_id = ? AND status = 'pending'",
+                (now, row["knowledge_base_id"]),
+            )
             # New uploads have no active index; existing documents stay readable while rebuilding.
             status = "pending" if row["status"] != "ready" else "ready"
             connection.execute(
@@ -1881,10 +2182,18 @@ class ConversationRepository:
         now = utc_now().isoformat()
         with self._lock, self._connect() as connection:
             row = connection.execute(
-                "SELECT status FROM knowledge_documents WHERE id = ?", (document_id,)
+                "SELECT status, knowledge_base_id FROM knowledge_documents WHERE id = ?", (document_id,)
             ).fetchone()
             if row is None:
                 raise KeyError(document_id)
+            # Cover startup recovery and direct worker calls as well as the
+            # public reindex endpoint.
+            connection.execute(
+                "UPDATE conversation_command_plans SET status = 'expired', next_slot = NULL, "
+                "state_version = state_version + 1, updated_at = ? "
+                "WHERE knowledge_base_id = ? AND status = 'pending'",
+                (now, row["knowledge_base_id"]),
+            )
             status = "indexing" if row["status"] != "ready" else "ready"
             connection.execute(
                 "UPDATE knowledge_documents SET status = ?, rebuild_status = 'indexing', "

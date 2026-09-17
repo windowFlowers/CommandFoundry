@@ -31,6 +31,10 @@ SECRET_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9_-]{8,}\b", re.IGNORECASE),
     re.compile(r"(?i)(authorization\s*:\s*bearer\s+)\S+"),
     re.compile(r"(?i)\b(password|passwd|token|api[_ -]?key)\s*[:=]\s*\S+"),
+    re.compile(r"(?i)(?:postgres(?:ql)?|mysql|redis|mongodb)://[^\s:/]+:[^\s@]+@"),
+    re.compile(r"(?i)\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b"),
+    re.compile(r"(?i)-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    re.compile(r"(?i)(?:令牌|密钥|私钥|口令|密码|凭证)\s*(?:[:：=]|是|为|叫)\s*\S+"),
 )
 TECHNOLOGIES = (
     "PostgreSQL",
