@@ -1,4 +1,4 @@
-# AegisCopilot 2.9
+# AegisCopilot 2.10
 
 Local-first command RAG for developers on Windows.
 
@@ -18,9 +18,10 @@ AegisCopilot turns a natural-language operation into grounded, copyable commands
 - **Parent/child retrieval**: small child chunks drive retrieval while bounded parent chunks preserve context for generation; citations point to the exact child/parent locator.
 - **Personalized context**: the current question takes precedence over conversation, knowledge-base and global preferences. At most four redacted memories are used per turn, only to enrich retrieval and presentation—not as command, fact, or risk evidence.
 - **Multiple knowledge bases and uploads**: create and bind multiple knowledge bases; upload TXT, Markdown, PDF, and DOCX files up to 20 MB each.
-- **Offline-first operation**: BM25 and local FastEmbed retrieval work without a cloud key. DeepSeek is optional and may only explain already grounded evidence.
+- **Offline-first operation**: BM25 and local FastEmbed retrieval work without a cloud key. Optional models may only explain already grounded evidence.
+- **Multiple model APIs**: the official OpenAI Python/Node SDKs provide the shared `base_url` + Chat Completions protocol for DeepSeek, OpenAI, Qwen, Moonshot, SiliconFlow, Ollama and custom OpenAI-compatible endpoints; the project does not duplicate the HTTP protocol.
 - **Desktop safety**: API keys are protected by Electron `safeStorage` / Windows DPAPI and are never exposed to the renderer or SQLite.
-- **Embedded terminal**: only PowerShell and CMD are allowed, with at most four temporary PTY sessions. Before execution the UI shows the shell, working directory, full command, risk and warnings; high-risk commands also require typing `确认执行`. Terminal output, input history and working directories are never stored in the app database.
+- **Embedded terminal**: only PowerShell and CMD are allowed, with at most four temporary PTY sessions. The terminal is a Codex-style resizable right-side dock so it does not cover the conversation. Before execution the UI shows the shell, working directory, full command, risk and warnings; high-risk commands also require typing `确认执行`. Terminal output, input history and working directories are never stored in the app database.
 
 ## Quick manual test
 
@@ -45,10 +46,10 @@ Do not execute a generated command during the clarification UI test. To verify t
 | Frontend | React 18, Vite 5, Lucide React |
 | Backend | Python 3.11+, FastAPI, Pydantic, SQLite, SSE |
 | Retrieval | rank-bm25, FastEmbed `BAAI/bge-small-zh-v1.5`, ONNX Runtime, RRF |
-| Generation | Optional DeepSeek OpenAI-compatible API |
+| Generation | Official OpenAI SDK (optional OpenAI-compatible API: DeepSeek / OpenAI / Qwen / Moonshot / SiliconFlow / Ollama / Custom) |
 | Packaging | PyInstaller onedir, electron-builder Windows x64 |
 
-The command planner persists resumable plans in SQLite schema v5. Plans support restart recovery, cancellation/restart, optimistic locking, source revisions and citation IDs, and expire after 24 hours by default. A knowledge-base rebuild invalidates plans that depend on the old evidence. Credentials are deliberately excluded from plan values and model input. The catalog currently contains 21 provenance-backed high-value recipes.
+The command planner persists resumable plans and multi-provider memory provenance in SQLite schema v6; the command-plan table was introduced in v5. Plans support restart recovery, cancellation/restart, optimistic locking, source revisions and citation IDs, and expire after 24 hours by default. A knowledge-base rebuild invalidates plans that depend on the old evidence. Credentials are deliberately excluded from plan values and model input. The catalog currently contains 21 provenance-backed high-value recipes.
 
 ## Development setup
 
@@ -64,6 +65,8 @@ cd ..\desktop
 npm.cmd install
 npm.cmd run dev
 ```
+
+Desktop development requires Node.js 22+. The Windows installer bundles its runtime, so installer users do not need to install Node.js separately.
 
 The first source checkout may download the BGE ONNX model to `models/cache/`. The Windows package contains the pinned local model and does not need to download it on first launch.
 
@@ -86,14 +89,14 @@ npm.cmd run dist:dir
 npm.cmd run dist:win
 ```
 
-The v2.9.0 release gate passed:
+The v2.10.0 release gate passed:
 
-- Backend: 138 tests passed.
-- Frontend: 38 tests passed; Vite production build passed.
-- Desktop: 19 tests passed, including PTY allowlisting, session limits, cleanup and preload IPC boundaries.
+- Backend: 143 tests passed.
+- Frontend: 40 tests passed; Vite production build passed.
+- Desktop: 24 tests passed, including SDK connection fallback, provider-key isolation, PTY allowlisting, resizable side dock, session limits, cleanup and preload IPC boundaries.
 - Packaged backend smoke test covers profile/memory CRUD, hybrid retrieval, offline SSE and the one-slot clarification flow.
 
-The Windows x64 installer is generated at `desktop/dist/AegisCopilot Setup 2.9.0.exe` and is intended to be distributed as a GitHub Release asset rather than committed to source history. Its SHA-256, build commit and complete gate record are documented in [docs/release-2.9.0.md](docs/release-2.9.0.md).
+The Windows x64 installer is generated at `desktop/dist/AegisCopilot Setup 2.10.0.exe` and is intended to be distributed as a GitHub Release asset rather than committed to source history. Its SHA-256, build commit and complete gate record are documented in [docs/release-2.10.0.md](docs/release-2.10.0.md).
 
 ## Installation and release boundaries
 
@@ -119,7 +122,7 @@ Uploaded documents are extracted, split into parent/child chunks, embedded and i
 
 - [Chinese README](README.md)
 - [Project rules](AGENTS.md)
-- [v2.9.0 release verification](docs/release-2.9.0.md)
+- [v2.10.0 release verification](docs/release-2.10.0.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Development, testing and packaging](docs/DEVELOPMENT.md)
 - [RAG evaluation](docs/RAG_EVALUATION.md)

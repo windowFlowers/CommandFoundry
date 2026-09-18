@@ -153,7 +153,10 @@ FallbackReason = Literal[
 
 class GenerationInfo(BaseModel):
     attempted: bool = False
-    provider: Literal["deepseek", "local"] = "local"
+    # Provider ids are configured by the desktop app.  Keep this open-ended so
+    # OpenAI-compatible services (OpenAI, Qwen, Moonshot, Ollama, custom) can
+    # be reported without changing the answer contract again.
+    provider: str = "local"
     model: str | None = None
     request_id: str | None = None
     latency_ms: int | None = None
@@ -325,7 +328,10 @@ class ConversationMemory(BaseModel):
     conversation_id: str
     status: Literal["idle", "pending", "summarizing", "ready"] = "idle"
     summary: MemorySummary = Field(default_factory=MemorySummary)
-    summary_provider: Literal["local", "deepseek"] | None = None
+    # Provider ids are configured by the desktop app.  Keep this open-ended so
+    # summaries created with OpenAI, Qwen, Ollama or a custom compatible
+    # endpoint remain truthful after the model provider changes.
+    summary_provider: str | None = None
     summary_updated_at: datetime | None = None
     compacted_through_message_id: str | None = None
     reset_after_message_id: str | None = None
@@ -343,7 +349,9 @@ MemoryCategory = Literal[
     "project_constraint",
 ]
 MemoryStatus = Literal["active", "superseded"]
-MemoryExtractionProvider = Literal["local", "deepseek", "manual"]
+# Manual/local are retained for backwards compatibility.  Automatic
+# extraction may be produced by any configured OpenAI-compatible provider.
+MemoryExtractionProvider = str
 
 
 class UserProfile(BaseModel):

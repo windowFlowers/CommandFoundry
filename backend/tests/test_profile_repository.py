@@ -35,7 +35,7 @@ def test_v24_migration_creates_independent_backup_and_secure_schema(tmp_path: Pa
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
         assert connection.execute("SELECT value FROM sentinel").fetchone()[0] == "v2.3-data"
     with repository._connect() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == DATABASE_SCHEMA_VERSION == 5
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == DATABASE_SCHEMA_VERSION == 6
         assert connection.execute("PRAGMA secure_delete").fetchone()[0] == 1
         tables = {
             row[0]
@@ -325,6 +325,37 @@ def test_task_completion_accepts_precreated_memory_ids_for_service_compatibility
 
     assert [item.id for item in completed] == [memory.id]
     assert repository.get_memory_extraction_task(task["id"])["status"] == "ready"
+
+
+def test_task_completion_persists_non_deepseek_provider_metadata(tmp_path: Path) -> None:
+    repository = ConversationRepository(tmp_path / "provider-task.sqlite3")
+    conversation, message = _conversation_with_user_message(repository)
+    task = repository.create_memory_extraction_task(
+        conversation.id,
+        message.id,
+        conversation.knowledge_base_id,
+        "我的环境使用 Windows",
+    )
+    claimed = repository.claim_memory_extraction_task(task["id"])
+    memories = repository.complete_memory_extraction_task(
+        task["id"],
+        [
+            {
+                "action": "ADD",
+                "scope": "knowledge_base",
+                "category": "platform",
+                "key": "os",
+                "value": "Windows",
+                "display_text": "项目使用 Windows",
+                "confidence": 0.95,
+            }
+        ],
+        extraction_provider="openai",
+        expected_epoch=claimed["extraction_epoch"],
+        expected_attempt=claimed["attempt_count"],
+    )
+    assert len(memories) == 1
+    assert memories[0].extraction_provider == "openai"
 
 
 def test_task_failure_and_knowledge_base_delete_cascade(tmp_path: Path) -> None:

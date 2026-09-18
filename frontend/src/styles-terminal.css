@@ -1,19 +1,48 @@
 .terminal-panel {
   position: fixed;
   z-index: 20;
-  left: 320px;
+  top: var(--titlebar-height);
   right: 0;
   bottom: 0;
-  min-height: 280px;
-  height: 34vh;
+  width: var(--terminal-width, 520px);
+  min-width: 360px;
+  max-width: 760px;
   display: flex;
   flex-direction: column;
   background: #1d2323;
   color: #edf0ec;
-  border-top: 1px solid #4e5a57;
-  box-shadow: 0 -12px 30px rgba(24, 29, 29, .18);
+  border-left: 1px solid #4e5a57;
+  box-shadow: -12px 0 30px rgba(24, 29, 29, .18);
 }
-.terminal-panel.expanded { height: 70vh; }
+.app-frame.terminal-docked > .workspace,
+.app-frame.terminal-docked > .knowledge-page {
+  width: calc(100% - var(--terminal-width, 520px));
+  margin-right: var(--terminal-width, 520px);
+}
+.terminal-panel.resizing,
+.terminal-panel.resizing * { user-select: none; }
+.terminal-panel-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -5px;
+  z-index: 2;
+  width: 10px;
+  cursor: ew-resize;
+  outline: none;
+}
+.terminal-panel-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: transparent;
+  transition: background 160ms ease;
+}
+.terminal-panel-resize-handle:hover::after,
+.terminal-panel-resize-handle:focus-visible::after { background: #8fa79d; }
 .terminal-panel-head,
 .terminal-session-tabs,
 .terminal-panel-foot { display: flex; align-items: center; }
@@ -56,7 +85,10 @@
 .execute-dialog > footer { justify-content: flex-end; margin-top: 18px; }
 .execute-dialog .danger-button:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 900px) {
-  .terminal-panel { left: 0; }
+  .terminal-panel { left: 0; width: 100%; min-width: 0; max-width: none; }
+  .app-frame.terminal-docked > .workspace,
+  .app-frame.terminal-docked > .knowledge-page { width: 0; margin-right: 0; visibility: hidden; }
+  .terminal-panel-resize-handle { display: none; }
   .terminal-panel-foot { flex-direction: column; align-items: flex-start; }
   .execute-dialog-meta { grid-template-columns: 1fr; }
 }

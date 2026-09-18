@@ -1,4 +1,4 @@
-# AegisCopilot 2.9
+# AegisCopilot 2.10
 
 面向开发者的本地优先命令 RAG 助手，支持 Windows 桌面端。
 
@@ -18,9 +18,10 @@ English version: [README.en.md](README.en.md)
 - **父子块检索**：子块负责精确召回，受限父块保留上下文；引用可定位到子块、父块和文档精确位置。
 - **个性化上下文**：当前问题优先于会话、知识库和全局偏好；每轮最多使用 4 条脱敏记忆，只影响检索补充和表达，不充当命令、事实或风险证据。
 - **多知识库与上传**：支持创建、绑定和管理多个知识库，上传 TXT、Markdown、PDF、DOCX，单文件上限 20 MB。
-- **本地优先**：BM25 与 FastEmbed 本地检索无需云端 Key；DeepSeek 只负责整理已验证证据，不能覆盖规划器命令或引用。
+- **本地优先**：BM25 与 FastEmbed 本地检索无需云端 Key；可选模型只负责整理已验证证据，不能覆盖规划器命令或引用。
+- **多模型 API**：通过官方 OpenAI Python/Node SDK 复用统一的 `base_url` + Chat Completions 协议，支持 DeepSeek、OpenAI、通义千问、Moonshot、SiliconFlow、Ollama 及自定义 OpenAI 兼容接口；不在项目中重复实现 HTTP 协议。
 - **桌面安全**：API Key 通过 Electron `safeStorage` / Windows DPAPI 加密，不暴露给渲染进程，也不写入 SQLite。
-- **内置终端**：仅允许 PowerShell 与 CMD，最多 4 个临时 PTY；执行前显示 Shell、工作目录、完整命令、风险和警告，高风险命令还要求输入“确认执行”。终端输出、输入历史和工作目录不会写入应用数据库。
+- **内置终端**：仅允许 PowerShell 与 CMD，最多 4 个临时 PTY；终端以 Codex 风格右侧可调整宽度的面板展示，不遮挡对话；执行前显示 Shell、工作目录、完整命令、风险和警告，高风险命令还要求输入“确认执行”。终端输出、输入历史和工作目录不会写入应用数据库。
 
 ## 手动测试：逐项补参生成可执行命令
 
@@ -45,10 +46,10 @@ python -m venv 'C:\Users\CZX\Documents\AegisCopilot 手动测试\.venv'
 | Frontend | React 18、Vite 5、Lucide React |
 | Backend | Python 3.11+、FastAPI、Pydantic、SQLite、SSE |
 | Retrieval | rank-bm25、FastEmbed `BAAI/bge-small-zh-v1.5`、ONNX Runtime、RRF |
-| Generation | 可选 DeepSeek OpenAI-compatible API |
+| Generation | 官方 OpenAI SDK（可选 OpenAI-compatible API：DeepSeek / OpenAI / Qwen / Moonshot / SiliconFlow / Ollama / Custom） |
 | Packaging | PyInstaller onedir、electron-builder Windows x64 |
 
-命令规划器使用 SQLite schema v5 保存可恢复计划，支持重启恢复、取消/重新开始、乐观锁和默认 24 小时过期，并记录来源 revision 与 citation IDs。知识库重建后，依赖旧证据的 pending 计划会自动失效；凭证值不会进入计划或模型输入。当前 recipe 目录包含 21 条带 provenance 的高价值配方。
+命令规划器使用 SQLite schema v6 保存可恢复计划和多模型记忆来源，命令计划表在 v5 引入；支持重启恢复、取消/重新开始、乐观锁和默认 24 小时过期，并记录来源 revision 与 citation IDs。知识库重建后，依赖旧证据的 pending 计划会自动失效；凭证值不会进入计划或模型输入。当前 recipe 目录包含 21 条带 provenance 的高价值配方。
 
 ## 开发环境
 
@@ -64,6 +65,8 @@ cd ..\desktop
 npm.cmd install
 npm.cmd run dev
 ```
+
+桌面开发需要 Node.js 22+；发布安装包会内置运行时，安装用户不需要单独安装 Node.js。
 
 首次源码运行可能会把 BGE ONNX 模型下载到 `models/cache/`。Windows 安装包包含固定版本的本地模型，首次启动不需要联网下载。
 
@@ -86,14 +89,14 @@ npm.cmd run dist:dir
 npm.cmd run dist:win
 ```
 
-v2.9.0 发布门禁结果：
+v2.10.0 发布门禁结果：
 
-- Backend：138 项通过；
-- Frontend：38 项通过，Vite 生产构建通过；
-- Desktop：19 项通过，包含 PTY allowlist、会话上限、清理和 preload IPC 边界；
+- Backend：143 项通过；
+- Frontend：40 项通过，Vite 生产构建通过；
+- Desktop：24 项通过，包含官方 SDK 连接降级、provider 密钥隔离、PTY allowlist、可调整侧边终端、会话上限、清理和 preload IPC 边界；
 - 包内后端烟测覆盖 profile/memory CRUD、混合检索、离线 SSE 和逐项澄清流程。
 
-Windows x64 安装包输出到 `desktop/dist/AegisCopilot Setup 2.9.0.exe`，应作为 GitHub Release asset 分发，不提交到源码历史。安装包 SHA-256、构建提交和完整门禁记录见 [docs/release-2.9.0.md](docs/release-2.9.0.md)。
+Windows x64 安装包输出到 `desktop/dist/AegisCopilot Setup 2.10.0.exe`，应作为 GitHub Release asset 分发，不提交到源码历史。安装包 SHA-256、构建提交和完整门禁记录见 [docs/release-2.10.0.md](docs/release-2.10.0.md)。
 
 ## 安装与发布边界
 
@@ -119,7 +122,7 @@ Windows x64 安装包输出到 `desktop/dist/AegisCopilot Setup 2.9.0.exe`，应
 
 - [English README](README.en.md)
 - [项目规则（含后续任务必须使用子 agent 的规则）](AGENTS.md)
-- [v2.9.0 发布核验记录](docs/release-2.9.0.md)
+- [v2.10.0 发布核验记录](docs/release-2.10.0.md)
 - [架构与关键取舍](docs/ARCHITECTURE.md)
 - [开发、测试与打包](docs/DEVELOPMENT.md)
 - [RAG 评测报告](docs/RAG_EVALUATION.md)

@@ -12,7 +12,14 @@ import { Drawer } from "../ui/Overlays";
 
 const providerLabels = {
   local: "本地提取",
-  deepseek: "DeepSeek 提取",
+  deepseek: "模型提取",
+  model: "模型提取",
+  openai: "OpenAI 提取",
+  qwen: "通义千问提取",
+  moonshot: "Moonshot 提取",
+  siliconflow: "SiliconFlow 提取",
+  ollama: "Ollama 提取",
+  custom: "模型提取",
   manual: "手动添加",
 };
 
@@ -53,7 +60,7 @@ export function PersonalizationDrawer({ open, onClose, personalization, refreshT
           <span><BrainCircuit size={15} />{ids.length} 条记忆</span>
           <span>全局 {personalization?.global_count || 0}</span>
           <span>知识库 {personalization?.scoped_count || 0}</span>
-          <span>{personalization?.sent_to_model ? "已发送 DeepSeek" : "仅本地使用"}</span>
+          <span>{personalization?.sent_to_model ? "已发送模型" : "仅本地使用"}</span>
           {personalization?.retrieval_query_enriched && <span>检索已扩展</span>}
         </div>
         {error && <div className="error-banner personalization-error" role="alert"><WifiOff size={17} /><span>{error}</span></div>}

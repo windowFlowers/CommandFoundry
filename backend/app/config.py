@@ -21,7 +21,7 @@ def _allowed_origins() -> list[str]:
 
 class Settings(BaseModel):
     app_name: str = "AegisCopilot API"
-    app_version: str = "2.9.0"
+    app_version: str = "2.10.0"
     environment: str = os.getenv("AEGIS_ENV", "local")
     storage_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_STORAGE_DIR", PROJECT_ROOT / "backend" / "storage"))
     knowledge_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_KNOWLEDGE_DIR", PROJECT_ROOT / "knowledge"))

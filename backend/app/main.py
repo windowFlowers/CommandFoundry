@@ -70,6 +70,7 @@ generator = DeepSeekGenerator(
     api_key=settings.llm_api_key,
     base_url=settings.llm_base_url,
     model=settings.llm_model,
+    provider=settings.llm_provider,
     timeout_seconds=settings.llm_timeout_seconds,
 )
 answer_service = AnswerService(generator)
@@ -515,7 +516,7 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     requested_base_id, safe_query, top_k=settings.retrieval_top_k
                 )
             # Curated command plans are local-first.  Do not advertise or call
-            # DeepSeek for a pending/recognised recipe, and keep explicit
+            # The configured OpenAI-compatible model is used for a pending/recognised recipe, and keep explicit
             # template requests deterministic as well.
             planner_recipe = command_planner._recipe_for(request.query, hits, pending_plan)
             planner_owned = planner_recipe is not None or command_planner.is_template_request(request.query)
@@ -524,7 +525,7 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 "status",
                 {
                     "stage": "generating" if use_model else "fallback",
-                    "message": "正在请求 DeepSeek" if use_model else "正在生成本地确定性答案",
+                    "message": "正在请求已配置模型" if use_model else "正在生成本地确定性答案",
                     "hit_count": len(hits),
                 },
             )

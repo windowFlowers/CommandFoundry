@@ -5,6 +5,7 @@ import inspect
 import re
 
 import httpx
+from openai import APIStatusError, APITimeoutError
 
 from .evidence import evidence_records
 from .generation import DeepSeekGenerator
@@ -251,7 +252,7 @@ class AnswerService:
         language, detail, expertise = _fallback_presentation(query, personalization_context)
         generation = GenerationInfo(
             attempted=attempted,
-            provider="deepseek" if attempted else "local",
+            provider=getattr(self.generator, "provider", "deepseek") if attempted else "local",
             model=getattr(self.generator, "model", None) if attempted else None,
             fallback_reason=reason,
         )
@@ -419,12 +420,17 @@ class AnswerService:
 
     @staticmethod
     def _fallback_reason(exc: Exception) -> str:
-        if isinstance(exc, httpx.TimeoutException):
+        if isinstance(exc, (httpx.TimeoutException, APITimeoutError)):
             return "timeout"
+        status_code = None
         if isinstance(exc, httpx.HTTPStatusError):
-            if exc.response.status_code in {401, 403}:
+            status_code = exc.response.status_code
+        elif isinstance(exc, APIStatusError):
+            status_code = getattr(exc, "status_code", None)
+        if status_code is not None:
+            if status_code in {401, 403}:
                 return "authentication"
-            if exc.response.status_code == 429:
+            if status_code == 429:
                 return "rate_limit"
             return "provider_error"
         if isinstance(exc, (ValueError, json.JSONDecodeError)):

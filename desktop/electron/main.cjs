@@ -13,8 +13,14 @@ const {
   shell,
 } = require("electron");
 
-const { clearApiKey, readApiKey, saveApiKey } = require("./model-config.cjs");
-const { testDeepSeekConnection } = require("./deepseek-connection.cjs");
+const {
+  clearApiKey,
+  readModelConfig,
+  resolveConnectionTestApiKey,
+  saveModelConfig,
+} = require("./model-config.cjs");
+const { testOpenAICompatibleConnection } = require("./openai-compatible-connection.cjs");
+const { normalizeProvider, providerLabel } = require("./model-providers.cjs");
 const {
   buildBackendLaunchSpec,
   buildRuntimeEnvironment,
@@ -82,8 +88,8 @@ function waitForSpawn(child, label) {
   });
 }
 
-function secureModelKey() {
-  return readApiKey({ userDataPath: app.getPath("userData"), safeStorage });
+function secureModelConfig() {
+  return readModelConfig({ userDataPath: app.getPath("userData"), safeStorage });
 }
 
 async function startBackend() {
@@ -94,11 +100,16 @@ async function startBackend() {
     resourcesPath: process.resourcesPath,
     port,
   });
+  const modelConfig = secureModelConfig();
+  const useEnvironmentModel = !modelConfig.apiKey
+    && modelConfig.provider !== "ollama"
+    && Boolean(process.env.AEGIS_LLM_API_KEY);
   const baseEnv = {
     ...process.env,
-    AEGIS_LLM_API_KEY: secureModelKey() || process.env.AEGIS_LLM_API_KEY || "",
-    AEGIS_LLM_MODEL: "deepseek-chat",
-    AEGIS_LLM_BASE_URL: "https://api.deepseek.com/v1",
+    AEGIS_LLM_API_KEY: useEnvironmentModel ? process.env.AEGIS_LLM_API_KEY : modelConfig.apiKey || "",
+    AEGIS_LLM_PROVIDER: useEnvironmentModel ? process.env.AEGIS_LLM_PROVIDER || "deepseek" : modelConfig.provider,
+    AEGIS_LLM_MODEL: useEnvironmentModel ? process.env.AEGIS_LLM_MODEL || "deepseek-chat" : modelConfig.model,
+    AEGIS_LLM_BASE_URL: useEnvironmentModel ? process.env.AEGIS_LLM_BASE_URL || "https://api.deepseek.com/v1" : modelConfig.baseUrl,
   };
   const environment = app.isPackaged
     ? buildRuntimeEnvironment({
@@ -260,17 +271,38 @@ async function loadMainWindow() {
 }
 
 function registerModelConfigIpc() {
-  ipcMain.handle("model-config:status", () => ({
-    configured: Boolean(secureModelKey()),
-    encryptionAvailable: safeStorage.isEncryptionAvailable(),
-    provider: "DeepSeek",
-    model: "deepseek-chat",
-  }));
-  ipcMain.handle("model-config:test", (_, input = {}) => (
-    testDeepSeekConnection(String(input.apiKey || secureModelKey()).trim())
-  ));
+  ipcMain.handle("model-config:status", () => {
+    const config = secureModelConfig();
+    return {
+      configured: Boolean(config.apiKey) || config.provider === "ollama",
+      encryptionAvailable: safeStorage.isEncryptionAvailable(),
+      provider: config.provider,
+      providerLabel: providerLabel(config.provider),
+      model: config.model,
+      baseUrl: config.baseUrl,
+    };
+  });
+  ipcMain.handle("model-config:test", (_, input = {}) => {
+    const current = secureModelConfig();
+    const requestedProvider = normalizeProvider(input.provider || current.provider);
+    return testOpenAICompatibleConnection({
+      // A saved key is scoped to its provider.  Never send an OpenAI key to a
+      // newly selected DeepSeek/Ollama/custom endpoint during a connection test.
+      apiKey: resolveConnectionTestApiKey({ input, current }),
+      provider: requestedProvider,
+      model: input.model || current.model,
+      baseUrl: input.baseUrl || current.baseUrl,
+    });
+  });
   ipcMain.handle("model-config:save", async (_, input = {}) => {
-    saveApiKey({ userDataPath: app.getPath("userData"), apiKey: input.apiKey, safeStorage });
+    saveModelConfig({
+      userDataPath: app.getPath("userData"),
+      apiKey: input.apiKey,
+      provider: input.provider,
+      model: input.model,
+      baseUrl: input.baseUrl,
+      safeStorage,
+    });
     await restartBackend();
     return { ok: true };
   });

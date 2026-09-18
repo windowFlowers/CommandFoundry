@@ -1147,6 +1147,7 @@ class PersonalizationService:
                     self.repository.complete_memory_extraction_task(
                         task_id,
                         candidates=candidates,
+                        extraction_provider=getattr(self.generator, "provider", "deepseek"),
                         expected_epoch=expected_epoch,
                         expected_attempt=int(task["attempt_count"]),
                     )

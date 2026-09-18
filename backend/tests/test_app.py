@@ -23,7 +23,7 @@ def _events(raw: str) -> list[tuple[str, dict]]:
 
 def test_health_and_knowledge_status() -> None:
     with TestClient(app) as client:
-        assert client.get("/health").json() == {"status": "ok", "version": "2.9.0"}
+        assert client.get("/health").json() == {"status": "ok", "version": "2.10.0"}
         payload = client.get("/knowledge/status").json()
     assert payload["ready"] is True
     assert payload["topic_count"] == 300

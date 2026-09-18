@@ -5,7 +5,9 @@
 - Windows 10/11 x64
 - Python 3.11 或 3.12
 - Node.js 20+
-- 可选：DeepSeek API Key
+- 可选：任一 OpenAI-compatible API Key（也可连接无需 Key 的本机 Ollama）
+- 桌面开发：Node.js 22+（Electron 39 与官方 OpenAI Node SDK 运行时要求）
+- 多模型协议：当前内置提供商使用官方 OpenAI SDK 的 OpenAI-compatible Chat Completions 接口；原生 Anthropic Messages 等非兼容协议需使用其兼容端点或自定义兼容网关。
 
 ## 本地开发
 
@@ -31,6 +33,8 @@ v2.4 的数据库 schema 版本为 4。已有 `user_version=3` 的 v2.3 数据�
 该备份用于人工回退，应用不会自动恢复它。升级验收完成前不要删除；需要回退时应先完全退出 AegisCopilot，并同时保留当前数据库以便排查。
 
 启动恢复不会覆盖已经可用的文档 revision：被中断的新上传索引和既有文档重建都会重新标记为待处理并由后台工作线程继续；中断的长期记忆提取也会从 `extracting` 回到 `pending`，再按当前画像开关和 epoch 校验后执行或取消。
+
+v2.10 将数据库 schema 更新为 6：把 v2.5 长期记忆来源的 `local/deepseek/manual` 限制扩展为任意已配置 provider id。首次打开旧数据库时会在迁移前创建 `.pre-v2.10.backup`，已有对话、文档和记忆内容会原样保留。
 
 ## 重新生成知识
 

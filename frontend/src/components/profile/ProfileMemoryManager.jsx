@@ -28,7 +28,18 @@ import { SelectMenu } from "../ui/SelectMenu";
 
 
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
-const providerLabels = { local: "本地提取", deepseek: "DeepSeek 提取", manual: "手动添加" };
+const providerLabels = {
+  local: "本地提取",
+  deepseek: "模型提取",
+  openai: "模型提取",
+  qwen: "模型提取",
+  moonshot: "模型提取",
+  siliconflow: "模型提取",
+  ollama: "模型提取",
+  custom: "模型提取",
+  model: "模型提取",
+  manual: "手动添加",
+};
 
 
 function memoryKnowledgeBaseName(memory, knowledgeBases) {

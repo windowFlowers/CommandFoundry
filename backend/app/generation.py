@@ -6,6 +6,7 @@ from time import perf_counter
 from typing import Literal
 
 import httpx
+from openai import APIStatusError, OpenAI
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from .evidence import evidence_records
@@ -139,25 +140,28 @@ key 必须使用稳定槽位：response_style 只用 language（en 或 zh-CN）�
 display_text 使用简短中文事实描述。不能确认时输出 {\"operations\": []}，不要猜测。"""
 
 
-class DeepSeekGenerator:
+class OpenAICompatibleGenerator:
     def __init__(
         self,
         *,
         api_key: str,
         base_url: str,
         model: str,
+        provider: str = "deepseek",
         timeout_seconds: int,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         self.api_key = api_key.strip()
         self.base_url = base_url.rstrip("/")
         self.model = model
+        self.provider = str(provider or "deepseek").strip().lower() or "deepseek"
         self.timeout_seconds = timeout_seconds
         self.transport = transport
 
     @property
     def available(self) -> bool:
-        return bool(self.api_key)
+        # Ollama's local OpenAI-compatible endpoint does not require a key.
+        return bool(self.api_key) or self.provider == "ollama"
 
     @staticmethod
     def _strip_code_fence(content: str) -> str:
@@ -200,6 +204,70 @@ class DeepSeekGenerator:
             )
         return json.dumps(list(grouped.values()), ensure_ascii=False)
 
+    def _client(self) -> OpenAI:
+        """Create the maintained OpenAI SDK client for this provider.
+
+        The SDK owns authentication, URL construction, timeouts and provider
+        error translation.  ``transport`` is only an explicit test seam; the
+        production path never bypasses the SDK with a hand-written HTTP call.
+        Ollama still receives a harmless placeholder key because the SDK
+        requires a non-empty key even when the local endpoint does not.
+        """
+        http_client = None
+        if self.transport is not None:
+            http_client = httpx.Client(
+                timeout=self.timeout_seconds,
+                transport=self.transport,
+            )
+        return OpenAI(
+            api_key=self.api_key or "ollama",
+            base_url=self.base_url,
+            timeout=self.timeout_seconds,
+            max_retries=0,
+            http_client=http_client,
+        )
+
+    def _completion(self, payload: dict) -> tuple[object, int]:
+        started = perf_counter()
+        with self._client() as client:
+            try:
+                response = client.chat.completions.create(**payload)
+            except APIStatusError as exc:
+                # A number of otherwise compatible endpoints reject one of
+                # the optional JSON/temperature/token controls.  Retry once
+                # with only the portable Chat Completions core; structured
+                # Pydantic validation below still rejects non-JSON output.
+                if not self._is_unsupported_optional_parameter(exc, payload):
+                    raise
+                portable = {
+                    key: value
+                    for key, value in payload.items()
+                    if key not in {"temperature", "max_tokens", "response_format"}
+                }
+                response = client.chat.completions.create(**portable)
+        return response, max(1, round((perf_counter() - started) * 1000))
+
+    @staticmethod
+    def _is_unsupported_optional_parameter(error: APIStatusError, payload: dict) -> bool:
+        if not any(key in payload for key in ("temperature", "max_tokens", "response_format")):
+            return False
+        if int(getattr(error, "status_code", 0) or 0) != 400:
+            return False
+        body = getattr(error, "body", None)
+        message = str(body or getattr(error, "message", "") or error).casefold()
+        return any(
+            marker in message
+            for marker in (
+                "unsupported",
+                "not support",
+                "unknown parameter",
+                "unrecognized request argument",
+                "temperature",
+                "max_tokens",
+                "response_format",
+            )
+        )
+
     def generate(
         self,
         query: str,
@@ -227,32 +295,25 @@ class DeepSeekGenerator:
                 },
             ],
         }
-        started = perf_counter()
-        with httpx.Client(timeout=self.timeout_seconds, transport=self.transport) as client:
-            response = client.post(
-                f"{self.base_url}/chat/completions",
-                headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
-        latency_ms = max(1, round((perf_counter() - started) * 1000))
+        response, latency_ms = self._completion(payload)
         try:
-            content = data["choices"][0]["message"]["content"]
+            choice = response.choices[0]
+            message = choice.message
+            content = message.content
             draft = ModelAnswerDraft.model_validate_json(self._strip_code_fence(content))
-            usage = data.get("usage") or {}
+            usage = response.usage
             draft.generation = GenerationInfo(
                 attempted=True,
-                provider="deepseek",
-                model=str(data.get("model") or self.model),
-                request_id=str(data["id"]) if data.get("id") else None,
+                provider=self.provider,
+                model=str(getattr(response, "model", None) or self.model),
+                request_id=str(getattr(response, "id", None)) if getattr(response, "id", None) else None,
                 latency_ms=latency_ms,
-                prompt_tokens=_optional_int(usage.get("prompt_tokens")),
-                completion_tokens=_optional_int(usage.get("completion_tokens")),
-                total_tokens=_optional_int(usage.get("total_tokens")),
+                prompt_tokens=_optional_int(getattr(usage, "prompt_tokens", None)),
+                completion_tokens=_optional_int(getattr(usage, "completion_tokens", None)),
+                total_tokens=_optional_int(getattr(usage, "total_tokens", None)),
             )
             return draft
-        except (ValidationError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        except (ValidationError, json.JSONDecodeError, IndexError, AttributeError, TypeError) as exc:
             raise ValueError("模型未返回有效的结构化答案") from exc
 
     def summarize_memory(self, payload: dict) -> MemorySummary:
@@ -268,18 +329,11 @@ class DeepSeekGenerator:
                 {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
             ],
         }
-        with httpx.Client(timeout=self.timeout_seconds, transport=self.transport) as client:
-            response = client.post(
-                f"{self.base_url}/chat/completions",
-                headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-                json=request_payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+        response, _ = self._completion(request_payload)
         try:
-            content = data["choices"][0]["message"]["content"]
+            content = response.choices[0].message.content
             return MemorySummary.model_validate_json(self._strip_code_fence(content))
-        except (ValidationError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        except (ValidationError, json.JSONDecodeError, IndexError, AttributeError, TypeError) as exc:
             raise ValueError("模型未返回有效的会话摘要") from exc
 
     def extract_user_memories(self, payload: dict) -> MemoryExtractionDraft:
@@ -295,19 +349,17 @@ class DeepSeekGenerator:
                 {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
             ],
         }
-        with httpx.Client(timeout=self.timeout_seconds, transport=self.transport) as client:
-            response = client.post(
-                f"{self.base_url}/chat/completions",
-                headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-                json=request_payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+        response, _ = self._completion(request_payload)
         try:
-            content = data["choices"][0]["message"]["content"]
+            content = response.choices[0].message.content
             return MemoryExtractionDraft.model_validate_json(self._strip_code_fence(content))
-        except (ValidationError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        except (ValidationError, json.JSONDecodeError, IndexError, AttributeError, TypeError) as exc:
             raise ValueError("模型未返回有效的用户记忆提取结果") from exc
+
+
+# Keep the public class name used by the v2.5-v2.9 integrations while allowing
+# any OpenAI-compatible provider to share the same grounded JSON contract.
+DeepSeekGenerator = OpenAICompatibleGenerator
 
 
 def _optional_int(value) -> int | None:

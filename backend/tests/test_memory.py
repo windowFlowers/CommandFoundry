@@ -286,6 +286,23 @@ def test_background_summary_preserves_local_result_on_success_or_failure(
         assert state.last_error == "ValueError"
 
 
+def test_background_summary_records_the_configured_provider(tmp_path: Path) -> None:
+    repository = ConversationRepository(tmp_path / "provider-memory.sqlite3")
+    conversation = repository.create()
+    for index in range(4):
+        _append_turn(repository, conversation.id, f"第 {index} 轮端口排查", "查看端口")
+    generator = SummaryGenerator()
+    generator.provider = "qwen"
+    service = ConversationMemoryService(
+        repository=repository,
+        generator=generator,
+        summary_trigger_turns=1,
+    )
+    service.compact_if_needed(conversation.id)
+    service._queue.join()
+    assert service.get_state(conversation.id).summary_provider == "qwen"
+
+
 def test_revision_lock_rejects_stale_model_summary(tmp_path: Path) -> None:
     repository = ConversationRepository(tmp_path / "memory.sqlite3")
     conversation = repository.create()

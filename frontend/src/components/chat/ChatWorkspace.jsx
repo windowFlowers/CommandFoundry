@@ -35,13 +35,22 @@ const examples = [
 
 const riskText = { low: "低风险", medium: "需留意", high: "高风险" };
 const fallbackText = {
-  no_api_key: "未配置 API Key",
+  no_api_key: "未配置模型 API Key",
   no_hits: "没有检索命中",
-  timeout: "DeepSeek 请求超时",
-  rate_limit: "DeepSeek 请求限流",
+  timeout: "模型请求超时",
+  rate_limit: "模型请求限流",
   authentication: "API Key 认证失败",
   invalid_json: "模型响应格式无效",
-  provider_error: "DeepSeek 服务异常",
+  provider_error: "模型服务异常",
+};
+const providerLabels = {
+  deepseek: "DeepSeek",
+  openai: "OpenAI",
+  qwen: "通义千问",
+  moonshot: "Moonshot / Kimi",
+  siliconflow: "SiliconFlow",
+  ollama: "Ollama",
+  custom: "自定义模型",
 };
 const domainText = {
   linux: "Linux / Shell", git: "Git", sql: "SQL", docker: "Docker",
@@ -147,12 +156,13 @@ function CommandCard({ command, index, citationMap, onPreviewDocument, onExecute
 
 function GenerationBadge({ answer }) {
   const generation = answer.generation || {};
+  const providerLabel = providerLabels[generation.provider] || generation.provider || "云端模型";
   if (answer.mode === "model") {
     const stats = [
       generation.total_tokens ? `${generation.total_tokens} token` : null,
       generation.latency_ms ? `${generation.latency_ms} ms` : null,
     ].filter(Boolean);
-    return <span className="generation-badge model">DeepSeek{stats.length ? ` · ${stats.join(" · ")}` : ""}</span>;
+    return <span className="generation-badge model">{providerLabel}{stats.length ? ` · ${stats.join(" · ")}` : ""}</span>;
   }
   const reason = fallbackText[generation.fallback_reason] || "本地确定性回答";
   return <span className="generation-badge local">本地回退 · {reason}</span>;

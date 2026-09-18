@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
+
 import httpx
 import pytest
+from openai import APITimeoutError, RateLimitError
 
 from app.answering import AnswerService
 from app.evidence import evidence_records
@@ -134,19 +137,92 @@ def test_deepseek_success_response_is_validated() -> None:
     assert draft.generation.latency_ms > 0
 
 
+def test_openai_compatible_provider_uses_the_same_sdk_contract() -> None:
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert request.url == "https://api.openai.example/v1/chat/completions"
+        assert request.headers["authorization"] == "Bearer test-key-not-a-secret"
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl-openai",
+                "model": "gpt-test",
+                "choices": [{"message": {"content": '{"summary":"OK","commands":[],"notes":[],"summary_segments":[]}'}}],
+                "usage": {"total_tokens": 7},
+            },
+        )
+
+    generator = DeepSeekGenerator(
+        api_key="test-key-not-a-secret",
+        base_url="https://api.openai.example/v1",
+        model="gpt-test",
+        provider="openai",
+        timeout_seconds=2,
+        transport=httpx.MockTransport(respond),
+    )
+    draft = generator.generate("回答一个测试问题", _git_hits())
+    assert draft.generation.provider == "openai"
+    assert draft.generation.model == "gpt-test"
+    assert draft.generation.total_tokens == 7
+
+
+def test_generator_retries_without_optional_controls_for_older_compatible_endpoints() -> None:
+    requests: list[dict] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        if len(requests) == 1:
+            return httpx.Response(
+                400,
+                request=request,
+                json={"error": {"message": "response_format is not supported"}},
+            )
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": '{"summary":"兼容端点回答","commands":[],"notes":[],"summary_segments":[]}'
+                        }
+                    }
+                ]
+            },
+        )
+
+    draft = _generator(httpx.MockTransport(respond)).generate("测试兼容端点", _git_hits())
+    assert draft.summary == "兼容端点回答"
+    assert len(requests) == 2
+    assert "response_format" not in requests[1]
+    assert "temperature" not in requests[1]
+
+
+def test_ollama_is_available_without_an_api_key() -> None:
+    generator = DeepSeekGenerator(
+        api_key="",
+        base_url="http://127.0.0.1:11434/v1",
+        model="llama3.2",
+        provider="ollama",
+        timeout_seconds=2,
+        transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"choices": []})),
+    )
+    assert generator.available is True
+
+
 def test_deepseek_timeout_is_exposed_for_fallback() -> None:
     def timeout(request: httpx.Request) -> httpx.Response:
         raise httpx.ReadTimeout("mock timeout", request=request)
 
-    with pytest.raises(httpx.ReadTimeout):
+    with pytest.raises(APITimeoutError):
         _generator(httpx.MockTransport(timeout)).generate("如何安全回滚？", _git_hits())
 
 
 def test_deepseek_rate_limit_is_exposed_for_fallback() -> None:
     transport = httpx.MockTransport(lambda _: httpx.Response(429, json={"error": {"message": "rate limited"}}))
-    with pytest.raises(httpx.HTTPStatusError) as caught:
+    with pytest.raises(RateLimitError) as caught:
         _generator(transport).generate("如何安全回滚？", _git_hits())
-    assert caught.value.response.status_code == 429
+    assert caught.value.status_code == 429
 
 
 def test_deepseek_invalid_json_is_rejected() -> None:

@@ -18,7 +18,7 @@ app.whenReady().then(async () => {
     process.stdout.write(JSON.stringify({ configured: true, ...result }));
     app.exit(0);
   } catch (error) {
-    process.stdout.write(JSON.stringify({ ok: false, configured: true, error: error.message }));
+    process.stdout.write(JSON.stringify({ ok: false, configured: true, provider: config.provider, error: error.message }));
     app.exit(1);
   }
 });

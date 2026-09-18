@@ -25,6 +25,7 @@ export function SelectMenu({
   value,
   options = [],
   onChange,
+  id,
   ariaLabel,
   disabled = false,
   dataUi,
@@ -135,6 +136,7 @@ export function SelectMenu({
         ref={triggerRef}
         className="select-menu-trigger"
         type="button"
+        id={id}
         role="combobox"
         aria-label={ariaLabel || "选择"}
         aria-labelledby={ariaLabel ? undefined : labelId}
@@ -174,4 +176,3 @@ export function SelectMenu({
     </div>
   );
 }
-

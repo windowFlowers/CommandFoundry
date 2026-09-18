@@ -1,12 +1,13 @@
 {
   "name": "aegiscopilot-desktop",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "private": true,
   "author": "AegisCopilot Contributors",
-    "description": "Local-first developer command RAG assistant",
+  "description": "Local-first developer command RAG assistant",
   "main": "electron/main.cjs",
   "dependencies": {
-    "node-pty": "^1.1.0"
+    "node-pty": "^1.1.0",
+    "openai": "7.18.0"
   },
   "scripts": {
     "dev": "electron .",
@@ -15,6 +16,7 @@
     "build:frontend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-frontend.ps1",
     "build:backend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-backend.ps1",
     "capture:ui": "electron scripts/capture-ui.cjs",
+    "verify:model": "electron scripts/verify-model.cjs",
     "verify:deepseek": "electron scripts/verify-deepseek.cjs",
     "verify:rag": "electron scripts/verify-rag.cjs",
     "verify:uploads": "..\\backend\\.venv\\Scripts\\python.exe ..\\scripts\\verify_uploads.py",
@@ -63,7 +65,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "assets/icon.ico"

@@ -12,9 +12,12 @@ import { fetchJson, streamChat } from "./lib/api";
 import { appendStreamAnswer, memoryStateForAnswer, resetConversationMemory } from "./lib/memory";
 
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
+const DEFAULT_TERMINAL_WIDTH = 520;
+const MIN_TERMINAL_WIDTH = 360;
+const MAX_TERMINAL_WIDTH = 760;
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.9.0";
+  const appVersion = window.aegisDesktop?.version || "2.10.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
@@ -39,6 +42,7 @@ export function App() {
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 900);
   const [preview, setPreview] = useState(null);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalWidth, setTerminalWidth] = useState(DEFAULT_TERMINAL_WIDTH);
   const {
     profile,
     memoryRevision,
@@ -284,7 +288,16 @@ export function App() {
     }
   }
 
-  return <div className="app-frame">
+  function resizeTerminal(nextWidth) {
+    const numericWidth = Number(nextWidth);
+    if (!Number.isFinite(numericWidth)) return;
+    setTerminalWidth(Math.min(MAX_TERMINAL_WIDTH, Math.max(MIN_TERMINAL_WIDTH, Math.round(numericWidth))));
+  }
+
+  return <div
+    className={`app-frame ${terminalOpen ? "terminal-docked" : ""}`}
+    style={{ "--terminal-width": `${terminalWidth}px` }}
+  >
     <div className="titlebar" data-ui="titlebar">
       <div className="titlebar-brand"><img src="./app-icon.png" alt="" /><span>AegisCopilot</span><small>v{appVersion}</small></div>
       <span className="titlebar-context">Developer Command RAG</span>
@@ -347,7 +360,14 @@ export function App() {
     <MemoryDrawer open={memoryDrawerOpen} onClose={() => setMemoryDrawerOpen(false)} memory={memoryState} loading={memoryLoading} error={memoryError} onReset={() => setMemoryResetOpen(true)} />
     <PersonalizationDrawer open={personalizationDrawerOpen} onClose={() => setPersonalizationDrawerOpen(false)} personalization={personalizationState} refreshToken={memoryRevision} />
     <DocumentPreviewModal preview={preview} onClose={() => setPreview(null)} />
-    <TerminalPanel open={terminalOpen} onClose={() => setTerminalOpen(false)} />
+    <TerminalPanel
+      open={terminalOpen}
+      width={terminalWidth}
+      minWidth={MIN_TERMINAL_WIDTH}
+      maxWidth={MAX_TERMINAL_WIDTH}
+      onWidthChange={resizeTerminal}
+      onClose={() => setTerminalOpen(false)}
+    />
     {memoryResetOpen && <Modal
       title="清空会话上下文"
       onClose={() => setMemoryResetOpen(false)}

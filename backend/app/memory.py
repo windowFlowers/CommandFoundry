@@ -459,6 +459,7 @@ class ConversationMemoryService:
                             conversation_id,
                             expected_revision=revision,
                             summary=summary,
+                            provider=getattr(self.generator, "provider", "deepseek"),
                         )
                     except Exception as exc:
                         self.repository.complete_model_memory(

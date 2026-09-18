@@ -28,7 +28,7 @@ from .models import (
 
 
 BUILTIN_KNOWLEDGE_BASE_NAME = "开发者 IT 知识库"
-DATABASE_SCHEMA_VERSION = 5
+DATABASE_SCHEMA_VERSION = 6
 DOCUMENT_INDEX_SCHEMA_VERSION = 2
 GLOBAL_MEMORY_CATEGORIES = {"response_style", "expertise"}
 SCOPED_MEMORY_CATEGORIES = {"platform", "toolchain", "project_constraint"}
@@ -64,6 +64,8 @@ class ConversationRepository:
                 labels.append("v2.4")
             if version < 5:
                 labels.append("v2.5")
+            if version < 6:
+                labels.append("v2.10")
             for label in labels:
                 backup_path = self.database_path.with_name(
                     f"{self.database_path.name}.pre-{label}.backup"
@@ -210,7 +212,7 @@ class ConversationRepository:
                     source_conversation_id TEXT,
                     source_message_id TEXT,
                     extraction_provider TEXT NOT NULL
-                        CHECK(extraction_provider IN ('local', 'deepseek', 'manual')),
+                        CHECK(length(trim(extraction_provider)) > 0),
                     embedding BLOB,
                     embedding_dimension INTEGER,
                     embedding_version TEXT NOT NULL DEFAULT '',
@@ -317,6 +319,7 @@ class ConversationRepository:
                     ON user_memory_extraction_tasks(profile_id, status, created_at);
                 """
             )
+            self._migrate_memory_provider_schema(connection)
             connection.execute(
                 "INSERT OR IGNORE INTO knowledge_bases(id, name, is_builtin, created_at, updated_at) "
                 "VALUES (?, ?, 1, ?, ?)",
@@ -404,6 +407,96 @@ class ConversationRepository:
                 (now,),
             )
             connection.execute(f"PRAGMA user_version = {DATABASE_SCHEMA_VERSION}")
+
+    @staticmethod
+    def _migrate_memory_provider_schema(connection: sqlite3.Connection) -> None:
+        """Allow memory provenance to follow the configured model provider.
+
+        v2.5 constrained this column to ``local/deepseek/manual``. Existing
+        databases are rebuilt transactionally so OpenAI, Qwen, Ollama and
+        custom compatible provider ids can be stored without losing memories.
+        Fresh databases already use the relaxed CHECK and take the no-op path.
+        """
+
+        row = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'user_memories'"
+        ).fetchone()
+        definition = str(row[0] or "") if row else ""
+        if "extraction_provider IN ('local', 'deepseek', 'manual')" not in definition:
+            return
+
+        connection.execute("DROP INDEX IF EXISTS idx_user_memories_active_key")
+        connection.execute("DROP INDEX IF EXISTS idx_user_memories_scope")
+        connection.execute("ALTER TABLE user_memories RENAME TO user_memories_v5")
+        connection.execute(
+            """
+            CREATE TABLE user_memories (
+                id TEXT PRIMARY KEY,
+                profile_id TEXT NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+                scope TEXT NOT NULL CHECK(scope IN ('global', 'knowledge_base')),
+                knowledge_base_id TEXT REFERENCES knowledge_bases(id) ON DELETE CASCADE,
+                category TEXT NOT NULL CHECK(category IN (
+                    'response_style', 'expertise', 'platform', 'toolchain', 'project_constraint'
+                )),
+                key TEXT NOT NULL,
+                value TEXT NOT NULL,
+                display_text TEXT NOT NULL,
+                confidence REAL NOT NULL CHECK(confidence >= 0 AND confidence <= 1),
+                pinned INTEGER NOT NULL DEFAULT 0 CHECK(pinned IN (0, 1)),
+                status TEXT NOT NULL DEFAULT 'active'
+                    CHECK(status IN ('active', 'superseded')),
+                supersedes_id TEXT REFERENCES user_memories(id) ON DELETE SET NULL,
+                source_conversation_id TEXT,
+                source_message_id TEXT,
+                extraction_provider TEXT NOT NULL
+                    CHECK(length(trim(extraction_provider)) > 0),
+                embedding BLOB,
+                embedding_dimension INTEGER,
+                embedding_version TEXT NOT NULL DEFAULT '',
+                last_used_at TEXT,
+                use_count INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                CHECK (
+                    (scope = 'global' AND knowledge_base_id IS NULL) OR
+                    (scope = 'knowledge_base' AND knowledge_base_id IS NOT NULL)
+                )
+            )
+            """
+        )
+        connection.execute(
+            """
+            INSERT INTO user_memories(
+                id, profile_id, scope, knowledge_base_id, category, key, value,
+                display_text, confidence, pinned, status, supersedes_id,
+                source_conversation_id, source_message_id, extraction_provider,
+                embedding, embedding_dimension, embedding_version, last_used_at,
+                use_count, created_at, updated_at
+            )
+            SELECT
+                id, profile_id, scope, knowledge_base_id, category, key, value,
+                display_text, confidence, pinned, status, supersedes_id,
+                source_conversation_id, source_message_id, extraction_provider,
+                embedding, embedding_dimension, embedding_version, last_used_at,
+                use_count, created_at, updated_at
+            FROM user_memories_v5
+            """
+        )
+        connection.execute("DROP TABLE user_memories_v5")
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX idx_user_memories_active_key
+            ON user_memories(
+                profile_id, scope, ifnull(knowledge_base_id, ''), category, key
+            ) WHERE status = 'active'
+            """
+        )
+        connection.execute(
+            """
+            CREATE INDEX idx_user_memories_scope
+            ON user_memories(profile_id, status, scope, knowledge_base_id, category, updated_at)
+            """
+        )
 
     @staticmethod
     def _parse_time(value: str) -> datetime:
@@ -873,6 +966,7 @@ class ConversationRepository:
         *,
         expected_revision: int,
         summary: MemorySummary | None,
+        provider: str = "deepseek",
         error: str = "",
     ) -> bool:
         now = utc_now().isoformat()
@@ -885,11 +979,13 @@ class ConversationRepository:
                 )
             else:
                 cursor = connection.execute(
-                    "UPDATE conversation_memory SET summary_json = ?, summary_provider = 'deepseek', status = 'ready', "
+                    "UPDATE conversation_memory SET summary_json = ?, summary_provider = ?, status = 'ready', "
                     "estimated_tokens = ?, pending_input_json = '', last_error = '', updated_at = ? "
                     "WHERE conversation_id = ? AND revision = ?",
                     (
                         summary.model_dump_json(),
+                        re.sub(r"[^a-z0-9._-]+", "_", str(provider or "deepseek").strip().casefold()).strip("._-")[:64]
+                        or "deepseek",
                         max(1, len(summary.model_dump_json()) // 3),
                         now,
                         conversation_id,
@@ -1114,7 +1210,10 @@ class ConversationRepository:
         normalized_confidence = float(confidence)
         if not 0 <= normalized_confidence <= 1:
             raise ValueError("记忆置信度必须在 0 到 1 之间")
-        if extraction_provider not in MEMORY_PROVIDERS:
+        normalized_provider = re.sub(
+            r"[^a-z0-9._-]+", "_", str(extraction_provider or "").strip().casefold()
+        ).strip("._-")[:64]
+        if not normalized_provider:
             raise ValueError("无效的记忆提取来源")
         return {
             "scope": normalized_scope,
@@ -1124,7 +1223,7 @@ class ConversationRepository:
             "value": normalized_value,
             "display_text": normalized_display,
             "confidence": normalized_confidence,
-            "extraction_provider": extraction_provider,
+            "extraction_provider": normalized_provider,
         }
 
     @staticmethod
@@ -1727,6 +1826,7 @@ class ConversationRepository:
         candidates: list[dict] | None = None,
         *,
         memory_ids: list[str] | None = None,
+        extraction_provider: str = "deepseek",
         expected_epoch: int | None = None,
         expected_attempt: int | None = None,
     ) -> list[UserMemory]:
@@ -1800,7 +1900,7 @@ class ConversationRepository:
                         value=str(candidate.get("value") or ""),
                         display_text=str(candidate.get("display_text") or ""),
                         confidence=confidence,
-                        extraction_provider="deepseek",
+                        extraction_provider=extraction_provider,
                     )
                 except (TypeError, ValueError):
                     continue

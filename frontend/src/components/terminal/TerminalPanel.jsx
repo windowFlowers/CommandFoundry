@@ -10,14 +10,23 @@ function shellLabel(shell) {
   return shell === "cmd" ? "CMD" : "PowerShell";
 }
 
-export function TerminalPanel({ open, onClose }) {
+export function TerminalPanel({
+  open,
+  onClose,
+  width = 520,
+  minWidth = 360,
+  maxWidth = 760,
+  onWidthChange,
+}) {
   const [sessions, setSessions] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [shell, setShell] = useState("powershell");
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState("");
+  const [resizing, setResizing] = useState(false);
   const containers = useRef(new Map());
   const instances = useRef(new Map());
+  const normalWidth = useRef(width);
 
   function attachSession(session) {
     if (!session || instances.current.has(session.terminalId)) return;
@@ -118,16 +127,72 @@ export function TerminalPanel({ open, onClose }) {
 
   function clearActive() { instances.current.get(activeId)?.terminal.clear(); }
 
+  function beginResize(event) {
+    if (event.button !== 0 || typeof onWidthChange !== "function") return;
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = width;
+    setResizing(true);
+    const move = (moveEvent) => onWidthChange(startWidth + startX - moveEvent.clientX);
+    const end = () => {
+      setResizing(false);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", end);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end, { once: true });
+  }
+
+  function resizeWithKeyboard(event) {
+    if (typeof onWidthChange !== "function") return;
+    const step = event.shiftKey ? 80 : 24;
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      onWidthChange(width + step);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      onWidthChange(width - step);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      onWidthChange(minWidth);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      onWidthChange(maxWidth);
+    }
+  }
+
+  function toggleExpanded() {
+    if (expanded) {
+      onWidthChange(normalWidth.current);
+    } else {
+      normalWidth.current = width;
+      onWidthChange(Math.max(width, Math.min(maxWidth, 680)));
+    }
+    setExpanded((value) => !value);
+  }
+
   if (!open) return null;
   return (
-    <section className={`terminal-panel ${expanded ? "expanded" : ""}`} data-ui="terminal-panel" aria-label="内置终端">
+    <section className={`terminal-panel ${expanded ? "expanded" : ""} ${resizing ? "resizing" : ""}`} data-ui="terminal-panel" aria-label="内置终端" style={{ "--terminal-width": `${width}px` }}>
+      <div
+        className="terminal-panel-resize-handle"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="调整终端宽度"
+        aria-valuemin={minWidth}
+        aria-valuemax={maxWidth}
+        aria-valuenow={width}
+        tabIndex={0}
+        onPointerDown={beginResize}
+        onKeyDown={resizeWithKeyboard}
+      />
       <header className="terminal-panel-head">
         <div className="terminal-panel-title"><TerminalIcon size={16} /><strong>终端</strong><span>{sessions.length} / 4</span></div>
         <div className="terminal-panel-actions">
           <button type="button" onClick={() => createSession("powershell")} disabled={sessions.length >= 4} aria-label="新建 PowerShell 终端"><Plus size={15} />PowerShell</button>
           <button type="button" onClick={() => createSession("cmd")} disabled={sessions.length >= 4} aria-label="新建 CMD 终端"><Plus size={15} />CMD</button>
           <button type="button" onClick={clearActive} disabled={!activeId} aria-label="清屏"><RotateCcw size={15} /></button>
-          <button type="button" onClick={() => setExpanded((value) => !value)} aria-label={expanded ? "还原终端高度" : "放大终端"}>{expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}</button>
+          <button type="button" onClick={toggleExpanded} aria-label={expanded ? "还原终端宽度" : "放大终端"}>{expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}</button>
           <button type="button" onClick={onClose} aria-label="关闭终端"><X size={16} /></button>
         </div>
       </header>

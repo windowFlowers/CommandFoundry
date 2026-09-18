@@ -4,7 +4,15 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
-const { clearApiKey, modelConfigPath, readApiKey, saveApiKey } = require("../electron/model-config.cjs");
+const {
+  clearApiKey,
+  modelConfigPath,
+  readApiKey,
+  readModelConfig,
+  resolveConnectionTestApiKey,
+  saveApiKey,
+  saveModelConfig,
+} = require("../electron/model-config.cjs");
 
 
 function fakeSafeStorage() {
@@ -36,9 +44,63 @@ test("model config refuses plaintext fallback when encryption is unavailable", (
   assert.equal(fs.existsSync(modelConfigPath(userDataPath)), false);
 });
 
+test("model config stores an OpenAI-compatible provider without exposing the key", () => {
+  const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), "aegis-config-provider-"));
+  const safeStorage = fakeSafeStorage();
+  saveModelConfig({
+    userDataPath,
+    safeStorage,
+    apiKey: "provider-secret",
+    provider: "openai",
+    model: "gpt-test",
+    baseUrl: "https://api.example.test/v1",
+  });
+  const raw = fs.readFileSync(modelConfigPath(userDataPath), "utf8");
+  assert.equal(raw.includes("provider-secret"), false);
+  assert.deepEqual(readModelConfig({ userDataPath, safeStorage }), {
+    provider: "openai",
+    model: "gpt-test",
+    baseUrl: "https://api.example.test/v1",
+    apiKey: "provider-secret",
+  });
+  assert.equal(readApiKey({ userDataPath, safeStorage }), "provider-secret");
+});
+
+test("connection tests do not reuse a saved key after switching provider", () => {
+  const current = { provider: "openai", apiKey: "openai-secret" };
+  assert.equal(
+    resolveConnectionTestApiKey({ input: { provider: "openai" }, current }),
+    "openai-secret",
+  );
+  assert.equal(
+    resolveConnectionTestApiKey({ input: { provider: "deepseek" }, current }),
+    "",
+  );
+  assert.equal(
+    resolveConnectionTestApiKey({ input: { provider: "deepseek", apiKey: "new-secret" }, current }),
+    "new-secret",
+  );
+});
+
+test("unencrypted legacy provider config keeps its own preset defaults", () => {
+  const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), "aegis-config-legacy-"));
+  const filePath = modelConfigPath(userDataPath);
+  fs.writeFileSync(filePath, JSON.stringify({ version: 1, provider: "openai", ciphertext: "ignored" }));
+  const config = readModelConfig({
+    userDataPath,
+    safeStorage: { isEncryptionAvailable: () => false },
+  });
+  assert.equal(config.provider, "openai");
+  assert.equal(config.model, "gpt-4o-mini");
+  assert.equal(config.baseUrl, "https://api.openai.com/v1");
+  assert.equal(config.apiKey, "");
+});
+
 test("preload exposes only scoped model config methods", () => {
   const preload = fs.readFileSync(path.resolve(__dirname, "../electron/preload.cjs"), "utf8");
   assert.match(preload, /modelConfig/);
+  assert.match(preload, /provider: input\.provider/);
+  assert.match(preload, /baseUrl: input\.baseUrl/);
   assert.match(preload, /model-config:status/);
   assert.match(preload, /terminal:\s*\{/);
   assert.match(preload, /terminal:create/);
