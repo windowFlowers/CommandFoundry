@@ -5,6 +5,9 @@
   "author": "AegisCopilot Contributors",
     "description": "Local-first developer command RAG assistant",
   "main": "electron/main.cjs",
+  "dependencies": {
+    "node-pty": "^1.1.0"
+  },
   "scripts": {
     "dev": "electron .",
     "test": "node --test test/*.test.cjs",
@@ -21,6 +24,10 @@
   "build": {
     "appId": "com.aegiscopilot.desktop",
     "productName": "AegisCopilot",
+    "npmRebuild": false,
+    "asarUnpack": [
+      "node_modules/node-pty/**/*"
+    ],
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -74,10 +81,7 @@
     }
   },
   "devDependencies": {
-    "@xterm/addon-fit": "^0.10.0",
-    "@xterm/xterm": "^5.3.0",
     "electron": "39.8.10",
-    "electron-builder": "26.0.12",
-    "node-pty": "^1.1.0"
+    "electron-builder": "26.0.12"
   }
 }
