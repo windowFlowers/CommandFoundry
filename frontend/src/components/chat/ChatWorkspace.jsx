@@ -29,7 +29,7 @@ import { SelectMenu } from "../ui/SelectMenu";
 const examples = [
   { id: "linux", label: "Linux / Shell", question: "在 Linux 中切换文件目录的指令是什么？", icon: Shell },
   { id: "git", label: "Git", question: "Git 怎么安全回滚一次提交？", icon: GitBranch },
-  { id: "toolchain", label: "Python / Node", question: "Python 怎么创建并激活虚拟环境？", icon: FileCode2 },
+  { id: "python", label: "Python", question: "Python 怎么创建并激活虚拟环境？", icon: FileCode2 },
 ];
 
 const riskText = { low: "低风险", medium: "需留意", high: "高风险" };

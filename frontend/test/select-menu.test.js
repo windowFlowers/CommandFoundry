@@ -33,6 +33,6 @@ test("new conversation home keeps exactly Linux, Git and Python examples without
   const examples = chatSource.match(/const examples = \[[\s\S]*?\];/)?.[0] || "";
   assert.match(emptyState, /03 ENTRIES/);
   assert.equal((emptyState.match(/<button key=\{id\}/g) || []).length, 1);
-  assert.deepEqual([...examples.matchAll(/id: "([^"]+)"/g)].map((match) => match[1]), ["linux", "git", "toolchain"]);
+  assert.deepEqual([...examples.matchAll(/id: "([^"]+)"/g)].map((match) => match[1]), ["linux", "git", "python"]);
   assert.doesNotMatch(emptyState, /LOCAL-FIRST COMMAND RAG|把问题变成|CURATED LOCALLY|TRACEABLE SOURCES|SAFE BY DEFAULT/);
 });
