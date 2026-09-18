@@ -85,7 +85,7 @@ def evaluate_memory(retriever: HybridRetriever, cases: list[dict]) -> dict[str, 
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Evaluate AegisCopilot BM25 and hybrid retrieval")
+    parser = argparse.ArgumentParser(description="Evaluate CommandFoundry BM25 and hybrid retrieval")
     parser.add_argument("--skip-hybrid", action="store_true", help="Only run the deterministic BM25 baseline")
     args = parser.parse_args()
 

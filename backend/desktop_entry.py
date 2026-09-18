@@ -8,7 +8,7 @@ from app.main import app
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AegisCopilot local API")
+    parser = argparse.ArgumentParser(description="CommandFoundry local API")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8002)
     args = parser.parse_args()

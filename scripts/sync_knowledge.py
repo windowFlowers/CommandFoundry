@@ -1442,7 +1442,7 @@ def build_windows_topics() -> list[dict[str, object]]:
         topic = dict(payload)
         topic["source"] = {
             "source_id": spec["id"],
-            "title": f"AegisCopilot Windows 2.7 种子知识：{spec['title']}",
+            "title": f"CommandFoundry Windows 2.7 种子知识：{spec['title']}",
             "source_url": spec["source_url"],
             "license": "MIT (project-authored)",
             "revision": WINDOWS_KNOWLEDGE_REVISION,
@@ -1460,7 +1460,7 @@ def build_sql_topics() -> list[dict[str, object]]:
         is_postgres = topic_id.startswith("postgres-")
         platform = ["PostgreSQL 14+"] if is_postgres else DOMAIN_PLATFORM["sql"]
         product = "PostgreSQL" if is_postgres else "MySQL 8.x"
-        source_title = f"AegisCopilot {product} 种子知识"
+        source_title = f"CommandFoundry {product} 种子知识"
         source_path = "generated/postgresql" if is_postgres else "generated/mysql"
         topics.append(
             {
@@ -1521,7 +1521,7 @@ def build_redis_topics() -> list[dict[str, object]]:
                 "notes": ["命令在 redis-cli 中执行；将尖括号占位参数替换为实际值。"],
                 "source": {
                     "source_id": f"redis.{topic_id}",
-                    "title": "AegisCopilot Redis 种子知识",
+                    "title": "CommandFoundry Redis 种子知识",
                     "source_url": source_url,
                     "license": "MIT (project-authored)",
                     "revision": "v2.1.0",
@@ -1629,7 +1629,14 @@ def ensure_source(source_root: Path) -> Path:
     if not (source_root / ".git").exists():
         source_root.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(["git", "clone", "--filter=blob:none", TLDR_REPOSITORY, str(source_root)], check=True)
-    subprocess.run(["git", "-C", str(source_root), "fetch", "origin", TLDR_REVISION], check=True)
+    revision_present = subprocess.run(
+        ["git", "-C", str(source_root), "cat-file", "-e", f"{TLDR_REVISION}^{{commit}}"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    ).returncode == 0
+    if not revision_present:
+        subprocess.run(["git", "-C", str(source_root), "fetch", "origin", TLDR_REVISION], check=True)
     subprocess.run(["git", "-C", str(source_root), "checkout", TLDR_REVISION], check=True)
     return source_root
 
@@ -1646,7 +1653,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
         json.dumps(
             {
                 "schema_version": 1,
-                "generated_for": f"AegisCopilot {KNOWLEDGE_VERSION}",
+                "generated_for": f"CommandFoundry {KNOWLEDGE_VERSION}",
                 "recipe_count": len(recipes),
                 "recipe_revision": recipe_revision,
                 "recipes": recipes,
@@ -1685,7 +1692,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
     )
     source_lock = {
         "schema_version": 1,
-        "generated_for": f"AegisCopilot {KNOWLEDGE_VERSION}",
+        "generated_for": f"CommandFoundry {KNOWLEDGE_VERSION}",
         "recipe_schema_version": 1,
         "recipe_revision": recipe_revision,
         "repositories": [
@@ -1748,7 +1755,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 - Copyright: tldr-pages team and contributors
 
-Selected command examples are adapted into AegisCopilot's structured knowledge format.
+Selected command examples are adapted into CommandFoundry's structured knowledge format.
 
 ## Architecture references
 
@@ -1767,7 +1774,7 @@ Project-authored Windows command seeds link to Microsoft Learn, Chocolatey and S
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build AegisCopilot's curated offline knowledge bundle")
+    parser = argparse.ArgumentParser(description="Build CommandFoundry's curated offline knowledge bundle")
     parser.add_argument("--tldr-root", type=Path, default=ROOT / ".runtime" / "sources" / "tldr")
     args = parser.parse_args()
     source_root = ensure_source(args.tldr_root.resolve())

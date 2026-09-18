@@ -20,7 +20,7 @@ test("ImageGen application icon includes PNG source and all Windows sizes", () =
   assert.deepEqual(sizes, [16, 32, 48, 64, 128, 256]);
 });
 
-test("Windows packaging stamps AegisCopilot metadata and recreates shortcuts", () => {
+test("Windows packaging stamps CommandFoundry metadata and recreates shortcuts", () => {
   const desktopRoot = path.resolve(__dirname, "..");
   const packageJson = JSON.parse(fs.readFileSync(path.join(desktopRoot, "package.json"), "utf8"));
   const mainSource = fs.readFileSync(path.join(desktopRoot, "electron", "main.cjs"), "utf8");
@@ -36,7 +36,7 @@ test("Windows packaging stamps AegisCopilot metadata and recreates shortcuts", (
   assert.match(afterPackSource, /--set-icon/);
   assert.match(afterPackSource, /ProductName/);
   assert.equal(packageJson.build.nsis.createDesktopShortcut, "always");
-  assert.equal(packageJson.build.nsis.shortcutName, "AegisCopilot");
+  assert.equal(packageJson.build.nsis.shortcutName, "CommandFoundry");
   assert.match(mainSource, /app\.setAppUserModelId\("com\.aegiscopilot\.desktop"\)/);
   assert.match(backendBuild, /collect-all fastembed/);
   assert.match(mainSource, /titleBarStyle: "hidden"/);

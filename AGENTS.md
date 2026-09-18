@@ -1,4 +1,4 @@
-# AegisCopilot 项目规则 / Project Rules
+# CommandFoundry 项目规则 / Project Rules
 
 ## 后续任务必须积极使用子 agent
 
@@ -14,7 +14,7 @@
 ## Computer Use 规则
 
 - 涉及 Windows 桌面 UI 时，先读取并遵循 `computer-use` 技能；只在真实 native app surface 可用时宣称完成 UI 验收。
-- 不通过 UI 自动化终端、命令提示符或 PowerShell；不执行 AegisCopilot 生成的命令。
+- 不通过 UI 自动化终端、命令提示符或 PowerShell；不执行 CommandFoundry 生成的命令。
 - 不把脚本烟测冒充为桌面 UI 验收；CUA 不可用时如实记录阻塞原因。
 
 ## 发布与安全

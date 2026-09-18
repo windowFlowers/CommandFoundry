@@ -20,7 +20,7 @@ def _allowed_origins() -> list[str]:
 
 
 class Settings(BaseModel):
-    app_name: str = "AegisCopilot API"
+    app_name: str = "CommandFoundry API"
     app_version: str = "2.10.0"
     environment: str = os.getenv("AEGIS_ENV", "local")
     storage_dir: Path = Field(default_factory=lambda: _path_from_env("AEGIS_STORAGE_DIR", PROJECT_ROOT / "backend" / "storage"))

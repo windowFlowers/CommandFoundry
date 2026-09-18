@@ -1,1 +1,1 @@
-"""AegisCopilot backend package."""
+"""CommandFoundry backend package."""

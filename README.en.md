@@ -1,134 +1,38 @@
-# AegisCopilot 2.10
+# CommandFoundry
 
-Local-first command RAG for developers on Windows.
+CommandFoundry is a local-first command RAG desktop application for developers, currently focused on Windows.
 
-AegisCopilot turns a natural-language operation into grounded, copyable commands. It retrieves local knowledge, preserves parent/child document context, cites the exact evidence range, and asks for missing command parameters one at a time instead of inventing paths, ports, shells, or credentials.
+## What it does
 
-> AegisCopilot never executes commands automatically or remotely. After an explicit confirmation, a direct command may be written to a local PowerShell/CMD terminal; templates and clarification answers remain copy-only.
+- Turns natural-language operations into source-grounded, copyable commands; asks for required details such as paths, shells, and ports when they are missing.
+- Searches local knowledge with parent/child chunk retrieval and precise citations. It supports TXT, Markdown, PDF, and DOCX uploads, as well as multiple knowledge bases.
+- Covers common PowerShell, CMD, and POSIX developer operations, including Python, Git, Docker, and Windows file, process, service, and networking topics.
+- Uses the official OpenAI SDKs to connect to DeepSeek, OpenAI, Qwen, Moonshot, SiliconFlow, Ollama, and other OpenAI-compatible APIs.
+- Provides local retrieval, personalized context, resumable command-parameter planning, and a side terminal. Local commands are run only after explicit user confirmation.
 
-中文版本：[README.md](README.md)
-
-## Highlights
-
-- **Direct command planning**: complete facts produce one command block without placeholders; missing facts become one clarification question at a time.
-- **Safe fallback**: skipped, refused, or invalid input falls back to one clearly labelled template instead of asking indefinitely.
-- **Shell-aware rendering**: PowerShell, CMD, and POSIX variants use dedicated quoting rules. Windows paths with spaces, Unicode, UNC paths, and trailing separators are covered by tests.
-- **Curated recipes**: provenance-backed recipes cover Python virtual environments, Git revert, Docker run, Windows file/port operations, MySQL, and Redis.
-- **Windows developer knowledge**: 33 PowerShell/CMD topics cover files, processes, services, networking, archives, hashes, HTTP, environment variables, winget/Chocolatey/Scoop, and robocopy warnings.
-- **Parent/child retrieval**: small child chunks drive retrieval while bounded parent chunks preserve context for generation; citations point to the exact child/parent locator.
-- **Personalized context**: the current question takes precedence over conversation, knowledge-base and global preferences. At most four redacted memories are used per turn, only to enrich retrieval and presentation—not as command, fact, or risk evidence.
-- **Multiple knowledge bases and uploads**: create and bind multiple knowledge bases; upload TXT, Markdown, PDF, and DOCX files up to 20 MB each.
-- **Offline-first operation**: BM25 and local FastEmbed retrieval work without a cloud key. Optional models may only explain already grounded evidence.
-- **Multiple model APIs**: the official OpenAI Python/Node SDKs provide the shared `base_url` + Chat Completions protocol for DeepSeek, OpenAI, Qwen, Moonshot, SiliconFlow, Ollama and custom OpenAI-compatible endpoints; the project does not duplicate the HTTP protocol.
-- **Desktop safety**: API keys are protected by Electron `safeStorage` / Windows DPAPI and are never exposed to the renderer or SQLite.
-- **Embedded terminal**: only PowerShell and CMD are allowed, with at most four temporary PTY sessions. The terminal is a Codex-style resizable right-side dock so it does not cover the conversation. Before execution the UI shows the shell, working directory, full command, risk and warnings; high-risk commands also require typing `确认执行`. Terminal output, input history and working directories are never stored in the app database.
-
-## Quick manual test
-
-1. Create a new conversation and select the developer IT knowledge base.
-2. Ask `Python 怎么创建并激活虚拟环境？`.
-3. Provide `C:\Users\CZX\Documents\AegisCopilot 手动测试` when asked for the target directory.
-4. Select **PowerShell**, then select **.venv**.
-5. The final answer should contain one copyable PowerShell block, no `<...>` placeholders, and expandable citations. It should resemble:
-
-```powershell
-python -m venv 'C:\Users\CZX\Documents\AegisCopilot 手动测试\.venv'
-& 'C:\Users\CZX\Documents\AegisCopilot 手动测试\.venv\Scripts\Activate.ps1'
-```
-
-Do not execute a generated command during the clarification UI test. To verify the terminal, manually use a harmless command only after the confirmation dialog; never use an assistant-generated high-risk command for testing.
-
-## Architecture
+## Technology stack
 
 | Layer | Technology |
-|---|---|
-| Desktop | Electron 39, custom protocol, electron-builder / NSIS |
-| Frontend | React 18, Vite 5, Lucide React |
-| Backend | Python 3.11+, FastAPI, Pydantic, SQLite, SSE |
-| Retrieval | rank-bm25, FastEmbed `BAAI/bge-small-zh-v1.5`, ONNX Runtime, RRF |
-| Generation | Official OpenAI SDK (optional OpenAI-compatible API: DeepSeek / OpenAI / Qwen / Moonshot / SiliconFlow / Ollama / Custom) |
-| Packaging | PyInstaller onedir, electron-builder Windows x64 |
+| --- | --- |
+| Desktop | Electron, electron-builder / NSIS, Node.js |
+| Frontend | React, Vite, Lucide React |
+| Backend | Python, FastAPI, Pydantic, SQLite, SSE |
+| Retrieval | BM25, FastEmbed, ONNX Runtime, RRF |
+| Model APIs | Official OpenAI Python/Node SDKs, OpenAI-compatible APIs |
+| Packaging | PyInstaller, Windows x64 NSIS |
 
-The command planner persists resumable plans and multi-provider memory provenance in SQLite schema v6; the command-plan table was introduced in v5. Plans support restart recovery, cancellation/restart, optimistic locking, source revisions and citation IDs, and expire after 24 hours by default. A knowledge-base rebuild invalidates plans that depend on the old evidence. Credentials are deliberately excluded from plan values and model input. The catalog currently contains 21 provenance-backed high-value recipes.
+## Screenshots
 
-## Development setup
+### Command workspace
 
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev,desktop]"
+![Command workspace](docs/screenshots/answer-1080x720.png)
 
-cd ..\frontend
-npm.cmd install
+### Knowledge-base management
 
-cd ..\desktop
-npm.cmd install
-npm.cmd run dev
-```
+![Knowledge-base management](docs/screenshots/knowledge-1440x920.png)
 
-Desktop development requires Node.js 22+. The Windows installer bundles its runtime, so installer users do not need to install Node.js separately.
+### Personalized context
 
-The first source checkout may download the BGE ONNX model to `models/cache/`. The Windows package contains the pinned local model and does not need to download it on first launch.
+![Personalized context](docs/screenshots/personalization-1440x920.png)
 
-## Tests and packaging
-
-```powershell
-cd backend
-.\.venv\Scripts\python.exe -m pytest -q
-
-cd ..\frontend
-npm.cmd test
-npm.cmd run build
-
-cd ..\desktop
-npm.cmd test
-npm.cmd run build:frontend
-npm.cmd run build:backend
-npm.cmd run dist:dir
-.\scripts\smoke-backend.ps1
-npm.cmd run dist:win
-```
-
-The v2.10.0 release gate passed:
-
-- Backend: 143 tests passed.
-- Frontend: 40 tests passed; Vite production build passed.
-- Desktop: 24 tests passed, including SDK connection fallback, provider-key isolation, PTY allowlisting, resizable side dock, session limits, cleanup and preload IPC boundaries.
-- Packaged backend smoke test covers profile/memory CRUD, hybrid retrieval, offline SSE and the one-slot clarification flow.
-
-The Windows x64 installer is generated at `desktop/dist/AegisCopilot Setup 2.10.0.exe` and is intended to be distributed as a GitHub Release asset rather than committed to source history. Its SHA-256, build commit and complete gate record are documented in [docs/release-2.10.0.md](docs/release-2.10.0.md).
-
-## Installation and release boundaries
-
-- Target platform: Windows 10/11 x64. The installer includes the local model and does not download it on first launch.
-- Installed data: `%APPDATA%\AegisCopilot\storage`; logs: `%APPDATA%\AegisCopilot\logs`.
-- The installer is unsigned, so Windows SmartScreen may show an unknown publisher. There is no auto-update channel and no macOS/Linux installer yet.
-- The GitHub Release installer is intended for testing and personal use. Configure trusted code signing and verify install, upgrade, and uninstall on a clean Windows host before wider distribution.
-
-## Knowledge and reindexing
-
-Uploaded documents are extracted, split into parent/child chunks, embedded and indexed locally. Documents created before the parent/child index rules were enabled should be rebuilt or reindexed from Knowledge Base Management. A rebuild changes the index revision and safely expires pending command plans that depend on the old evidence.
-
-## Security boundaries
-
-- No automatic or remote command execution.
-- Direct commands are written to a local PowerShell/CMD PTY only after explicit confirmation. Templates, clarification cards and legacy answers have no execute button.
-- At most four temporary terminal sessions are allowed; sessions are cleaned up on exit and terminal output, input history and working directories are not persisted.
-- No credentials, API keys, tokens, private keys, or connection strings in SQLite, logs, long-term memory, or model prompts.
-- Deterministic rules label/warn about high-risk commands. Direct plans do not return unresolved placeholders; template fallbacks may retain placeholders. The application is not a sandbox and never executes commands on the user's behalf.
-- API keys are encrypted at rest through Electron `safeStorage` / Windows DPAPI.
-
-## Documentation
-
-- [Chinese README](README.md)
-- [Project rules](AGENTS.md)
-- [v2.10.0 release verification](docs/release-2.10.0.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Development, testing and packaging](docs/DEVELOPMENT.md)
-- [RAG evaluation](docs/RAG_EVALUATION.md)
-- [Security boundaries](docs/SECURITY.md)
-- [Third-party notices](knowledge/THIRD_PARTY_NOTICES.md)
-
-## License
-
-Project code is released under the MIT License. Adapted tldr knowledge is provided under CC BY 4.0; source URLs, revisions, licenses and hashes are recorded in `knowledge/manifest.json` and `knowledge/sources.lock.json`.
+中文版本：[README.md](README.md)

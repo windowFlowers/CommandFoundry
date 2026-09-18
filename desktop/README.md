@@ -1,4 +1,4 @@
-# AegisCopilot v2.10 Electron 桌面端
+# CommandFoundry v2.10 Electron 桌面端
 
 Electron 桌面版提供两条运行路径：开发模式自动启动仓库中的 FastAPI/Vite，发布模式运行内置 React 资源和 PyInstaller 后端。
 
@@ -37,8 +37,8 @@ npm.cmd run dist:win
 
 输出：
 
-- `dist/win-unpacked/AegisCopilot.exe`：未安装目录
-- `dist/AegisCopilot Setup 2.10.0.exe`：Windows x64 NSIS 安装包
+- `dist/win-unpacked/CommandFoundry.exe`：未安装目录
+- `dist/CommandFoundry Setup 2.10.0.exe`：Windows x64 NSIS 安装包
 
 ## 数据与模型
 
@@ -54,7 +54,7 @@ npm.cmd run dist:win
 - 仅构建 Windows x64
 - 未配置代码签名，SmartScreen 可能提示未知发布者
 - 不包含自动更新、托盘常驻和 macOS/Linux 安装包
-- 构建时会把“命令提示符 + 分层知识页”图标和 AegisCopilot 产品信息写入 Windows EXE
+- 构建时会把“命令提示符 + 分层知识页”图标和 CommandFoundry 产品信息写入 Windows EXE
 - 从旧版升级后，已固定到任务栏的旧快捷方式可能仍使用 Windows 图标缓存；解除固定后从新安装的开始菜单重新固定
 
 ## 内置终端与执行确认

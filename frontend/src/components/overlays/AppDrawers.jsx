@@ -124,7 +124,7 @@ export function MemoryDrawer({ open, onClose, memory, loading, error, onReset })
           const values = Array.isArray(summary[key]) ? summary[key] : [summary[key]];
           return <section key={key}><h3><span>{String(index + 1).padStart(2, "0")}</span>{label}</h3><div>{values.map((value, valueIndex) => <span key={`${key}-${valueIndex}`}>{value}</span>)}</div></section>;
         })}</div>}
-        <section className="memory-recent"><h3><span>{String(sections.length + 1).padStart(2, "0")}</span>本次使用</h3>{memory.recent_messages?.length ? <div>{memory.recent_messages.map((message) => <article key={message.id}><span>{message.role === "user" ? "你" : "AegisCopilot"}</span><p>{message.preview}</p></article>)}</div> : <div className="memory-empty">未使用历史消息</div>}</section>
+        <section className="memory-recent"><h3><span>{String(sections.length + 1).padStart(2, "0")}</span>本次使用</h3>{memory.recent_messages?.length ? <div>{memory.recent_messages.map((message) => <article key={message.id}><span>{message.role === "user" ? "你" : "CommandFoundry"}</span><p>{message.preview}</p></article>)}</div> : <div className="memory-empty">未使用历史消息</div>}</section>
         {memory.last_error && <div className="memory-error">模型摘要失败 · {memory.last_error}</div>}
         <button className="clear-memory" type="button" onClick={onReset} data-ui="clear-memory">清空上下文</button>
       </>}

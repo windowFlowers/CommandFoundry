@@ -4,7 +4,7 @@ setlocal
 cd /d "%~dp0"
 
 if not exist ".venv\Scripts\python.exe" (
-  echo [AegisCopilot] Virtual environment not found. Run setup.cmd first.
+  echo [CommandFoundry] Virtual environment not found. Run setup.cmd first.
   exit /b 1
 )
 

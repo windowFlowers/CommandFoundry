@@ -200,7 +200,7 @@ async function handleUnexpectedServiceExit(label) {
   servicesReady = false;
   const result = await dialog.showMessageBox(mainWindow, {
     type: "error",
-    title: "AegisCopilot 服务已停止",
+    title: "CommandFoundry 服务已停止",
     message: `${label}进程意外退出。`,
     detail: `可以重启应用恢复。日志目录：${logDirectory()}`,
     buttons: ["重启应用", "退出"],
@@ -342,7 +342,7 @@ async function bootstrap() {
   } catch (error) {
     await dialog.showMessageBox({
       type: "error",
-      title: "AegisCopilot 启动失败",
+      title: "CommandFoundry 启动失败",
       message: error.message,
       detail: `日志目录：${logDirectory()}`,
       buttons: ["退出"],

@@ -7,7 +7,7 @@
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 - Copyright: tldr-pages team and contributors
 
-Selected command examples are adapted into AegisCopilot's structured knowledge format.
+Selected command examples are adapted into CommandFoundry's structured knowledge format.
 
 ## Architecture references
 

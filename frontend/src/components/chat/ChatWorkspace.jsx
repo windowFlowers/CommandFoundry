@@ -284,7 +284,7 @@ function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOp
       <div className="answer-topline">
         <span className="thread-index">{entryNumber}</span>
         <span className="assistant-mark"><Code2 size={17} /></span>
-        <h2 className="speaker-name" id={titleId}>AegisCopilot</h2>
+        <h2 className="speaker-name" id={titleId}>CommandFoundry</h2>
         <div className="answer-signals">
           <ContextBadge answer={answer} onOpen={onOpenMemory} />
           <PersonalizationBadge answer={answer} onOpen={onOpenPersonalization} />

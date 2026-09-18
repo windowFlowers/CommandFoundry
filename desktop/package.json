@@ -1,8 +1,8 @@
 {
-  "name": "aegiscopilot-desktop",
+  "name": "commandfoundry-desktop",
   "version": "2.10.0",
   "private": true,
-  "author": "AegisCopilot Contributors",
+  "author": "CommandFoundry Contributors",
   "description": "Local-first developer command RAG assistant",
   "main": "electron/main.cjs",
   "dependencies": {
@@ -25,7 +25,7 @@
   },
   "build": {
     "appId": "com.aegiscopilot.desktop",
-    "productName": "AegisCopilot",
+    "productName": "CommandFoundry",
     "npmRebuild": false,
     "asarUnpack": [
       "node_modules/node-pty/**/*"
@@ -78,7 +78,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "AegisCopilot",
+      "shortcutName": "CommandFoundry",
       "installerIcon": "assets/icon.ico",
       "uninstallerIcon": "assets/icon.ico",
       "installerHeaderIcon": "assets/icon.ico"

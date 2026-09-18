@@ -251,7 +251,7 @@ export function App() {
             if (data.answer?.answer_kind === "clarification") {
               setAnswerAnnouncement(`需要补充信息：${data.answer?.clarification?.question || "请回答澄清问题"}。`);
             } else {
-              setAnswerAnnouncement(`AegisCopilot 回答已生成，共 ${Math.min(data.answer?.commands?.length || 0, 1)} 条命令。`);
+              setAnswerAnnouncement(`CommandFoundry 回答已生成，共 ${Math.min(data.answer?.commands?.length || 0, 1)} 条命令。`);
             }
             if (data.memory_update) notifyMemoryUpdate(data);
           }
@@ -299,7 +299,7 @@ export function App() {
     style={{ "--terminal-width": `${terminalWidth}px` }}
   >
     <div className="titlebar" data-ui="titlebar">
-      <div className="titlebar-brand"><img src="./app-icon.png" alt="" /><span>AegisCopilot</span><small>v{appVersion}</small></div>
+      <div className="titlebar-brand"><img src="./app-icon.png" alt="" /><span>CommandFoundry</span><small>v{appVersion}</small></div>
       <span className="titlebar-context">Developer Command RAG</span>
     </div>
     {view === "knowledge" ? (

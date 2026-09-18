@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_for": "AegisCopilot 2.7.0",
+  "generated_for": "CommandFoundry 2.7.0",
   "recipe_schema_version": 1,
-  "recipe_revision": "d6bccea4b2b49448c1a2378b1fa39909e99f74560b58dc372c01b909a92fbfb7",
+  "recipe_revision": "53eccd06b390b207a48e098cc2daa3ae2e7d3a74d3f935ea77cdf60237dbd92c",
   "repositories": [
     {
       "repository": "https://github.com/tldr-pages/tldr.git",
@@ -2799,11 +2799,11 @@
     {
       "recipe_id": "redis.string-set.cli",
       "topic_id": "redis.string-set",
-      "source_revision": "c8c2c5db22b80cacc2a7789219034d9d901ccd239b02f3c01e8837c81d3cf33f",
+      "source_revision": "df1e418b41f168b1e2f87660eabe2cfdb4bbf4eff3ee0e412ecfa5ef7139a1a2",
       "provenance": [
         {
           "source_id": "redis.string-set",
-          "title": "AegisCopilot Redis 种子知识",
+          "title": "CommandFoundry Redis 种子知识",
           "source_url": "https://redis.io/docs/latest/commands/set/",
           "license": "MIT (project-authored)",
           "revision": "v2.1.0",
@@ -2817,11 +2817,11 @@
     {
       "recipe_id": "sql.mysql-connect.client",
       "topic_id": "sql.mysql-connect",
-      "source_revision": "94080eef0c5e8ddb2c0289e0c59aeab76a53ee2fbfedea3dbde9046f6fd1dc00",
+      "source_revision": "8dc5654daf34ba14b0da4ab7d52b6321b837e666a9caf45ff9281c767e6ec4e4",
       "provenance": [
         {
           "source_id": "sql.mysql-connect",
-          "title": "AegisCopilot MySQL 8.x 种子知识",
+          "title": "CommandFoundry MySQL 8.x 种子知识",
           "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
           "license": "MIT (project-authored)",
           "revision": "v2.2.0",
@@ -2835,11 +2835,11 @@
     {
       "recipe_id": "windows.compress-archive.paths",
       "topic_id": "windows.compress-archive",
-      "source_revision": "a83684d8659be0bd188eb2d4906df064623ac6d06195b8520c583446bf2be2b8",
+      "source_revision": "4edcc327f1b0e25e363c09cf888911684c53ac6b6c7c38638a51dc380d7723ee",
       "provenance": [
         {
           "source_id": "windows.compress-archive",
-          "title": "AegisCopilot Windows 2.7 种子知识：压缩 Windows 文件和目录",
+          "title": "CommandFoundry Windows 2.7 种子知识：压缩 Windows 文件和目录",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/compress-archive",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2853,11 +2853,11 @@
     {
       "recipe_id": "windows.copy-item.paths",
       "topic_id": "windows.copy-item",
-      "source_revision": "985ea2d7965a14b1981f9a15b73f92bf069d27f2e97eb84756718a89dc411dbd",
+      "source_revision": "cc7b196c9c54bc17df299bffb6cdc4b30f2f51695a46eb1b79820464d75779ea",
       "provenance": [
         {
           "source_id": "windows.copy-item",
-          "title": "AegisCopilot Windows 2.7 种子知识：复制 Windows 文件或目录",
+          "title": "CommandFoundry Windows 2.7 种子知识：复制 Windows 文件或目录",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2871,11 +2871,11 @@
     {
       "recipe_id": "windows.expand-archive.paths",
       "topic_id": "windows.expand-archive",
-      "source_revision": "99369b53f5794dced75087e62e0c9b43d2239570c8b485cfb9a485828762a3df",
+      "source_revision": "051a481eff9bb8df2c590a3a702df67d7b640cdccdfe8a7c95cc7c4d29c23fb9",
       "provenance": [
         {
           "source_id": "windows.expand-archive",
-          "title": "AegisCopilot Windows 2.7 种子知识：解压 Windows ZIP 文件",
+          "title": "CommandFoundry Windows 2.7 种子知识：解压 Windows ZIP 文件",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2889,11 +2889,11 @@
     {
       "recipe_id": "windows.get-filehash.path",
       "topic_id": "windows.get-filehash",
-      "source_revision": "4eede31120cb5b6238b74b2785d302006c82f057c341d0850274731cd9754f86",
+      "source_revision": "28f4b7c3f5c06520acaff086945455c16d58912f240e7a568207a88b0d3b8e3f",
       "provenance": [
         {
           "source_id": "windows.get-filehash",
-          "title": "AegisCopilot Windows 2.7 种子知识：计算 Windows 文件哈希",
+          "title": "CommandFoundry Windows 2.7 种子知识：计算 Windows 文件哈希",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/get-filehash",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2907,11 +2907,11 @@
     {
       "recipe_id": "windows.get-service.name",
       "topic_id": "windows.get-service",
-      "source_revision": "e730c80bc236d991c3573e991a4afbcf96237025a6aeab227b42fb394b44749c",
+      "source_revision": "04500bff8f4ea7588487b4812693de9c7bd382db9b06c3eb26b9c46728860243",
       "provenance": [
         {
           "source_id": "windows.get-service",
-          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 服务",
+          "title": "CommandFoundry Windows 2.7 种子知识：查看 Windows 服务",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-service",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2925,11 +2925,11 @@
     {
       "recipe_id": "windows.move-item.paths",
       "topic_id": "windows.move-item",
-      "source_revision": "769d6f074692b609af77b7ea3d36f6684e717e4ddac7a6dd95529dc0ab2dcdd6",
+      "source_revision": "9a5b311f2de3da7037f8f77e6b04c0126b17d3ea7f9d2aa0034a3d40cc2a693a",
       "provenance": [
         {
           "source_id": "windows.move-item",
-          "title": "AegisCopilot Windows 2.7 种子知识：移动或重命名 Windows 文件",
+          "title": "CommandFoundry Windows 2.7 种子知识：移动或重命名 Windows 文件",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2943,11 +2943,11 @@
     {
       "recipe_id": "windows.netstat.port",
       "topic_id": "windows.netstat",
-      "source_revision": "eef82290c1c097d905a39ea2bd7605eb0a86d1655c7b06f0bbe51aa0ed03c994",
+      "source_revision": "776cabbc488607db854c9a18a60ea2e5e3ccd4b7c9ff61339e88dc21792ef213",
       "provenance": [
         {
           "source_id": "windows.netstat",
-          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 端口和连接",
+          "title": "CommandFoundry Windows 2.7 种子知识：查看 Windows 端口和连接",
           "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netstat",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2961,11 +2961,11 @@
     {
       "recipe_id": "windows.new-item.file",
       "topic_id": "windows.new-item",
-      "source_revision": "23c244eacf8808f38178d0f07b713a4a2bc6857be96876afcad4019433a83296",
+      "source_revision": "c5da856857a9935b13cd47f6d3aa9c8dd70287388daa86dceb7689991a7082f4",
       "provenance": [
         {
           "source_id": "windows.new-item",
-          "title": "AegisCopilot Windows 2.7 种子知识：创建 Windows 文件或目录",
+          "title": "CommandFoundry Windows 2.7 种子知识：创建 Windows 文件或目录",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/new-item",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2979,11 +2979,11 @@
     {
       "recipe_id": "windows.remove-item.path",
       "topic_id": "windows.remove-item",
-      "source_revision": "f6d51e7b96b55423d4a899073ad0184fa776e81c1ff52f4cda5eb28cd71bbdbd",
+      "source_revision": "b46d153303ba4f925093582c4d05b1314f2fc0c321cd4ea062c750fd4960da36",
       "provenance": [
         {
           "source_id": "windows.remove-item",
-          "title": "AegisCopilot Windows 2.7 种子知识：删除 Windows 文件或目录",
+          "title": "CommandFoundry Windows 2.7 种子知识：删除 Windows 文件或目录",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -2997,11 +2997,11 @@
     {
       "recipe_id": "windows.restart-service.name",
       "topic_id": "windows.restart-service",
-      "source_revision": "d8c287d93403fe00d4d319e9652bd3c987c10c1113071316951fce74bf1c94bc",
+      "source_revision": "9f81ed5be53a81e3512c6c46b0596f8460486954f951636234d1ee455dbdad41",
       "provenance": [
         {
           "source_id": "windows.restart-service",
-          "title": "AegisCopilot Windows 2.7 种子知识：重启 Windows 服务",
+          "title": "CommandFoundry Windows 2.7 种子知识：重启 Windows 服务",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -3015,11 +3015,11 @@
     {
       "recipe_id": "windows.start-service.name",
       "topic_id": "windows.start-service",
-      "source_revision": "b0112e6ed49114ef8a91578aecf9f7f85f9b262743eb36c83d647a140f0ee71c",
+      "source_revision": "cf11194fd85d85d0673d9721d5c1f8f9088f5875d3470b98212b0f3e7db9710e",
       "provenance": [
         {
           "source_id": "windows.start-service",
-          "title": "AegisCopilot Windows 2.7 种子知识：启动 Windows 服务",
+          "title": "CommandFoundry Windows 2.7 种子知识：启动 Windows 服务",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-service",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -3033,11 +3033,11 @@
     {
       "recipe_id": "windows.stop-process.pid",
       "topic_id": "windows.stop-process",
-      "source_revision": "70d983b34b641b6f0bf2786e44c548a3b2031523bc3b894a1797e3637b8e8ffc",
+      "source_revision": "269d22e02b9d5aac0459dd715b7dd5a5e685dfb981b3ef6aa9d013034a3f8429",
       "provenance": [
         {
           "source_id": "windows.stop-process",
-          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 进程",
+          "title": "CommandFoundry Windows 2.7 种子知识：停止 Windows 进程",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -3051,11 +3051,11 @@
     {
       "recipe_id": "windows.stop-service.name",
       "topic_id": "windows.stop-service",
-      "source_revision": "b3e177d8c12b86977006d70bcd70c4a10b7435258209ef78849b62531b8f4193",
+      "source_revision": "a540168de259e23bf8a7237e075ff0d23ebad290d204f838ca4850852fb825cd",
       "provenance": [
         {
           "source_id": "windows.stop-service",
-          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 服务",
+          "title": "CommandFoundry Windows 2.7 种子知识：停止 Windows 服务",
           "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -3069,11 +3069,11 @@
     {
       "recipe_id": "windows.test-netconnection.host-port",
       "topic_id": "windows.test-netconnection",
-      "source_revision": "edce2895f77f22659412013c3a95cfa622ef090621f03956b387aad09166c14b",
+      "source_revision": "37721da3b391833e4b10aad08d3475446beda32e2e406933b62b424998da0ff8",
       "provenance": [
         {
           "source_id": "windows.test-netconnection",
-          "title": "AegisCopilot Windows 2.7 种子知识：测试 Windows 主机或端口连通性",
+          "title": "CommandFoundry Windows 2.7 种子知识：测试 Windows 主机或端口连通性",
           "source_url": "https://learn.microsoft.com/powershell/module/nettcpip/test-netconnection",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
@@ -3087,11 +3087,11 @@
     {
       "recipe_id": "windows.winget.install",
       "topic_id": "windows.winget",
-      "source_revision": "75333485349aab57f810315097ceea9137df7b275e01e157b93aa5cc11d8b7d2",
+      "source_revision": "b06d2f7448cff28c10978af341c2737b6407d7aef4cebd537d6a919cfb0ba133",
       "provenance": [
         {
           "source_id": "windows.winget",
-          "title": "AegisCopilot Windows 2.7 种子知识：使用 winget 管理 Windows 软件",
+          "title": "CommandFoundry Windows 2.7 种子知识：使用 winget 管理 Windows 软件",
           "source_url": "https://learn.microsoft.com/windows/package-manager/winget/",
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",

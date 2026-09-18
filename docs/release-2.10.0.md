@@ -1,4 +1,4 @@
-# AegisCopilot 2.10.0 发布核验记录
+# CommandFoundry 2.10.0 发布核验记录
 
 ## 范围
 
@@ -29,11 +29,11 @@
 
 ## 构建产物
 
-- 安装包：`desktop/dist/AegisCopilot Setup 2.10.0.exe`
+- 安装包：`desktop/dist/CommandFoundry Setup 2.10.0.exe`
 - 架构：Windows x64 NSIS
 - Git commit：`df90c2a` (`feat: add multi-provider SDK support and side terminal`)
-- SHA-256：`1E9132A8CA7845CA6F08EC18E43C9F2B6BFB275759A7281F519BE3A49854DFC6`
-- 文件大小：`211,408,018` bytes
+- SHA-256：`9A0B0015D6472EA246898148009E7225C15529959FE7CE0520F247723A0E34C0`
+- 文件大小：`211,408,676` bytes
 
 构建和校验命令：
 
@@ -41,11 +41,11 @@
 cd backend; .\.venv\Scripts\python.exe -m pytest -q
 cd ..\frontend; npm.cmd test; npm.cmd run build
 cd ..\desktop; npm.cmd test; npm.cmd run build:frontend; npm.cmd run build:backend; .\scripts\smoke-backend.ps1; npm.cmd run dist:win
-Get-FileHash .\dist\AegisCopilot Setup 2.10.0.exe -Algorithm SHA256
+Get-FileHash .\dist\CommandFoundry Setup 2.10.0.exe -Algorithm SHA256
 ```
 
 ## Computer Use 验收
 
-只在提供原生 AegisCopilot UI surface 时验收模型设置、右侧终端面板和对话不被遮挡；不通过 UI 自动化终端、不执行助手生成命令、不上传敏感数据。若当前主机没有原生窗口 surface，应明确记录为未完成 CUA，而不能用浏览器或脚本冒充。
+只在提供原生 CommandFoundry UI surface 时验收模型设置、右侧终端面板和对话不被遮挡；不通过 UI 自动化终端、不执行助手生成命令、不上传敏感数据。若当前主机没有原生窗口 surface，应明确记录为未完成 CUA，而不能用浏览器或脚本冒充。
 
-本次 Computer Use 初始化返回 `Trusted RPC service is not configured: sky`，没有可绑定的原生 AegisCopilot 窗口；因此未以脚本或浏览器冒充 UI 验收。源码测试、安装包构建和后端 smoke 独立完成，原生窗口服务可用后再按上述边界补做目视验收。
+本次 Computer Use 初始化返回 `Trusted RPC service is not configured: sky`，没有可绑定的原生 CommandFoundry 窗口；因此未以脚本或浏览器冒充 UI 验收。源码测试、安装包构建和后端 smoke 独立完成，原生窗口服务可用后再按上述边界补做目视验收。
