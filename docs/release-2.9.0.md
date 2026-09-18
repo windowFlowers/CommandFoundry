@@ -23,8 +23,12 @@
 
 - 安装包：`desktop/dist/AegisCopilot Setup 2.9.0.exe`
 - 架构：Windows x64 NSIS
-- Git commit：以最终构建前记录的 `git rev-parse HEAD` 为准
-- SHA-256：以最终构建后 `Get-FileHash -Algorithm SHA256` 输出为准
+- Git commit：`4d8c405a46273db6f4c64d92138c0cc5d2589524`
+- SHA-256：`14FB96B98EBD5EBABF07C189DE11BBECF2AE1ABEB8EAEA2247D2FA80480EB119`
+- 文件大小：`208,687,568` 字节
+- 终端运行时：`node-pty` 作为生产依赖打包，`npmRebuild=false` 并通过 `asarUnpack` 保留 `win32-x64` 预构建原生模块；已核验安装包解包目录包含 `pty.node`、`conpty.node` 和 `conpty_console_list.node`。
+
+依赖审计备注：npm 当前对完整桌面依赖树报告 14 个漏洞（13 high、1 critical），本次没有自动执行 `npm audit fix`，以避免未经审查的 Electron/构建链升级；运行时终端依赖已单独纳入安装包验证，剩余依赖升级应在后续安全维护变更中处理。
 
 构建和校验命令：
 
