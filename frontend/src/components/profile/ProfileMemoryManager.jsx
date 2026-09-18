@@ -24,6 +24,7 @@ import {
   updateProfileMemory,
 } from "../../lib/profile";
 import { Modal } from "../ui/Overlays";
+import { SelectMenu } from "../ui/SelectMenu";
 
 
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
@@ -80,10 +81,10 @@ function MemoryEditorModal({ memory, knowledgeBases, defaultKnowledgeBaseId, wor
           </div>
         ) : <>
           <div className="profile-memory-form-row">
-            <label><span>范围</span><select value={draft.scope} onChange={(event) => changeScope(event.target.value)}><option value="global">全局</option><option value="knowledge_base">知识库</option></select></label>
-            <label><span>类别</span><select value={draft.category} onChange={(event) => setDraft((current) => ({ ...current, category: event.target.value }))}>{categories.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}</select></label>
+            <label><span>范围</span><SelectMenu value={draft.scope} onChange={changeScope} ariaLabel="范围" options={[{ value: "global", label: "全局" }, { value: "knowledge_base", label: "知识库" }]} /></label>
+            <label><span>类别</span><SelectMenu value={draft.category} onChange={(category) => setDraft((current) => ({ ...current, category }))} ariaLabel="类别" options={categories} /></label>
           </div>
-          {draft.scope === "knowledge_base" && <label><span>知识库</span><select value={draft.knowledgeBaseId} onChange={(event) => setDraft((current) => ({ ...current, knowledgeBaseId: event.target.value }))}>{knowledgeBases.map((base) => <option key={base.id} value={base.id}>{base.name}</option>)}</select></label>}
+          {draft.scope === "knowledge_base" && <label><span>知识库</span><SelectMenu value={draft.knowledgeBaseId} onChange={(knowledgeBaseId) => setDraft((current) => ({ ...current, knowledgeBaseId }))} ariaLabel="知识库" options={knowledgeBases.map((base) => ({ value: base.id, label: base.name }))} /></label>}
         </>}
         <label className="profile-pin-field"><input type="checkbox" checked={draft.pinned} onChange={(event) => setDraft((current) => ({ ...current, pinned: event.target.checked }))} /><span>固定记忆</span></label>
       </form>
@@ -257,9 +258,9 @@ export function ProfileMemoryManager({ profile, knowledgeBases, initialKnowledge
       </section>
       <section className="profile-memory-toolbar" aria-label="记忆筛选">
         <label className="profile-search"><span className="sr-only">搜索记忆</span><Search size={16} /><input value={filters.q} onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))} placeholder="搜索记忆" /></label>
-        <label><span className="sr-only">范围</span><select value={filters.scope} onChange={(event) => changeFilterScope(event.target.value)} data-ui="profile-scope-filter"><option value="all">全部范围</option><option value="global">全局</option><option value="knowledge_base">知识库</option></select></label>
-        <label><span className="sr-only">类别</span><select value={filters.category} onChange={(event) => setFilters((current) => ({ ...current, category: event.target.value }))} data-ui="profile-category-filter"><option value="all">全部类别</option>{filterCategories.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}</select></label>
-        {filters.scope === "knowledge_base" && <label><span className="sr-only">知识库</span><select value={filters.knowledgeBaseId} onChange={(event) => setFilters((current) => ({ ...current, knowledgeBaseId: event.target.value }))}>{knowledgeBases.map((base) => <option key={base.id} value={base.id}>{base.name}</option>)}</select></label>}
+        <label><span className="sr-only">范围</span><SelectMenu value={filters.scope} onChange={changeFilterScope} ariaLabel="范围筛选" dataUi="profile-scope-filter" options={[{ value: "all", label: "全部范围" }, { value: "global", label: "全局" }, { value: "knowledge_base", label: "知识库" }]} /></label>
+        <label><span className="sr-only">类别</span><SelectMenu value={filters.category} onChange={(category) => setFilters((current) => ({ ...current, category }))} ariaLabel="类别筛选" dataUi="profile-category-filter" options={[{ value: "all", label: "全部类别" }, ...filterCategories]} /></label>
+        {filters.scope === "knowledge_base" && <label><span className="sr-only">知识库</span><SelectMenu value={filters.knowledgeBaseId} onChange={(knowledgeBaseId) => setFilters((current) => ({ ...current, knowledgeBaseId }))} ariaLabel="知识库筛选" options={knowledgeBases.map((base) => ({ value: base.id, label: base.name }))} /></label>}
         <span className="profile-toolbar-spacer" />
         <button ref={addButtonRef} className="primary-button" type="button" onClick={() => setEditor({ memory: null })} data-ui="add-profile-memory"><Plus size={15} />新增记忆</button>
         <button className="secondary-button profile-clear-button" type="button" onClick={() => setClearOpen(true)} disabled={activeMemoryCount === 0} data-ui="clear-profile-memories"><Trash2 size={15} />忘记全部</button>

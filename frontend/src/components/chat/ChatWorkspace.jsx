@@ -2,17 +2,14 @@ import { useId, useRef, useState } from "react";
 import {
   AlertTriangle,
   BookOpen,
-  Box,
   BrainCircuit,
   Check,
   ChevronDown,
   Clipboard,
   Code2,
-  Database,
   FileCode2,
   FolderCog,
   GitBranch,
-  Globe2,
   LoaderCircle,
   Menu,
   MessageSquareText,
@@ -27,13 +24,11 @@ import {
 } from "lucide-react";
 import { contextBadgeLabel } from "../../lib/memory";
 import { personalizationBadgeLabel } from "../../lib/profile";
+import { SelectMenu } from "../ui/SelectMenu";
 
 const examples = [
   { id: "linux", label: "Linux / Shell", question: "在 Linux 中切换文件目录的指令是什么？", icon: Shell },
   { id: "git", label: "Git", question: "Git 怎么安全回滚一次提交？", icon: GitBranch },
-  { id: "sql", label: "SQL / MySQL", question: "MySQL 中怎么创建一个视图？", icon: Database },
-  { id: "docker", label: "Docker", question: "Docker 怎么查看容器最近 100 行日志？", icon: Box },
-  { id: "http", label: "HTTP / cURL", question: "如何用 cURL 发送带 JSON 的 POST 请求？", icon: Globe2 },
   { id: "toolchain", label: "Python / Node", question: "Python 怎么创建并激活虚拟环境？", icon: FileCode2 },
 ];
 
@@ -304,14 +299,8 @@ function UserMessage({ message, entryNumber }) {
 function EmptyState({ onExample }) {
   return (
     <section className="empty-state" data-ui="empty-state">
-      <div className="empty-copy">
-        <span className="eyebrow">LOCAL-FIRST COMMAND RAG</span>
-        <h2>把问题变成<br />可以直接使用的命令</h2>
-        <p>从所选知识库检索可靠用法，再由模型整理上下文。命令会标注平台、前置条件、风险和来源。</p>
-        <div className="exhibition-meta"><span>CURATED LOCALLY</span><span>TRACEABLE SOURCES</span><span>SAFE BY DEFAULT</span></div>
-      </div>
       <section className="example-catalogue" aria-labelledby="example-catalogue-title">
-        <div className="catalogue-heading"><h2 id="example-catalogue-title">示例目录</h2><span>06 ENTRIES</span></div>
+        <div className="catalogue-heading"><h2 id="example-catalogue-title">示例目录</h2><span>03 ENTRIES</span></div>
         <div className="example-grid" data-ui="example-grid">
           {examples.map(({ id, label, question, icon: Icon }, index) => (
             <button key={id} type="button" onClick={() => onExample(question)}>
@@ -374,16 +363,22 @@ function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation
           {!sidebarOpen && <button ref={expandRef} className="icon-button" type="button" onClick={onExpandSidebar} aria-label="展开侧栏" data-ui="expand-sidebar"><Menu size={19} /></button>}
           <div><span className="eyebrow">COMMAND WORKSPACE</span><h1>{activeConversation?.title || "新的技术问题"}</h1></div>
         </div>
-        <label className="knowledge-select-wrap">
-          <BookOpen size={16} />
-          <span className="sr-only">选择知识库</span>
-          <select value={selectedKnowledgeBaseId} onChange={(event) => onKnowledgeBaseChange(event.target.value)} disabled={busy} data-ui="knowledge-select">
-            {deletedKnowledgeBase && <option value={selectedKnowledgeBaseId}>{activeConversation.knowledge_base_name}（已删除）</option>}
-            {knowledgeBases.map((base) => <option key={base.id} value={base.id}>{base.name}</option>)}
-          </select>
+        <div className="knowledge-select-wrap">
+          <BookOpen size={16} aria-hidden="true" />
+          <SelectMenu
+            value={selectedKnowledgeBaseId}
+            options={[
+              ...(deletedKnowledgeBase ? [{ value: selectedKnowledgeBaseId, label: `${activeConversation.knowledge_base_name}（已删除）` }] : []),
+              ...knowledgeBases.map((base) => ({ value: base.id, label: base.name })),
+            ]}
+            onChange={onKnowledgeBaseChange}
+            ariaLabel="选择知识库"
+            disabled={busy}
+            dataUi="knowledge-select"
+          />
           <span className={`status-dot ${knowledgeStatus?.ready && !deletedKnowledgeBase ? "ready" : ""}`} aria-hidden="true" />
           <span className="knowledge-status-label" role="status">{deletedKnowledgeBase ? "已删除" : knowledgeStatus?.ready ? "已就绪" : "准备中"}</span>
-        </label>
+        </div>
       </header>
       <div className="message-viewport">
         {messages.length === 0 ? <EmptyState onExample={onSubmit} /> : (

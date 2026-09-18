@@ -176,7 +176,7 @@ app.whenReady().then(async () => {
   window.showInactive();
   await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"example-grid\"]'))"));
   await waitFor(() => window.webContents.executeJavaScript("Boolean(document.querySelector('[data-ui=\"open-knowledge\"] small')?.textContent.match(/[1-9]/))"));
-  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"knowledge-select\"] option:checked')?.textContent.includes('开发者 IT') && document.querySelector('.knowledge-status-label')?.textContent === '已就绪'"));
+  await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"knowledge-select\"][role=\"combobox\"]')?.textContent.includes('开发者 IT') && document.querySelector('.knowledge-status-label')?.textContent === '已就绪'"));
   await new Promise((resolve) => setTimeout(resolve, 350));
   const initialKnowledgeBasesResponse = await fetch(`${apiBaseUrl}/knowledge-bases`);
   if (!initialKnowledgeBasesResponse.ok) throw new Error(`Could not verify initial knowledge bases (${initialKnowledgeBasesResponse.status})`);
@@ -356,15 +356,15 @@ app.whenReady().then(async () => {
 
     await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"use-for-chat\"]')?.click()", true);
     await waitFor(() => window.webContents.executeJavaScript(
-      `document.querySelector('.knowledge-select-wrap select option:checked')?.textContent === ${JSON.stringify(uploadKnowledgeBaseName)} && Boolean(document.querySelector('.empty-state'))`,
+      `document.querySelector('[data-ui="knowledge-select"][role="combobox"]')?.textContent === ${JSON.stringify(uploadKnowledgeBaseName)} && Boolean(document.querySelector('.empty-state'))`,
     ));
     await window.webContents.executeJavaScript(`(() => {
-      const select = document.querySelector('.knowledge-select-wrap select');
-      select.value = 'developer-it';
-      select.dispatchEvent(new Event('change', { bubbles: true }));
+      const trigger = document.querySelector('[data-ui="knowledge-select"][role="combobox"]');
+      trigger?.click();
+      [...document.querySelectorAll('[role="option"]')].find((option) => option.textContent === '开发者 IT 知识库')?.click();
     })()`, true);
     await waitFor(() => window.webContents.executeJavaScript(
-      "document.querySelector('.knowledge-select-wrap select')?.value === 'developer-it' && Boolean(document.querySelector('.empty-state'))",
+      "document.querySelector('[data-ui=\"knowledge-select\"][role=\"combobox\"]')?.textContent.includes('开发者 IT') && Boolean(document.querySelector('.empty-state'))",
     ));
   } else {
     await window.webContents.executeJavaScript("document.querySelector('[data-ui=\"back-to-chat\"]').click()", true);
@@ -386,11 +386,11 @@ app.whenReady().then(async () => {
   await waitFor(() => window.webContents.executeJavaScript("document.querySelector('[data-ui=\"profile-memory-editor\"]')?.contains(document.activeElement)"));
   const validMemoryEditorDefaults = await window.webContents.executeJavaScript(`(() => {
     const modal = document.querySelector('[data-ui="profile-memory-editor"]');
-    const selects = modal?.querySelectorAll('select');
+    const selects = modal?.querySelectorAll('[role="combobox"]');
     return modal?.querySelector('textarea')?.maxLength === 160
-      && selects?.[0]?.value === 'global'
-      && selects?.[1]?.value === 'response_style'
-      && ![...selects[1].options].some((option) => option.value === 'platform');
+      && selects?.[0]?.textContent.includes('全局')
+      && selects?.[1]?.textContent.includes('答复风格')
+      && !modal?.querySelector('[role="option"]')?.textContent.includes('平台');
   })()`, true);
   if (!validMemoryEditorDefaults) throw new Error("Profile memory editor defaults are invalid");
   await window.webContents.executeJavaScript("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))", true);
