@@ -31,9 +31,9 @@
 
 - 安装包：`desktop/dist/AegisCopilot Setup 2.10.0.exe`
 - 架构：Windows x64 NSIS
-- Git commit：待最终提交后填写
-- SHA-256：待最终打包后填写
-- 文件大小：待最终打包后填写
+- Git commit：`df90c2a` (`feat: add multi-provider SDK support and side terminal`)
+- SHA-256：`1E9132A8CA7845CA6F08EC18E43C9F2B6BFB275759A7281F519BE3A49854DFC6`
+- 文件大小：`211,408,018` bytes
 
 构建和校验命令：
 
