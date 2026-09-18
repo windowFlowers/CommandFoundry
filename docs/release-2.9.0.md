@@ -42,3 +42,5 @@ Get-FileHash .\dist\AegisCopilot Setup 2.9.0.exe -Algorithm SHA256
 ## Computer Use 验收
 
 只在提供原生 AegisCopilot UI surface 时验收主页三示例、SelectMenu、终端面板和确认对话框；不通过 UI 自动化终端、不执行助手生成命令、不上传敏感数据。若当前主机没有原生窗口 surface，应明确记录为未完成 CUA，而不能用浏览器或脚本冒充。
+
+本次交付门禁中调用 Computer Use inventory 返回 `apps: []`，未提供可绑定的原生 AegisCopilot 窗口；因此没有用浏览器或脚本替代 UI 验收，也没有通过 UI 自动化终端或执行任何生成命令。安装包、后端 smoke 和源码测试已完成，原生窗口可用后应按上述边界补做目视验收。
