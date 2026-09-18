@@ -88,7 +88,7 @@ npm.cmd run dist:win
 
 v2.9.0 发布门禁结果：
 
-- Backend：137 项通过；
+- Backend：138 项通过；
 - Frontend：38 项通过，Vite 生产构建通过；
 - Desktop：19 项通过，包含 PTY allowlist、会话上限、清理和 preload IPC 边界；
 - 包内后端烟测覆盖 profile/memory CRUD、混合检索、离线 SSE 和逐项澄清流程。

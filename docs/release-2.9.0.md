@@ -13,7 +13,7 @@
 
 ## 自动化门禁
 
-- Backend：137 passed。
+- Backend：138 passed。
 - Frontend：38 passed；Vite production build passed。
 - Desktop：19 passed；包含 shell allowlist、PTY 数据转发、resize、退出清理、四会话上限、malformed input 拒绝和 preload IPC 边界。
 - Windows 知识专项：33 个主题、来源 revision/license/hash、PowerShell/CMD 标记和 99 条离线评测数据已生成。

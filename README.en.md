@@ -88,7 +88,7 @@ npm.cmd run dist:win
 
 The v2.9.0 release gate passed:
 
-- Backend: 137 tests passed.
+- Backend: 138 tests passed.
 - Frontend: 38 tests passed; Vite production build passed.
 - Desktop: 19 tests passed, including PTY allowlisting, session limits, cleanup and preload IPC boundaries.
 - Packaged backend smoke test covers profile/memory CRUD, hybrid retrieval, offline SSE and the one-slot clarification flow.
