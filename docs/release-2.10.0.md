@@ -31,7 +31,7 @@
 
 - 安装包：`desktop/dist/CommandFoundry Setup 2.10.0.exe`
 - 架构：Windows x64 NSIS
-- Git commit：`df90c2a` (`feat: add multi-provider SDK support and side terminal`)
+- Git commit：`881f841` (`feat: rebrand project as CommandFoundry`)
 - SHA-256：`9A0B0015D6472EA246898148009E7225C15529959FE7CE0520F247723A0E34C0`
 - 文件大小：`211,408,676` bytes
 
