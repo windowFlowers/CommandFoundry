@@ -20,3 +20,4 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 
 Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
 The Python virtual-environment recipes link to the Python `venv` documentation for the platform-specific activation variants. The documentation itself is not redistributed.
+Project-authored Windows command seeds link to Microsoft Learn, Chocolatey and Scoop documentation. The documentation itself is not redistributed.

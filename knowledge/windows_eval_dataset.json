@@ -1,0 +1,956 @@
+[
+  {
+    "id": "windows-001",
+    "query": "Chocolatey 安装软件",
+    "expected_topic_id": "windows.choco",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-002",
+    "query": "choco install 怎么用",
+    "expected_topic_id": "windows.choco",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-003",
+    "query": "choco 搜索包",
+    "expected_topic_id": "windows.choco",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-004",
+    "query": "PowerShell 压缩 zip",
+    "expected_topic_id": "windows.compress-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-005",
+    "query": "Compress-Archive 怎么用",
+    "expected_topic_id": "windows.compress-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-006",
+    "query": "Windows 打包 ZIP",
+    "expected_topic_id": "windows.compress-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-007",
+    "query": "PowerShell 复制文件",
+    "expected_topic_id": "windows.copy-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-008",
+    "query": "Copy-Item 复制目录",
+    "expected_topic_id": "windows.copy-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-009",
+    "query": "Windows 复制文件夹",
+    "expected_topic_id": "windows.copy-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-010",
+    "query": "PowerShell 解压 zip",
+    "expected_topic_id": "windows.expand-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-011",
+    "query": "Expand-Archive 怎么用",
+    "expected_topic_id": "windows.expand-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-012",
+    "query": "Windows 解压 ZIP",
+    "expected_topic_id": "windows.expand-archive",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-013",
+    "query": "PowerShell 查看文件夹内容",
+    "expected_topic_id": "windows.get-childitem",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-014",
+    "query": "Get-ChildItem 怎么用",
+    "expected_topic_id": "windows.get-childitem",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-015",
+    "query": "CMD dir 查看文件",
+    "expected_topic_id": "windows.get-childitem",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-016",
+    "query": "PowerShell 命令在哪里",
+    "expected_topic_id": "windows.get-command",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-017",
+    "query": "Get-Command 查命令",
+    "expected_topic_id": "windows.get-command",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-018",
+    "query": "Windows 查找可执行文件",
+    "expected_topic_id": "windows.get-command",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-019",
+    "query": "PowerShell 查看文件内容",
+    "expected_topic_id": "windows.get-content",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-020",
+    "query": "Get-Content 读取日志",
+    "expected_topic_id": "windows.get-content",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-021",
+    "query": "CMD type 查看文本",
+    "expected_topic_id": "windows.get-content",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-022",
+    "query": "PowerShell 查看环境变量",
+    "expected_topic_id": "windows.get-environmentvariable",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-023",
+    "query": "Windows 环境变量怎么查",
+    "expected_topic_id": "windows.get-environmentvariable",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-024",
+    "query": "读取 PATH 环境变量",
+    "expected_topic_id": "windows.get-environmentvariable",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-025",
+    "query": "PowerShell 计算 SHA256",
+    "expected_topic_id": "windows.get-filehash",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-026",
+    "query": "Get-FileHash 校验文件",
+    "expected_topic_id": "windows.get-filehash",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-027",
+    "query": "Windows 文件 hash 怎么算",
+    "expected_topic_id": "windows.get-filehash",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-028",
+    "query": "PowerShell 查看指定端口",
+    "expected_topic_id": "windows.get-nettcpconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-029",
+    "query": "Get-NetTCPConnection 查端口",
+    "expected_topic_id": "windows.get-nettcpconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-030",
+    "query": "Windows TCP 连接状态",
+    "expected_topic_id": "windows.get-nettcpconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-031",
+    "query": "PowerShell 查看进程",
+    "expected_topic_id": "windows.get-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-032",
+    "query": "Get-Process 查 PID",
+    "expected_topic_id": "windows.get-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-033",
+    "query": "Windows 查看进程 CPU",
+    "expected_topic_id": "windows.get-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-034",
+    "query": "PowerShell 查看服务",
+    "expected_topic_id": "windows.get-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-035",
+    "query": "Get-Service 查服务状态",
+    "expected_topic_id": "windows.get-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-036",
+    "query": "Windows 服务状态",
+    "expected_topic_id": "windows.get-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-037",
+    "query": "PowerShell HTTP GET",
+    "expected_topic_id": "windows.invoke-webrequest",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-038",
+    "query": "Invoke-WebRequest 下载文件",
+    "expected_topic_id": "windows.invoke-webrequest",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-039",
+    "query": "Windows 请求 URL",
+    "expected_topic_id": "windows.invoke-webrequest",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-040",
+    "query": "PowerShell 移动文件",
+    "expected_topic_id": "windows.move-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-041",
+    "query": "Move-Item 重命名文件",
+    "expected_topic_id": "windows.move-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-042",
+    "query": "CMD move 移动文件",
+    "expected_topic_id": "windows.move-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-043",
+    "query": "Windows 怎么查看端口占用？",
+    "expected_topic_id": "windows.netstat",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-044",
+    "query": "Windows 查看监听端口和 PID",
+    "expected_topic_id": "windows.netstat",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-045",
+    "query": "netstat -ano 怎么用",
+    "expected_topic_id": "windows.netstat",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-046",
+    "query": "PowerShell 创建文件",
+    "expected_topic_id": "windows.new-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-047",
+    "query": "New-Item 新建文件夹",
+    "expected_topic_id": "windows.new-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-048",
+    "query": "CMD type nul 创建空文件",
+    "expected_topic_id": "windows.new-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-049",
+    "query": "PowerShell 版本怎么看？",
+    "expected_topic_id": "windows.powershell",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-050",
+    "query": "PowerShell 执行策略怎么查看",
+    "expected_topic_id": "windows.powershell",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-051",
+    "query": "查看 pwsh 版本",
+    "expected_topic_id": "windows.powershell",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-052",
+    "query": "PowerShell 删除文件",
+    "expected_topic_id": "windows.remove-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-053",
+    "query": "Remove-Item 递归删除目录",
+    "expected_topic_id": "windows.remove-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-054",
+    "query": "CMD del 删除文件",
+    "expected_topic_id": "windows.remove-item",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-055",
+    "query": "PowerShell 查 DNS",
+    "expected_topic_id": "windows.resolve-dnsname",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-056",
+    "query": "Resolve-DnsName 怎么用",
+    "expected_topic_id": "windows.resolve-dnsname",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-057",
+    "query": "Windows 查看域名解析",
+    "expected_topic_id": "windows.resolve-dnsname",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-058",
+    "query": "PowerShell 重启服务",
+    "expected_topic_id": "windows.restart-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-059",
+    "query": "Restart-Service 怎么用",
+    "expected_topic_id": "windows.restart-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-060",
+    "query": "Windows 重启服务",
+    "expected_topic_id": "windows.restart-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-061",
+    "query": "Windows 文件夹同步 robocopy",
+    "expected_topic_id": "windows.robocopy",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-062",
+    "query": "Robocopy 复制目录",
+    "expected_topic_id": "windows.robocopy",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-063",
+    "query": "robocopy /MIR 风险",
+    "expected_topic_id": "windows.robocopy",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-064",
+    "query": "Scoop 安装软件",
+    "expected_topic_id": "windows.scoop",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-065",
+    "query": "scoop install 怎么用",
+    "expected_topic_id": "windows.scoop",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-066",
+    "query": "scoop 搜索应用",
+    "expected_topic_id": "windows.scoop",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-067",
+    "query": "PowerShell 搜索文件内容",
+    "expected_topic_id": "windows.select-string",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-068",
+    "query": "Select-String 查日志",
+    "expected_topic_id": "windows.select-string",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-069",
+    "query": "CMD findstr 搜索文本",
+    "expected_topic_id": "windows.select-string",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-070",
+    "query": "PowerShell 设置工作路径",
+    "expected_topic_id": "windows.set-location",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-071",
+    "query": "Set-Location 修改当前路径",
+    "expected_topic_id": "windows.set-location",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-072",
+    "query": "CMD cd /d 切换驱动器",
+    "expected_topic_id": "windows.set-location",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-073",
+    "query": "PowerShell 启动程序",
+    "expected_topic_id": "windows.start-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-074",
+    "query": "Start-Process 打开程序",
+    "expected_topic_id": "windows.start-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-075",
+    "query": "Windows 启动进程",
+    "expected_topic_id": "windows.start-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-076",
+    "query": "PowerShell 启动服务",
+    "expected_topic_id": "windows.start-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-077",
+    "query": "Start-Service 怎么用",
+    "expected_topic_id": "windows.start-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-078",
+    "query": "Windows 启动服务",
+    "expected_topic_id": "windows.start-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-079",
+    "query": "PowerShell 结束进程",
+    "expected_topic_id": "windows.stop-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-080",
+    "query": "Stop-Process 按 PID",
+    "expected_topic_id": "windows.stop-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-081",
+    "query": "Windows 终止进程",
+    "expected_topic_id": "windows.stop-process",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-082",
+    "query": "PowerShell 停止服务",
+    "expected_topic_id": "windows.stop-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-083",
+    "query": "Stop-Service 怎么用",
+    "expected_topic_id": "windows.stop-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-084",
+    "query": "Windows 停止服务",
+    "expected_topic_id": "windows.stop-service",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-085",
+    "query": "CMD taskkill 怎么用",
+    "expected_topic_id": "windows.taskkill",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-086",
+    "query": "Windows 按进程名结束程序",
+    "expected_topic_id": "windows.taskkill",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-087",
+    "query": "taskkill /IM",
+    "expected_topic_id": "windows.taskkill",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-088",
+    "query": "CMD tasklist 查看进程",
+    "expected_topic_id": "windows.tasklist",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-089",
+    "query": "Windows 查看进程列表",
+    "expected_topic_id": "windows.tasklist",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-090",
+    "query": "tasklist 按 PID 查",
+    "expected_topic_id": "windows.tasklist",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-091",
+    "query": "PowerShell 测试端口",
+    "expected_topic_id": "windows.test-netconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-092",
+    "query": "Test-NetConnection 检查网络",
+    "expected_topic_id": "windows.test-netconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-093",
+    "query": "Windows 测试 TCP 端口",
+    "expected_topic_id": "windows.test-netconnection",
+    "expected_shells": [
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-094",
+    "query": "CMD where.exe 查找命令路径",
+    "expected_topic_id": "windows.where",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-095",
+    "query": "Windows exe 路径查询",
+    "expected_topic_id": "windows.where",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-096",
+    "query": "where python 路径",
+    "expected_topic_id": "windows.where",
+    "expected_shells": [
+      "cmd"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-097",
+    "query": "Windows 安装软件 winget",
+    "expected_topic_id": "windows.winget",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-098",
+    "query": "winget 搜索软件",
+    "expected_topic_id": "windows.winget",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  },
+  {
+    "id": "windows-099",
+    "query": "winget upgrade 更新软件",
+    "expected_topic_id": "windows.winget",
+    "expected_shells": [
+      "cmd",
+      "powershell"
+    ],
+    "domain": "windows"
+  }
+]

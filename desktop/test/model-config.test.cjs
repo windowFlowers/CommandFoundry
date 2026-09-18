@@ -40,5 +40,15 @@ test("preload exposes only scoped model config methods", () => {
   const preload = fs.readFileSync(path.resolve(__dirname, "../electron/preload.cjs"), "utf8");
   assert.match(preload, /modelConfig/);
   assert.match(preload, /model-config:status/);
+  assert.match(preload, /terminal:\s*\{/);
+  assert.match(preload, /terminal:create/);
+  assert.match(preload, /terminal:write/);
+  assert.match(preload, /terminal:resize/);
+  assert.match(preload, /terminal:close/);
+  assert.match(preload, /terminal:list/);
+  assert.match(preload, /terminal:data/);
+  assert.match(preload, /terminal:exit/);
+  assert.match(preload, /terminal:error/);
+  assert.equal(/child_process|execFile|spawn\(/.test(preload), false);
   assert.equal(/decryptString|readApiKey/.test(preload), false);
 });

@@ -541,1261 +541,1261 @@
   },
   {
     "id": "case-091",
-    "query": "如何使用 gradle？",
-    "expected_topic_id": "java.gradle",
-    "domain": "java"
-  },
-  {
-    "id": "case-092",
-    "query": "如何使用 gradle-build？",
-    "expected_topic_id": "java.gradle-build",
-    "domain": "java"
-  },
-  {
-    "id": "case-093",
-    "query": "如何使用 gradle-clean？",
-    "expected_topic_id": "java.gradle-clean",
-    "domain": "java"
-  },
-  {
-    "id": "case-094",
-    "query": "如何使用 gradle-dependencies？",
-    "expected_topic_id": "java.gradle-dependencies",
-    "domain": "java"
-  },
-  {
-    "id": "case-095",
-    "query": "如何使用 gradle-init？",
-    "expected_topic_id": "java.gradle-init",
-    "domain": "java"
-  },
-  {
-    "id": "case-096",
-    "query": "如何使用 gradle-tasks？",
-    "expected_topic_id": "java.gradle-tasks",
-    "domain": "java"
-  },
-  {
-    "id": "case-097",
-    "query": "如何使用 gradle-test？",
-    "expected_topic_id": "java.gradle-test",
-    "domain": "java"
-  },
-  {
-    "id": "case-098",
-    "query": "如何使用 gradle-wrapper？",
-    "expected_topic_id": "java.gradle-wrapper",
-    "domain": "java"
-  },
-  {
-    "id": "case-099",
     "query": "如何使用 jar？",
     "expected_topic_id": "java.jar",
     "domain": "java"
   },
   {
-    "id": "case-100",
+    "id": "case-092",
     "query": "如何使用 java？",
     "expected_topic_id": "java.java",
     "domain": "java"
   },
   {
-    "id": "case-101",
+    "id": "case-093",
     "query": "如何使用 javac？",
     "expected_topic_id": "java.javac",
     "domain": "java"
   },
   {
-    "id": "case-102",
-    "query": "如何使用 javadoc？",
-    "expected_topic_id": "java.javadoc",
-    "domain": "java"
-  },
-  {
-    "id": "case-103",
-    "query": "如何使用 jps？",
-    "expected_topic_id": "java.jps",
-    "domain": "java"
-  },
-  {
-    "id": "case-104",
-    "query": "如何使用 keytool？",
-    "expected_topic_id": "java.keytool",
-    "domain": "java"
-  },
-  {
-    "id": "case-105",
+    "id": "case-094",
     "query": "如何使用 kotlin？",
     "expected_topic_id": "java.kotlin",
     "domain": "java"
   },
   {
-    "id": "case-106",
+    "id": "case-095",
     "query": "如何使用 mvn？",
     "expected_topic_id": "java.mvn",
     "domain": "java"
   },
   {
-    "id": "case-107",
-    "query": "如何使用 mvn-archetype？",
-    "expected_topic_id": "java.mvn-archetype",
-    "domain": "java"
-  },
-  {
-    "id": "case-108",
+    "id": "case-096",
     "query": "如何使用 mvn-compile？",
     "expected_topic_id": "java.mvn-compile",
     "domain": "java"
   },
   {
-    "id": "case-109",
-    "query": "如何使用 mvn-dependency？",
-    "expected_topic_id": "java.mvn-dependency",
-    "domain": "java"
-  },
-  {
-    "id": "case-110",
+    "id": "case-097",
     "query": "如何使用 mvn-package？",
     "expected_topic_id": "java.mvn-package",
     "domain": "java"
   },
   {
-    "id": "case-111",
+    "id": "case-098",
     "query": "如何使用 kubectl？",
     "expected_topic_id": "kubernetes.kubectl",
     "domain": "kubernetes"
   },
   {
-    "id": "case-112",
+    "id": "case-099",
     "query": "如何使用 kubectl-apply？",
     "expected_topic_id": "kubernetes.kubectl-apply",
     "domain": "kubernetes"
   },
   {
-    "id": "case-113",
+    "id": "case-100",
     "query": "如何使用 kubectl-config？",
     "expected_topic_id": "kubernetes.kubectl-config",
     "domain": "kubernetes"
   },
   {
-    "id": "case-114",
+    "id": "case-101",
     "query": "如何使用 kubectl-cp？",
     "expected_topic_id": "kubernetes.kubectl-cp",
     "domain": "kubernetes"
   },
   {
-    "id": "case-115",
+    "id": "case-102",
     "query": "如何使用 kubectl-create？",
     "expected_topic_id": "kubernetes.kubectl-create",
     "domain": "kubernetes"
   },
   {
-    "id": "case-116",
+    "id": "case-103",
     "query": "如何使用 kubectl-delete？",
     "expected_topic_id": "kubernetes.kubectl-delete",
     "domain": "kubernetes"
   },
   {
-    "id": "case-117",
+    "id": "case-104",
     "query": "如何使用 kubectl-describe？",
     "expected_topic_id": "kubernetes.kubectl-describe",
     "domain": "kubernetes"
   },
   {
-    "id": "case-118",
+    "id": "case-105",
     "query": "如何使用 kubectl-exec？",
     "expected_topic_id": "kubernetes.kubectl-exec",
     "domain": "kubernetes"
   },
   {
-    "id": "case-119",
+    "id": "case-106",
     "query": "如何使用 kubectl-explain？",
     "expected_topic_id": "kubernetes.kubectl-explain",
     "domain": "kubernetes"
   },
   {
-    "id": "case-120",
+    "id": "case-107",
     "query": "如何使用 kubectl-expose？",
     "expected_topic_id": "kubernetes.kubectl-expose",
     "domain": "kubernetes"
   },
   {
-    "id": "case-121",
+    "id": "case-108",
     "query": "如何使用 kubectl-get？",
     "expected_topic_id": "kubernetes.kubectl-get",
     "domain": "kubernetes"
   },
   {
-    "id": "case-122",
+    "id": "case-109",
     "query": "如何使用 kubectl-label？",
     "expected_topic_id": "kubernetes.kubectl-label",
     "domain": "kubernetes"
   },
   {
-    "id": "case-123",
+    "id": "case-110",
     "query": "Kubernetes 怎么查看容器日志？",
     "expected_topic_id": "kubernetes.kubectl-logs",
     "domain": "kubernetes"
   },
   {
-    "id": "case-124",
+    "id": "case-111",
     "query": "如何使用 kubectl-patch？",
     "expected_topic_id": "kubernetes.kubectl-patch",
     "domain": "kubernetes"
   },
   {
-    "id": "case-125",
+    "id": "case-112",
     "query": "如何使用 kubectl-port-forward？",
     "expected_topic_id": "kubernetes.kubectl-port-forward",
     "domain": "kubernetes"
   },
   {
-    "id": "case-126",
+    "id": "case-113",
     "query": "如何使用 kubectl-rollout？",
     "expected_topic_id": "kubernetes.kubectl-rollout",
     "domain": "kubernetes"
   },
   {
-    "id": "case-127",
+    "id": "case-114",
     "query": "如何使用 kubectl-scale？",
     "expected_topic_id": "kubernetes.kubectl-scale",
     "domain": "kubernetes"
   },
   {
-    "id": "case-128",
+    "id": "case-115",
     "query": "如何使用 kubectl-taint？",
     "expected_topic_id": "kubernetes.kubectl-taint",
     "domain": "kubernetes"
   },
   {
-    "id": "case-129",
+    "id": "case-116",
     "query": "如何使用 kubectl-top？",
     "expected_topic_id": "kubernetes.kubectl-top",
     "domain": "kubernetes"
   },
   {
-    "id": "case-130",
+    "id": "case-117",
     "query": "如何使用 kubectl-wait？",
     "expected_topic_id": "kubernetes.kubectl-wait",
     "domain": "kubernetes"
   },
   {
-    "id": "case-131",
+    "id": "case-118",
     "query": "如何使用 cat？",
     "expected_topic_id": "linux.cat",
     "domain": "linux"
   },
   {
-    "id": "case-132",
+    "id": "case-119",
     "query": "切换目录",
     "expected_topic_id": "linux.cd",
     "domain": "linux"
   },
   {
-    "id": "case-133",
+    "id": "case-120",
     "query": "给脚本执行权限",
     "expected_topic_id": "linux.chmod",
     "domain": "linux"
   },
   {
-    "id": "case-134",
+    "id": "case-121",
     "query": "更改文件用户",
     "expected_topic_id": "linux.chown",
     "domain": "linux"
   },
   {
-    "id": "case-135",
+    "id": "case-122",
     "query": "复制文件",
     "expected_topic_id": "linux.cp",
     "domain": "linux"
   },
   {
-    "id": "case-136",
+    "id": "case-123",
     "query": "磁盘剩余空间",
     "expected_topic_id": "linux.df",
     "domain": "linux"
   },
   {
-    "id": "case-137",
+    "id": "case-124",
     "query": "文件夹大小",
     "expected_topic_id": "linux.du",
     "domain": "linux"
   },
   {
-    "id": "case-138",
+    "id": "case-125",
     "query": "按名称找文件",
     "expected_topic_id": "linux.find",
     "domain": "linux"
   },
   {
-    "id": "case-139",
+    "id": "case-126",
     "query": "在文件中搜索",
     "expected_topic_id": "linux.grep",
     "domain": "linux"
   },
   {
-    "id": "case-140",
+    "id": "case-127",
     "query": "如何使用 head？",
     "expected_topic_id": "linux.head",
     "domain": "linux"
   },
   {
-    "id": "case-141",
+    "id": "case-128",
     "query": "结束进程",
     "expected_topic_id": "linux.kill",
     "domain": "linux"
   },
   {
-    "id": "case-142",
+    "id": "case-129",
     "query": "如何使用 less？",
     "expected_topic_id": "linux.less",
     "domain": "linux"
   },
   {
-    "id": "case-143",
+    "id": "case-130",
     "query": "查看目录文件",
     "expected_topic_id": "linux.ls",
     "domain": "linux"
   },
   {
-    "id": "case-144",
+    "id": "case-131",
     "query": "新建文件夹",
     "expected_topic_id": "linux.mkdir",
     "domain": "linux"
   },
   {
-    "id": "case-145",
+    "id": "case-132",
     "query": "移动文件",
     "expected_topic_id": "linux.mv",
     "domain": "linux"
   },
   {
-    "id": "case-146",
+    "id": "case-133",
     "query": "列出进程",
     "expected_topic_id": "linux.ps",
     "domain": "linux"
   },
   {
-    "id": "case-147",
+    "id": "case-134",
     "query": "如何使用 pwd？",
     "expected_topic_id": "linux.pwd",
     "domain": "linux"
   },
   {
-    "id": "case-148",
+    "id": "case-135",
     "query": "快速搜索代码",
     "expected_topic_id": "linux.rg",
     "domain": "linux"
   },
   {
-    "id": "case-149",
+    "id": "case-136",
     "query": "删除文件",
     "expected_topic_id": "linux.rm",
     "domain": "linux"
   },
   {
-    "id": "case-150",
+    "id": "case-137",
     "query": "上传文件到服务器",
     "expected_topic_id": "linux.scp",
     "domain": "linux"
   },
   {
-    "id": "case-151",
+    "id": "case-138",
     "query": "如何使用 sed？",
     "expected_topic_id": "linux.sed",
     "domain": "linux"
   },
   {
-    "id": "case-152",
+    "id": "case-139",
     "query": "如何使用 sort？",
     "expected_topic_id": "linux.sort",
     "domain": "linux"
   },
   {
-    "id": "case-153",
+    "id": "case-140",
     "query": "远程登录 Linux",
     "expected_topic_id": "linux.ssh",
     "domain": "linux"
   },
   {
-    "id": "case-154",
+    "id": "case-141",
     "query": "如何使用 tail？",
     "expected_topic_id": "linux.tail",
     "domain": "linux"
   },
   {
-    "id": "case-155",
+    "id": "case-142",
     "query": "创建 tar.gz",
     "expected_topic_id": "linux.tar",
     "domain": "linux"
   },
   {
-    "id": "case-156",
+    "id": "case-143",
     "query": "查看 CPU 内存占用",
     "expected_topic_id": "linux.top",
     "domain": "linux"
   },
   {
-    "id": "case-157",
+    "id": "case-144",
     "query": "如何使用 touch？",
     "expected_topic_id": "linux.touch",
     "domain": "linux"
   },
   {
-    "id": "case-158",
+    "id": "case-145",
     "query": "如何使用 uniq？",
     "expected_topic_id": "linux.uniq",
     "domain": "linux"
   },
   {
-    "id": "case-159",
+    "id": "case-146",
     "query": "如何使用 wc？",
     "expected_topic_id": "linux.wc",
     "domain": "linux"
   },
   {
-    "id": "case-160",
+    "id": "case-147",
     "query": "压缩目录",
     "expected_topic_id": "linux.zip",
     "domain": "linux"
   },
   {
-    "id": "case-161",
+    "id": "case-148",
     "query": "如何使用 certbot？",
     "expected_topic_id": "network.certbot",
     "domain": "network"
   },
   {
-    "id": "case-162",
+    "id": "case-149",
     "query": "如何使用 dig？",
     "expected_topic_id": "network.dig",
     "domain": "network"
   },
   {
-    "id": "case-163",
+    "id": "case-150",
     "query": "如何使用 firewall-cmd？",
     "expected_topic_id": "network.firewall-cmd",
     "domain": "network"
   },
   {
-    "id": "case-164",
+    "id": "case-151",
     "query": "如何使用 hostnamectl？",
     "expected_topic_id": "network.hostnamectl",
     "domain": "network"
   },
   {
-    "id": "case-165",
+    "id": "case-152",
     "query": "如何使用 ip？",
     "expected_topic_id": "network.ip",
     "domain": "network"
   },
   {
-    "id": "case-166",
+    "id": "case-153",
     "query": "lsof 查看端口占用",
     "expected_topic_id": "network.lsof",
     "domain": "network"
   },
   {
-    "id": "case-167",
+    "id": "case-154",
     "query": "如何使用 nc？",
     "expected_topic_id": "network.nc",
     "domain": "network"
   },
   {
-    "id": "case-168",
+    "id": "case-155",
     "query": "如何使用 netstat？",
     "expected_topic_id": "network.netstat",
     "domain": "network"
   },
   {
-    "id": "case-169",
+    "id": "case-156",
     "query": "如何使用 nginx？",
     "expected_topic_id": "network.nginx",
     "domain": "network"
   },
   {
-    "id": "case-170",
+    "id": "case-157",
     "query": "如何使用 nslookup？",
     "expected_topic_id": "network.nslookup",
     "domain": "network"
   },
   {
-    "id": "case-171",
+    "id": "case-158",
     "query": "如何使用 ping？",
     "expected_topic_id": "network.ping",
     "domain": "network"
   },
   {
-    "id": "case-172",
+    "id": "case-159",
     "query": "如何使用 rsync？",
     "expected_topic_id": "network.rsync",
     "domain": "network"
   },
   {
-    "id": "case-173",
+    "id": "case-160",
     "query": "如何使用 sftp？",
     "expected_topic_id": "network.sftp",
     "domain": "network"
   },
   {
-    "id": "case-174",
+    "id": "case-161",
     "query": "Linux 怎么查看端口占用？",
     "expected_topic_id": "network.ss",
     "domain": "network"
   },
   {
-    "id": "case-175",
+    "id": "case-162",
     "query": "如何使用 ssh？",
     "expected_topic_id": "network.ssh",
     "domain": "network"
   },
   {
-    "id": "case-176",
+    "id": "case-163",
     "query": "如何使用 ssh-copy-id？",
     "expected_topic_id": "network.ssh-copy-id",
     "domain": "network"
   },
   {
-    "id": "case-177",
+    "id": "case-164",
     "query": "如何使用 ssh-keygen？",
     "expected_topic_id": "network.ssh-keygen",
     "domain": "network"
   },
   {
-    "id": "case-178",
+    "id": "case-165",
     "query": "如何使用 tcpdump？",
     "expected_topic_id": "network.tcpdump",
     "domain": "network"
   },
   {
-    "id": "case-179",
+    "id": "case-166",
     "query": "如何使用 traceroute？",
     "expected_topic_id": "network.traceroute",
     "domain": "network"
   },
   {
-    "id": "case-180",
+    "id": "case-167",
     "query": "如何使用 ufw？",
     "expected_topic_id": "network.ufw",
     "domain": "network"
   },
   {
-    "id": "case-181",
+    "id": "case-168",
     "query": "如何使用 bun？",
     "expected_topic_id": "node.bun",
     "domain": "node"
   },
   {
-    "id": "case-182",
+    "id": "case-169",
     "query": "启用 pnpm yarn",
     "expected_topic_id": "node.corepack",
     "domain": "node"
   },
   {
-    "id": "case-183",
+    "id": "case-170",
     "query": "如何使用 deno？",
     "expected_topic_id": "node.deno",
     "domain": "node"
   },
   {
-    "id": "case-184",
+    "id": "case-171",
     "query": "JavaScript lint",
     "expected_topic_id": "node.eslint",
     "domain": "node"
   },
   {
-    "id": "case-185",
+    "id": "case-172",
     "query": "执行 JavaScript 文件",
     "expected_topic_id": "node.node",
     "domain": "node"
   },
   {
-    "id": "case-186",
+    "id": "case-173",
     "query": "npm 安装依赖",
     "expected_topic_id": "node.npm",
     "domain": "node"
   },
   {
-    "id": "case-187",
+    "id": "case-174",
     "query": "如何使用 npm-audit？",
     "expected_topic_id": "node.npm-audit",
     "domain": "node"
   },
   {
-    "id": "case-188",
+    "id": "case-175",
     "query": "如何使用 npm-cache？",
     "expected_topic_id": "node.npm-cache",
     "domain": "node"
   },
   {
-    "id": "case-189",
+    "id": "case-176",
     "query": "如何使用 npm-config？",
     "expected_topic_id": "node.npm-config",
     "domain": "node"
   },
   {
-    "id": "case-190",
+    "id": "case-177",
     "query": "如何使用 npm-install？",
     "expected_topic_id": "node.npm-install",
     "domain": "node"
   },
   {
-    "id": "case-191",
+    "id": "case-178",
     "query": "如何使用 npm-publish？",
     "expected_topic_id": "node.npm-publish",
     "domain": "node"
   },
   {
-    "id": "case-192",
+    "id": "case-179",
     "query": "如何使用 npm-run-script？",
     "expected_topic_id": "node.npm-run-script",
     "domain": "node"
   },
   {
-    "id": "case-193",
+    "id": "case-180",
     "query": "如何使用 npm-test？",
     "expected_topic_id": "node.npm-test",
     "domain": "node"
   },
   {
-    "id": "case-194",
+    "id": "case-181",
     "query": "不安装运行 npm 包",
     "expected_topic_id": "node.npx",
     "domain": "node"
   },
   {
-    "id": "case-195",
+    "id": "case-182",
     "query": "pnpm install",
     "expected_topic_id": "node.pnpm",
     "domain": "node"
   },
   {
-    "id": "case-196",
+    "id": "case-183",
     "query": "格式化 JavaScript",
     "expected_topic_id": "node.prettier",
     "domain": "node"
   },
   {
-    "id": "case-197",
+    "id": "case-184",
     "query": "执行 TypeScript 文件",
     "expected_topic_id": "node.ts-node",
     "domain": "node"
   },
   {
-    "id": "case-198",
+    "id": "case-185",
     "query": "如何使用 tsc？",
     "expected_topic_id": "node.tsc",
     "domain": "node"
   },
   {
-    "id": "case-199",
+    "id": "case-186",
     "query": "启动 Vite 开发服务器",
     "expected_topic_id": "node.vite",
     "domain": "node"
   },
   {
-    "id": "case-200",
+    "id": "case-187",
     "query": "yarn install",
     "expected_topic_id": "node.yarn",
     "domain": "node"
   },
   {
-    "id": "case-201",
+    "id": "case-188",
     "query": "Python 格式化",
     "expected_topic_id": "python.black",
     "domain": "python"
   },
   {
-    "id": "case-202",
+    "id": "case-189",
     "query": "如何使用 conda？",
     "expected_topic_id": "python.conda",
     "domain": "python"
   },
   {
-    "id": "case-203",
+    "id": "case-190",
     "query": "如何使用 django-admin？",
     "expected_topic_id": "python.django-admin",
     "domain": "python"
   },
   {
-    "id": "case-204",
+    "id": "case-191",
     "query": "如何使用 flake8？",
     "expected_topic_id": "python.flake8",
     "domain": "python"
   },
   {
-    "id": "case-205",
+    "id": "case-192",
     "query": "如何使用 flask？",
     "expected_topic_id": "python.flask",
     "domain": "python"
   },
   {
-    "id": "case-206",
+    "id": "case-193",
     "query": "如何使用 gunicorn？",
     "expected_topic_id": "python.gunicorn",
     "domain": "python"
   },
   {
-    "id": "case-207",
+    "id": "case-194",
     "query": "如何使用 http-server？",
     "expected_topic_id": "python.http-server",
     "domain": "python"
   },
   {
-    "id": "case-208",
+    "id": "case-195",
     "query": "如何使用 ipython？",
     "expected_topic_id": "python.ipython",
     "domain": "python"
   },
   {
-    "id": "case-209",
+    "id": "case-196",
     "query": "如何使用 jupyter？",
     "expected_topic_id": "python.jupyter",
     "domain": "python"
   },
   {
-    "id": "case-210",
+    "id": "case-197",
     "query": "如何使用 mypy？",
     "expected_topic_id": "python.mypy",
     "domain": "python"
   },
   {
-    "id": "case-211",
+    "id": "case-198",
     "query": "安装 Python 依赖",
     "expected_topic_id": "python.pip",
     "domain": "python"
   },
   {
-    "id": "case-212",
+    "id": "case-199",
     "query": "pip3 install",
     "expected_topic_id": "python.pip3",
     "domain": "python"
   },
   {
-    "id": "case-213",
+    "id": "case-200",
     "query": "如何使用 pipenv？",
     "expected_topic_id": "python.pipenv",
     "domain": "python"
   },
   {
-    "id": "case-214",
+    "id": "case-201",
     "query": "安装 Python 命令行工具",
     "expected_topic_id": "python.pipx",
     "domain": "python"
   },
   {
-    "id": "case-215",
+    "id": "case-202",
     "query": "如何使用 poetry？",
     "expected_topic_id": "python.poetry",
     "domain": "python"
   },
   {
-    "id": "case-216",
+    "id": "case-203",
     "query": "如何使用 pydoc？",
     "expected_topic_id": "python.pydoc",
     "domain": "python"
   },
   {
-    "id": "case-217",
+    "id": "case-204",
     "query": "如何使用 pyenv？",
     "expected_topic_id": "python.pyenv",
     "domain": "python"
   },
   {
-    "id": "case-218",
+    "id": "case-205",
     "query": "如何使用 pylint？",
     "expected_topic_id": "python.pylint",
     "domain": "python"
   },
   {
-    "id": "case-219",
+    "id": "case-206",
     "query": "运行单元测试",
     "expected_topic_id": "python.pytest",
     "domain": "python"
   },
   {
-    "id": "case-220",
+    "id": "case-207",
     "query": "执行 Python 脚本",
     "expected_topic_id": "python.python",
     "domain": "python"
   },
   {
-    "id": "case-221",
+    "id": "case-208",
     "query": "执行 Python3 脚本",
     "expected_topic_id": "python.python3",
     "domain": "python"
   },
   {
-    "id": "case-222",
+    "id": "case-209",
     "query": "Python lint",
     "expected_topic_id": "python.ruff",
     "domain": "python"
   },
   {
-    "id": "case-223",
+    "id": "case-210",
     "query": "如何使用 tox？",
     "expected_topic_id": "python.tox",
     "domain": "python"
   },
   {
-    "id": "case-224",
+    "id": "case-211",
     "query": "uv 安装依赖",
     "expected_topic_id": "python.uv",
     "domain": "python"
   },
   {
-    "id": "case-225",
+    "id": "case-212",
     "query": "Python 虚拟环境",
     "expected_topic_id": "python.virtualenv",
     "domain": "python"
   },
   {
-    "id": "case-226",
+    "id": "case-213",
     "query": "Redis 怎么删除  键？",
     "expected_topic_id": "redis.delete-key",
     "domain": "redis"
   },
   {
-    "id": "case-227",
+    "id": "case-214",
     "query": "Redis 怎么设置  过期时间？",
     "expected_topic_id": "redis.expire",
     "domain": "redis"
   },
   {
-    "id": "case-228",
+    "id": "case-215",
     "query": "Redis 怎么读写  Hash？",
     "expected_topic_id": "redis.hash",
     "domain": "redis"
   },
   {
-    "id": "case-229",
+    "id": "case-216",
     "query": "Redis 怎么查看  服务状态？",
     "expected_topic_id": "redis.info",
     "domain": "redis"
   },
   {
-    "id": "case-230",
+    "id": "case-217",
     "query": "Redis 怎么操作  List？",
     "expected_topic_id": "redis.list",
     "domain": "redis"
   },
   {
-    "id": "case-231",
+    "id": "case-218",
     "query": "Redis 怎么查看  键内存占用？",
     "expected_topic_id": "redis.memory-usage",
     "domain": "redis"
   },
   {
-    "id": "case-232",
+    "id": "case-219",
     "query": "Redis 怎么使用 redis-cli 管道批量写入？",
     "expected_topic_id": "redis.pipeline",
     "domain": "redis"
   },
   {
-    "id": "case-233",
+    "id": "case-220",
     "query": "Redis 怎么使用  发布订阅？",
     "expected_topic_id": "redis.pubsub",
     "domain": "redis"
   },
   {
-    "id": "case-234",
+    "id": "case-221",
     "query": "Redis 怎么渐进扫描  键？",
     "expected_topic_id": "redis.scan-keys",
     "domain": "redis"
   },
   {
-    "id": "case-235",
+    "id": "case-222",
     "query": "Redis 怎么操作  Set？",
     "expected_topic_id": "redis.set",
     "domain": "redis"
   },
   {
-    "id": "case-236",
+    "id": "case-223",
     "query": "Redis 怎么查看  慢查询？",
     "expected_topic_id": "redis.slowlog",
     "domain": "redis"
   },
   {
-    "id": "case-237",
+    "id": "case-224",
     "query": "Redis 怎么操作  Sorted Set？",
     "expected_topic_id": "redis.sorted-set",
     "domain": "redis"
   },
   {
-    "id": "case-238",
+    "id": "case-225",
     "query": "Redis 怎么读取  字符串？",
     "expected_topic_id": "redis.string-get",
     "domain": "redis"
   },
   {
-    "id": "case-239",
+    "id": "case-226",
     "query": "Redis 怎么写入  字符串？",
     "expected_topic_id": "redis.string-set",
     "domain": "redis"
   },
   {
-    "id": "case-240",
+    "id": "case-227",
     "query": "Redis 怎么使用  事务？",
     "expected_topic_id": "redis.transaction",
     "domain": "redis"
   },
   {
-    "id": "case-241",
+    "id": "case-228",
     "query": "备份 MySQL",
     "expected_topic_id": "sql.backup",
     "domain": "sql"
   },
   {
-    "id": "case-242",
+    "id": "case-229",
     "query": "MySQL 新建数据库",
     "expected_topic_id": "sql.create-database",
     "domain": "sql"
   },
   {
-    "id": "case-243",
+    "id": "case-230",
     "query": "MySQL 添加索引",
     "expected_topic_id": "sql.create-index",
     "domain": "sql"
   },
   {
-    "id": "case-244",
+    "id": "case-231",
     "query": "MySQL 新建表",
     "expected_topic_id": "sql.create-table",
     "domain": "sql"
   },
   {
-    "id": "case-245",
+    "id": "case-232",
     "query": "MySQL 创建账号",
     "expected_topic_id": "sql.create-user",
     "domain": "sql"
   },
   {
-    "id": "case-246",
+    "id": "case-233",
     "query": "MySQL 怎么创建视图",
     "expected_topic_id": "sql.create-view",
     "domain": "sql"
   },
   {
-    "id": "case-247",
+    "id": "case-234",
     "query": "MySQL 删除记录",
     "expected_topic_id": "sql.delete-rows",
     "domain": "sql"
   },
   {
-    "id": "case-248",
+    "id": "case-235",
     "query": "MySQL EXPLAIN",
     "expected_topic_id": "sql.explain-query",
     "domain": "sql"
   },
   {
-    "id": "case-249",
+    "id": "case-236",
     "query": "MySQL 插入记录",
     "expected_topic_id": "sql.insert-row",
     "domain": "sql"
   },
   {
-    "id": "case-250",
+    "id": "case-237",
     "query": "MySQL JOIN",
     "expected_topic_id": "sql.join-tables",
     "domain": "sql"
   },
   {
-    "id": "case-251",
+    "id": "case-238",
     "query": "登录 MySQL",
     "expected_topic_id": "sql.mysql-connect",
     "domain": "sql"
   },
   {
-    "id": "case-252",
+    "id": "case-239",
     "query": "pg_dump 备份",
     "expected_topic_id": "sql.postgres-backup",
     "domain": "sql"
   },
   {
-    "id": "case-253",
+    "id": "case-240",
     "query": "psql 登录数据库",
     "expected_topic_id": "sql.postgres-connect",
     "domain": "sql"
   },
   {
-    "id": "case-254",
+    "id": "case-241",
     "query": "PostgreSQL 新建数据库",
     "expected_topic_id": "sql.postgres-create-database",
     "domain": "sql"
   },
   {
-    "id": "case-255",
+    "id": "case-242",
     "query": "PostgreSQL CREATE INDEX CONCURRENTLY",
     "expected_topic_id": "sql.postgres-create-index",
     "domain": "sql"
   },
   {
-    "id": "case-256",
+    "id": "case-243",
     "query": "PostgreSQL CREATE TABLE",
     "expected_topic_id": "sql.postgres-create-table",
     "domain": "sql"
   },
   {
-    "id": "case-257",
+    "id": "case-244",
     "query": "PostgreSQL CREATE VIEW",
     "expected_topic_id": "sql.postgres-create-view",
     "domain": "sql"
   },
   {
-    "id": "case-258",
+    "id": "case-245",
     "query": "PostgreSQL DELETE",
     "expected_topic_id": "sql.postgres-delete",
     "domain": "sql"
   },
   {
-    "id": "case-259",
+    "id": "case-246",
     "query": "PostgreSQL EXPLAIN ANALYZE",
     "expected_topic_id": "sql.postgres-explain",
     "domain": "sql"
   },
   {
-    "id": "case-260",
+    "id": "case-247",
     "query": "PostgreSQL INSERT RETURNING",
     "expected_topic_id": "sql.postgres-insert",
     "domain": "sql"
   },
   {
-    "id": "case-261",
+    "id": "case-248",
     "query": "psql 查看数据库",
     "expected_topic_id": "sql.postgres-list",
     "domain": "sql"
   },
   {
-    "id": "case-262",
+    "id": "case-249",
     "query": "pg_restore 恢复",
     "expected_topic_id": "sql.postgres-restore",
     "domain": "sql"
   },
   {
-    "id": "case-263",
+    "id": "case-250",
     "query": "PostgreSQL SELECT 查询",
     "expected_topic_id": "sql.postgres-select",
     "domain": "sql"
   },
   {
-    "id": "case-264",
+    "id": "case-251",
     "query": "PostgreSQL BEGIN COMMIT ROLLBACK",
     "expected_topic_id": "sql.postgres-transaction",
     "domain": "sql"
   },
   {
-    "id": "case-265",
+    "id": "case-252",
     "query": "PostgreSQL UPDATE",
     "expected_topic_id": "sql.postgres-update",
     "domain": "sql"
   },
   {
-    "id": "case-266",
+    "id": "case-253",
     "query": "PostgreSQL ON CONFLICT",
     "expected_topic_id": "sql.postgres-upsert",
     "domain": "sql"
   },
   {
-    "id": "case-267",
+    "id": "case-254",
     "query": "导入 MySQL 备份",
     "expected_topic_id": "sql.restore",
     "domain": "sql"
   },
   {
-    "id": "case-268",
+    "id": "case-255",
     "query": "MySQL 查询数据",
     "expected_topic_id": "sql.select-rows",
     "domain": "sql"
   },
   {
-    "id": "case-269",
+    "id": "case-256",
     "query": "MySQL 开启事务",
     "expected_topic_id": "sql.transaction",
     "domain": "sql"
   },
   {
-    "id": "case-270",
+    "id": "case-257",
     "query": "MySQL 修改记录",
     "expected_topic_id": "sql.update-rows",
     "domain": "sql"
   },
   {
-    "id": "case-271",
+    "id": "case-258",
     "query": "如何使用 gdb？",
     "expected_topic_id": "testing.gdb",
     "domain": "testing"
   },
   {
-    "id": "case-272",
+    "id": "case-259",
     "query": "如何使用 jest？",
     "expected_topic_id": "testing.jest",
     "domain": "testing"
   },
   {
-    "id": "case-273",
+    "id": "case-260",
     "query": "如何使用 k6？",
     "expected_topic_id": "testing.k6",
     "domain": "testing"
   },
   {
-    "id": "case-274",
+    "id": "case-261",
     "query": "如何使用 lldb？",
     "expected_topic_id": "testing.lldb",
     "domain": "testing"
   },
   {
-    "id": "case-275",
+    "id": "case-262",
     "query": "如何使用 mocha？",
     "expected_topic_id": "testing.mocha",
     "domain": "testing"
   },
   {
-    "id": "case-276",
+    "id": "case-263",
     "query": "如何使用 phpunit？",
     "expected_topic_id": "testing.phpunit",
     "domain": "testing"
   },
   {
-    "id": "case-277",
+    "id": "case-264",
     "query": "如何使用 pytest？",
     "expected_topic_id": "testing.pytest",
     "domain": "testing"
   },
   {
-    "id": "case-278",
+    "id": "case-265",
     "query": "如何使用 strace？",
     "expected_topic_id": "testing.strace",
     "domain": "testing"
   },
   {
-    "id": "case-279",
+    "id": "case-266",
     "query": "如何使用 valgrind？",
     "expected_topic_id": "testing.valgrind",
     "domain": "testing"
   },
   {
-    "id": "case-280",
+    "id": "case-267",
     "query": "如何使用 vitest？",
     "expected_topic_id": "testing.vitest",
     "domain": "testing"
   },
   {
-    "id": "case-281",
-    "query": "如何使用 choco？",
+    "id": "case-268",
+    "query": "Chocolatey 安装软件",
     "expected_topic_id": "windows.choco",
     "domain": "windows"
   },
   {
-    "id": "case-282",
-    "query": "如何使用 get-childitem？",
+    "id": "case-269",
+    "query": "PowerShell 压缩 zip",
+    "expected_topic_id": "windows.compress-archive",
+    "domain": "windows"
+  },
+  {
+    "id": "case-270",
+    "query": "PowerShell 复制文件",
+    "expected_topic_id": "windows.copy-item",
+    "domain": "windows"
+  },
+  {
+    "id": "case-271",
+    "query": "PowerShell 解压 zip",
+    "expected_topic_id": "windows.expand-archive",
+    "domain": "windows"
+  },
+  {
+    "id": "case-272",
+    "query": "PowerShell 查看文件夹内容",
     "expected_topic_id": "windows.get-childitem",
     "domain": "windows"
   },
   {
-    "id": "case-283",
-    "query": "如何使用 get-content？",
+    "id": "case-273",
+    "query": "PowerShell 命令在哪里",
+    "expected_topic_id": "windows.get-command",
+    "domain": "windows"
+  },
+  {
+    "id": "case-274",
+    "query": "PowerShell 查看文件内容",
     "expected_topic_id": "windows.get-content",
     "domain": "windows"
   },
   {
-    "id": "case-284",
-    "query": "如何使用 get-filehash？",
+    "id": "case-275",
+    "query": "PowerShell 查看环境变量",
+    "expected_topic_id": "windows.get-environmentvariable",
+    "domain": "windows"
+  },
+  {
+    "id": "case-276",
+    "query": "PowerShell 计算 SHA256",
     "expected_topic_id": "windows.get-filehash",
     "domain": "windows"
   },
   {
-    "id": "case-285",
-    "query": "如何使用 invoke-webrequest？",
+    "id": "case-277",
+    "query": "PowerShell 查看指定端口",
+    "expected_topic_id": "windows.get-nettcpconnection",
+    "domain": "windows"
+  },
+  {
+    "id": "case-278",
+    "query": "PowerShell 查看进程",
+    "expected_topic_id": "windows.get-process",
+    "domain": "windows"
+  },
+  {
+    "id": "case-279",
+    "query": "PowerShell 查看服务",
+    "expected_topic_id": "windows.get-service",
+    "domain": "windows"
+  },
+  {
+    "id": "case-280",
+    "query": "PowerShell HTTP GET",
     "expected_topic_id": "windows.invoke-webrequest",
     "domain": "windows"
   },
   {
-    "id": "case-286",
-    "query": "如何使用 move-item？",
+    "id": "case-281",
+    "query": "PowerShell 移动文件",
     "expected_topic_id": "windows.move-item",
     "domain": "windows"
   },
   {
-    "id": "case-287",
+    "id": "case-282",
     "query": "Windows 怎么查看端口占用？",
     "expected_topic_id": "windows.netstat",
     "domain": "windows"
   },
   {
-    "id": "case-288",
-    "query": "如何使用 new-item？",
+    "id": "case-283",
+    "query": "PowerShell 创建文件",
     "expected_topic_id": "windows.new-item",
     "domain": "windows"
   },
   {
-    "id": "case-289",
-    "query": "如何使用 powershell？",
+    "id": "case-284",
+    "query": "PowerShell 版本怎么看？",
     "expected_topic_id": "windows.powershell",
     "domain": "windows"
   },
   {
-    "id": "case-290",
-    "query": "如何使用 remove-item？",
+    "id": "case-285",
+    "query": "PowerShell 删除文件",
     "expected_topic_id": "windows.remove-item",
     "domain": "windows"
   },
   {
-    "id": "case-291",
-    "query": "如何使用 robocopy？",
+    "id": "case-286",
+    "query": "PowerShell 查 DNS",
+    "expected_topic_id": "windows.resolve-dnsname",
+    "domain": "windows"
+  },
+  {
+    "id": "case-287",
+    "query": "PowerShell 重启服务",
+    "expected_topic_id": "windows.restart-service",
+    "domain": "windows"
+  },
+  {
+    "id": "case-288",
+    "query": "Windows 文件夹同步 robocopy",
     "expected_topic_id": "windows.robocopy",
     "domain": "windows"
   },
   {
-    "id": "case-292",
-    "query": "如何使用 scoop？",
+    "id": "case-289",
+    "query": "Scoop 安装软件",
     "expected_topic_id": "windows.scoop",
     "domain": "windows"
   },
   {
-    "id": "case-293",
-    "query": "如何使用 select-string？",
+    "id": "case-290",
+    "query": "PowerShell 搜索文件内容",
     "expected_topic_id": "windows.select-string",
     "domain": "windows"
   },
   {
-    "id": "case-294",
-    "query": "如何使用 set-location？",
+    "id": "case-291",
+    "query": "PowerShell 设置工作路径",
     "expected_topic_id": "windows.set-location",
     "domain": "windows"
   },
   {
-    "id": "case-295",
-    "query": "如何使用 start-process？",
+    "id": "case-292",
+    "query": "PowerShell 启动程序",
     "expected_topic_id": "windows.start-process",
     "domain": "windows"
   },
   {
-    "id": "case-296",
-    "query": "如何使用 start-service？",
+    "id": "case-293",
+    "query": "PowerShell 启动服务",
     "expected_topic_id": "windows.start-service",
     "domain": "windows"
   },
   {
-    "id": "case-297",
-    "query": "如何使用 stop-service？",
+    "id": "case-294",
+    "query": "PowerShell 结束进程",
+    "expected_topic_id": "windows.stop-process",
+    "domain": "windows"
+  },
+  {
+    "id": "case-295",
+    "query": "PowerShell 停止服务",
     "expected_topic_id": "windows.stop-service",
     "domain": "windows"
   },
   {
-    "id": "case-298",
-    "query": "如何使用 taskkill？",
+    "id": "case-296",
+    "query": "CMD taskkill 怎么用",
     "expected_topic_id": "windows.taskkill",
     "domain": "windows"
   },
   {
-    "id": "case-299",
-    "query": "如何使用 test-netconnection？",
+    "id": "case-297",
+    "query": "CMD tasklist 查看进程",
+    "expected_topic_id": "windows.tasklist",
+    "domain": "windows"
+  },
+  {
+    "id": "case-298",
+    "query": "PowerShell 测试端口",
     "expected_topic_id": "windows.test-netconnection",
     "domain": "windows"
   },
   {
+    "id": "case-299",
+    "query": "CMD where.exe 查找命令路径",
+    "expected_topic_id": "windows.where",
+    "domain": "windows"
+  },
+  {
     "id": "case-300",
-    "query": "如何使用 winget？",
+    "query": "Windows 安装软件 winget",
     "expected_topic_id": "windows.winget",
     "domain": "windows"
   }

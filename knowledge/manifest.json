@@ -1,15 +1,15 @@
 {
   "schema_version": 3,
   "topic_count": 300,
-  "recipe_count": 8,
+  "recipe_count": 21,
   "recipe_schema_version": 1,
-  "recipe_revision": "3af841c515e2df6c009868a0ce298485d45439583fd4e8aada4ab69fe417c19d",
+  "recipe_revision": "d6bccea4b2b49448c1a2378b1fa39909e99f74560b58dc372c01b909a92fbfb7",
   "domains": {
     "cicd": 15,
     "docker": 25,
     "git": 30,
     "http": 20,
-    "java": 20,
+    "java": 7,
     "kubernetes": 20,
     "linux": 30,
     "network": 20,
@@ -18,7 +18,7 @@
     "redis": 15,
     "sql": 30,
     "testing": 10,
-    "windows": 20
+    "windows": 33
   },
   "sources": [
     {
@@ -922,86 +922,6 @@
       "kind": "vendored"
     },
     {
-      "source_id": "java.gradle",
-      "title": "tldr: gradle",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle.md",
-      "sha256": "0b2e3054f62def6ef411e3bdcd417a4b6fcf96737b1670a28bd325c17be34223",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-build",
-      "title": "tldr: gradle-build",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-build.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-build.md",
-      "sha256": "0aca324465a2b4821dcf6bb62514cb459710aaa6d9e56bc7234532c48e6a0e9b",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-clean",
-      "title": "tldr: gradle-clean",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-clean.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-clean.md",
-      "sha256": "a56b8c44915181164f14cfa86fac78e2c1b3ade2e36e2393b42def8e769aee9d",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-dependencies",
-      "title": "tldr: gradle-dependencies",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-dependencies.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-dependencies.md",
-      "sha256": "32f6f2ac565e2c027588b2cc38aff89366927042e2561d361f886f206f359524",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-init",
-      "title": "tldr: gradle-init",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-init.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-init.md",
-      "sha256": "b3d375320f1616f84cb66f3aad3a59ef5310949c6129de21fdab03842c501d72",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-tasks",
-      "title": "tldr: gradle-tasks",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-tasks.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-tasks.md",
-      "sha256": "7732e81f117e6888f7eee2e92303a5d0e2a61cf45a883a6c3fc2b7613ec4a4e1",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-test",
-      "title": "tldr: gradle-test",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-test.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-test.md",
-      "sha256": "9e8f38ec2a97e1cd888c201873803fbefd73970ca0f938da0f78a5fd91a4b60d",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.gradle-wrapper",
-      "title": "tldr: gradle-wrapper",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle-wrapper.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/gradle-wrapper.md",
-      "sha256": "3bacba33991befa2689668b9009ee10fc1469e3e7170b250dd5040b03beb1c4e",
-      "kind": "vendored"
-    },
-    {
       "source_id": "java.jar",
       "title": "tldr: jar",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jar.md",
@@ -1032,36 +952,6 @@
       "kind": "vendored"
     },
     {
-      "source_id": "java.javadoc",
-      "title": "tldr: javadoc",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/javadoc.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/javadoc.md",
-      "sha256": "173ba65ea3685f382f0aec4e956a43804b41ca92d67af2bfdc71ac8c56f2d71e",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.jps",
-      "title": "tldr: jps",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jps.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/jps.md",
-      "sha256": "d69789d9a9fe42fc61cd1c32ddaf72fdafeea8e0787b328e9a0a46cf37407f7c",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.keytool",
-      "title": "tldr: keytool",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/keytool.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/keytool.md",
-      "sha256": "8f5b48844514643ee261f08c7ee49e1ee1c45b53749924871d770c8aa618d86d",
-      "kind": "vendored"
-    },
-    {
       "source_id": "java.kotlin",
       "title": "tldr: kotlin",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kotlin.md",
@@ -1082,16 +972,6 @@
       "kind": "vendored"
     },
     {
-      "source_id": "java.mvn-archetype",
-      "title": "tldr: mvn-archetype",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-archetype.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/mvn-archetype.md",
-      "sha256": "6133e0d607ade379992e69195b94b9e5d94af6ab7bd556c63e2095d5f3a1e2c5",
-      "kind": "vendored"
-    },
-    {
       "source_id": "java.mvn-compile",
       "title": "tldr: mvn-compile",
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-compile.md",
@@ -1099,16 +979,6 @@
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
       "path": "pages/common/mvn-compile.md",
       "sha256": "4bea114041d701fad62029b1d2866a026565297735bc1ea224f991cbc32a8be6",
-      "kind": "vendored"
-    },
-    {
-      "source_id": "java.mvn-dependency",
-      "title": "tldr: mvn-dependency",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-dependency.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/mvn-dependency.md",
-      "sha256": "188c4f48a637b48a960ca24e9b7ee07ad2b11ddf4405eccb0177d2f70f9b1d47",
       "kind": "vendored"
     },
     {
@@ -2823,203 +2693,333 @@
     },
     {
       "source_id": "windows.choco",
-      "title": "tldr: choco",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/choco.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/choco.md",
-      "sha256": "e0dbbbe643648977e9a3788ad9c6d570978b432d1d39bd4a0fabd4ba37d53772",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 Chocolatey 管理 Windows 软件",
+      "source_url": "https://docs.chocolatey.org/en-us/choco/commands/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/choco",
+      "sha256": "b219ebcee73abd0e2bd7080b4cf833acc8f03aa68db78c7491bfa1b30866962e",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.compress-archive",
+      "title": "AegisCopilot Windows 2.7 种子知识：压缩 Windows 文件和目录",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/compress-archive",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/compress-archive",
+      "sha256": "af14b3a8c81b4e2314713305b2d419278a2da804462ccb53c3382ec89635c463",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.copy-item",
+      "title": "AegisCopilot Windows 2.7 种子知识：复制 Windows 文件或目录",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/copy-item",
+      "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.expand-archive",
+      "title": "AegisCopilot Windows 2.7 种子知识：解压 Windows ZIP 文件",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/expand-archive",
+      "sha256": "6b7623c6e78b373784db2ddcd14220bafed2c8f78fafad900b60c34b7b818846",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.get-childitem",
-      "title": "tldr: get-childitem",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-childitem.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/get-childitem.md",
-      "sha256": "a2999d42f650f14229b6cbef510e221d6059f5d8bbcf007f6a411b546cabf798",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：列出 Windows 文件和目录",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-childitem",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-childitem",
+      "sha256": "018883889cd93f81a1c46921a33aca0b865bb8da8bf2bc7f2821907c5f3952a9",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.get-command",
+      "title": "AegisCopilot Windows 2.7 种子知识：查找 Windows 可用命令",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.core/get-command",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-command",
+      "sha256": "7e24d9219ecb209d55d3fea340798d216e2fd4124d9785063793d99daa57914e",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.get-content",
-      "title": "tldr: get-content",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-content.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/get-content.md",
-      "sha256": "798b5a40fa5d36dea80bd7610a44cda2220c35f6c5707e899615a79285075926",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：读取 Windows 文本文件",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-content",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-content",
+      "sha256": "2a83fe2118c36595474c3f9ec96f0b802e6cef3fabe1c842f9a0d75e0af1549f",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.get-environmentvariable",
+      "title": "AegisCopilot Windows 2.7 种子知识：读取 Windows 环境变量",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_environment_variables",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-environmentvariable",
+      "sha256": "70159adb5f0bfe98eb69420c75f6c125124578326f5791ff4ac34b5bc3d33ad0",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.get-filehash",
-      "title": "tldr: get-filehash",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/get-filehash.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/get-filehash.md",
-      "sha256": "c95ac4d2a5d737497f81b660a395845132938120b281e81106efa26f2daea905",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：计算 Windows 文件哈希",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/get-filehash",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-filehash",
+      "sha256": "bc35030c6db954354aa252f00eebe9c15f4b36fe54cdd6af2a28d4e43e51c589",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.get-nettcpconnection",
+      "title": "AegisCopilot Windows 2.7 种子知识：按端口查看 Windows TCP 连接",
+      "source_url": "https://learn.microsoft.com/powershell/module/nettcpip/get-nettcpconnection",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-nettcpconnection",
+      "sha256": "bdc460b0acb9f4aeeea8dfe27024112bf054ef2d19ead190311bacb069d6779d",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.get-process",
+      "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 进程",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-process",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-process",
+      "sha256": "ea32577054978fd27f61a3df1029dcb19c3916e7110b44f224c32d16c8f37259",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.get-service",
+      "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 服务",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-service",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-service",
+      "sha256": "75d70763188648981ec31b30328cb2561748e8a1ce0eee87faa4ee7bfa5abf84",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.invoke-webrequest",
-      "title": "tldr: invoke-webrequest",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/invoke-webrequest.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/invoke-webrequest.md",
-      "sha256": "2097b854c0cf7b8345e2aeac8c957248cccf0900e5d0080643a9226e136e9566",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 PowerShell 发起 HTTP 请求",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/invoke-webrequest",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/invoke-webrequest",
+      "sha256": "0af232c77895f0ad78a8f90d66d6eb621380cf2e779cfb778823011345326c0b",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.move-item",
-      "title": "tldr: move-item",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/move-item.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/move-item.md",
-      "sha256": "df81179d5720deac0a1071cb21e0db52b4497429bd972f7aacafea005d30d3fb",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：移动或重命名 Windows 文件",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/move-item",
+      "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.netstat",
-      "title": "AegisCopilot Windows 端口种子知识",
-      "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
+      "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 端口和连接",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netstat",
       "license": "MIT (project-authored)",
-      "revision": "v2.2.0",
-      "path": "generated/windows-port-usage",
-      "sha256": "efd093f262e27204736099bfa1516b3c782cec30a1c208bf2f608feaa2c86021",
+      "revision": "v2.7.0",
+      "path": "generated/windows/netstat",
+      "sha256": "23a48063a0b94757ae06b11c58722a3d2ddfb48880ae5ea0c9ca53c5ec065af4",
       "kind": "generated_seed"
     },
     {
       "source_id": "windows.new-item",
-      "title": "tldr: new-item",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/new-item.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/new-item.md",
-      "sha256": "cf940fb722f88c15a441cf628ee0495f8372b03e8f6e4d80bfc00d4eb078e0f7",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：创建 Windows 文件或目录",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/new-item",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/new-item",
+      "sha256": "b9ff343bf31fca6dcfce851ad4f24fd13157268dec30940adc2bb8958d9e4bb6",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.powershell",
-      "title": "tldr: powershell",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/powershell.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/powershell.md",
-      "sha256": "17ff39e9b608bac971a7ecd92b679fd8a6e616dd39a9998e312708e369180de4",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：检查 PowerShell 版本与执行策略",
+      "source_url": "https://learn.microsoft.com/powershell/scripting/overview",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/powershell",
+      "sha256": "b89818229faf849eb2396314de79c087187bb38b3fffe3c043e6e82ff45573b1",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.remove-item",
-      "title": "tldr: remove-item",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/remove-item.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/remove-item.md",
-      "sha256": "933e776f40d2ac616580cefba1d7532d9b949a44e37cc246c7c619db9b4d9f5a",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：删除 Windows 文件或目录",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/remove-item",
+      "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.resolve-dnsname",
+      "title": "AegisCopilot Windows 2.7 种子知识：解析 Windows DNS 记录",
+      "source_url": "https://learn.microsoft.com/powershell/module/dnsclient/resolve-dnsname",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/resolve-dnsname",
+      "sha256": "17b3e06a64a6297f480eb1a5019f9fbf98256220da3b4d13450db45a9768dd31",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.restart-service",
+      "title": "AegisCopilot Windows 2.7 种子知识：重启 Windows 服务",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/restart-service",
+      "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.robocopy",
-      "title": "tldr: robocopy",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/robocopy.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/robocopy.md",
-      "sha256": "61a0919e52e94016978b31ff4d542e1dceb64f3802c4540070b70ef606556df8",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 Robocopy 复制 Windows 目录",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/robocopy",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/robocopy",
+      "sha256": "665d0b2e364722d1a3edb2b5199a0dd82b6d2480cec8a3222e4619d5a83a4850",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.scoop",
-      "title": "tldr: scoop",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/scoop.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/scoop.md",
-      "sha256": "de7a24bcd08b6a56b1cecb1e0fecdb897d462c209ddc475e69fdfb7666981eb1",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 Scoop 管理 Windows 软件",
+      "source_url": "https://scoop.sh/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/scoop",
+      "sha256": "a5a39d6940e5bd05f7a99384b00c288c9fa78ce49cf0ed4c821de9fd35c66727",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.select-string",
-      "title": "tldr: select-string",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/select-string.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/select-string.md",
-      "sha256": "6df8c621e44b5a6f7a5e92700704337428e490f4ed1658dc3810e122a2b4102f",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：在 Windows 文件中搜索文本",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/select-string",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/select-string",
+      "sha256": "e3dd4180d0da51fd3d28cb27faad304617fbc4479c3d5abee0cd51dc06bcd87d",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.set-location",
-      "title": "tldr: set-location",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/set-location.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/set-location.md",
-      "sha256": "37ec82ba46be7f3158d316f6994bf5ab8666311cb5c45606899f2d7bbc66ce06",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：设置 Windows 工作路径",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/set-location",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/set-location",
+      "sha256": "8ef9b5934737cb1389e3e0e56c50cab42ad670119594ec651d7c74fa559dda45",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.start-process",
-      "title": "tldr: start-process",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/start-process.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/start-process.md",
-      "sha256": "9d5a941b1312b1761675bbb00c7c68fc7cabc1a32c50b7bfad1d6e1aa93f1854",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：启动 Windows 程序",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-process",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/start-process",
+      "sha256": "17c4d63163a6df70e4025baad378444122facd6f792aee71b9f0d6a2639db7a3",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.start-service",
-      "title": "tldr: start-service",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/start-service.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/start-service.md",
-      "sha256": "602cb9f6256cf2915945021ac5447c5f991e44cfdd02cad4e984cdbb3e1ab3f9",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：启动 Windows 服务",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-service",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/start-service",
+      "sha256": "9269a466a7d74afc726474c9e398ddcc52c02eac8b710e51b767d7a42fa3973b",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.stop-process",
+      "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 进程",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/stop-process",
+      "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.stop-service",
-      "title": "tldr: stop-service",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/stop-service.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/stop-service.md",
-      "sha256": "ded1f2ffff7d9d100b33af75f17f83b14fc2e57ebbcffa9afb2234ef269c845a",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 服务",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/stop-service",
+      "sha256": "e80484aec468c67987b526004a40abb8279c4bab7ad05de1039f9366311ec59f",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.taskkill",
-      "title": "tldr: taskkill",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/taskkill.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/taskkill.md",
-      "sha256": "7381c7bcc25b67b182448327f8a479b196489acfd203f7e81de51d93bec9d96d",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 CMD 终止 Windows 进程",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/taskkill",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/taskkill",
+      "sha256": "12496edafed07a264841abade1f2242372290754791a971415075ec70cfad7d0",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.tasklist",
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 CMD 查看 Windows 进程",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/tasklist",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/tasklist",
+      "sha256": "15a97a36ddefb1bcb4976d3fd6d0b424eceefa8f0650d5840322ec82599c796e",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.test-netconnection",
-      "title": "tldr: test-netconnection",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/test-netconnection.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/test-netconnection.md",
-      "sha256": "a63691563a577a14e606933b13de71f59cd8e6f883ec5287eb0872b0836563dd",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：测试 Windows 主机或端口连通性",
+      "source_url": "https://learn.microsoft.com/powershell/module/nettcpip/test-netconnection",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/test-netconnection",
+      "sha256": "a8c2ebf7cfc9de1064b03226060e1fdcfbe3009daa543a44d2daa934a60b0297",
+      "kind": "generated_seed"
+    },
+    {
+      "source_id": "windows.where",
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 CMD where.exe 查询命令路径",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/where",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/where",
+      "sha256": "8396c2f3f26000399cde0354d19d11adaed5cb30d001cdf9d5979a41a879e590",
+      "kind": "generated_seed"
     },
     {
       "source_id": "windows.winget",
-      "title": "tldr: winget",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/winget.md",
-      "license": "CC BY 4.0",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/windows/winget.md",
-      "sha256": "57693bd044a0da8111c62b9c0067a11fd790b9e67a9f85eabd4325e6b070ea0c",
-      "kind": "vendored"
+      "title": "AegisCopilot Windows 2.7 种子知识：使用 winget 管理 Windows 软件",
+      "source_url": "https://learn.microsoft.com/windows/package-manager/winget/",
+      "license": "MIT (project-authored)",
+      "revision": "v2.7.0",
+      "path": "generated/windows/winget",
+      "sha256": "b81723e72cc1ad1c6ab9ede08999a8ca976cc438f5c80bdcd25024e43ced0dc8",
+      "kind": "generated_seed"
     }
   ],
   "recipes": [
@@ -3143,18 +3143,126 @@
       ]
     },
     {
+      "recipe_id": "windows.compress-archive.paths",
+      "topic_id": "windows.compress-archive",
+      "source_revision": "a83684d8659be0bd188eb2d4906df064623ac6d06195b8520c583446bf2be2b8",
+      "provenance": [
+        {
+          "source_id": "windows.compress-archive",
+          "title": "AegisCopilot Windows 2.7 种子知识：压缩 Windows 文件和目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/compress-archive",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/compress-archive",
+          "sha256": "af14b3a8c81b4e2314713305b2d419278a2da804462ccb53c3382ec89635c463",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.copy-item.paths",
+      "topic_id": "windows.copy-item",
+      "source_revision": "985ea2d7965a14b1981f9a15b73f92bf069d27f2e97eb84756718a89dc411dbd",
+      "provenance": [
+        {
+          "source_id": "windows.copy-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：复制 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/copy-item",
+          "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.expand-archive.paths",
+      "topic_id": "windows.expand-archive",
+      "source_revision": "99369b53f5794dced75087e62e0c9b43d2239570c8b485cfb9a485828762a3df",
+      "provenance": [
+        {
+          "source_id": "windows.expand-archive",
+          "title": "AegisCopilot Windows 2.7 种子知识：解压 Windows ZIP 文件",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/expand-archive",
+          "sha256": "6b7623c6e78b373784db2ddcd14220bafed2c8f78fafad900b60c34b7b818846",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.get-filehash.path",
+      "topic_id": "windows.get-filehash",
+      "source_revision": "4eede31120cb5b6238b74b2785d302006c82f057c341d0850274731cd9754f86",
+      "provenance": [
+        {
+          "source_id": "windows.get-filehash",
+          "title": "AegisCopilot Windows 2.7 种子知识：计算 Windows 文件哈希",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/get-filehash",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-filehash",
+          "sha256": "bc35030c6db954354aa252f00eebe9c15f4b36fe54cdd6af2a28d4e43e51c589",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.get-service.name",
+      "topic_id": "windows.get-service",
+      "source_revision": "e730c80bc236d991c3573e991a4afbcf96237025a6aeab227b42fb394b44749c",
+      "provenance": [
+        {
+          "source_id": "windows.get-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-service",
+          "sha256": "75d70763188648981ec31b30328cb2561748e8a1ce0eee87faa4ee7bfa5abf84",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.move-item.paths",
+      "topic_id": "windows.move-item",
+      "source_revision": "769d6f074692b609af77b7ea3d36f6684e717e4ddac7a6dd95529dc0ab2dcdd6",
+      "provenance": [
+        {
+          "source_id": "windows.move-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：移动或重命名 Windows 文件",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/move-item",
+          "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
       "recipe_id": "windows.netstat.port",
       "topic_id": "windows.netstat",
-      "source_revision": "b3d70a8e54869db494da146383ebe7a6ad5db49df9724ee9cfe0a112afde90b3",
+      "source_revision": "eef82290c1c097d905a39ea2bd7605eb0a86d1655c7b06f0bbe51aa0ed03c994",
       "provenance": [
         {
           "source_id": "windows.netstat",
-          "title": "AegisCopilot Windows 端口种子知识",
-          "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
+          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 端口和连接",
+          "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netstat",
           "license": "MIT (project-authored)",
-          "revision": "v2.2.0",
-          "path": "generated/windows-port-usage",
-          "sha256": "efd093f262e27204736099bfa1516b3c782cec30a1c208bf2f608feaa2c86021",
+          "revision": "v2.7.0",
+          "path": "generated/windows/netstat",
+          "sha256": "23a48063a0b94757ae06b11c58722a3d2ddfb48880ae5ea0c9ca53c5ec065af4",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
@@ -3163,17 +3271,143 @@
     {
       "recipe_id": "windows.new-item.file",
       "topic_id": "windows.new-item",
-      "source_revision": "1e70f8a176b857d95bb0ce889a78e00a0a756b806495f58914d829ddb8cd0198",
+      "source_revision": "23c244eacf8808f38178d0f07b713a4a2bc6857be96876afcad4019433a83296",
       "provenance": [
         {
           "source_id": "windows.new-item",
-          "title": "tldr: new-item",
-          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/new-item.md",
-          "license": "CC BY 4.0",
-          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-          "path": "pages/windows/new-item.md",
-          "sha256": "cf940fb722f88c15a441cf628ee0495f8372b03e8f6e4d80bfc00d4eb078e0f7",
-          "kind": "vendored",
+          "title": "AegisCopilot Windows 2.7 种子知识：创建 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/new-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/new-item",
+          "sha256": "b9ff343bf31fca6dcfce851ad4f24fd13157268dec30940adc2bb8958d9e4bb6",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.remove-item.path",
+      "topic_id": "windows.remove-item",
+      "source_revision": "f6d51e7b96b55423d4a899073ad0184fa776e81c1ff52f4cda5eb28cd71bbdbd",
+      "provenance": [
+        {
+          "source_id": "windows.remove-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：删除 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/remove-item",
+          "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.restart-service.name",
+      "topic_id": "windows.restart-service",
+      "source_revision": "d8c287d93403fe00d4d319e9652bd3c987c10c1113071316951fce74bf1c94bc",
+      "provenance": [
+        {
+          "source_id": "windows.restart-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：重启 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/restart-service",
+          "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.start-service.name",
+      "topic_id": "windows.start-service",
+      "source_revision": "b0112e6ed49114ef8a91578aecf9f7f85f9b262743eb36c83d647a140f0ee71c",
+      "provenance": [
+        {
+          "source_id": "windows.start-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：启动 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/start-service",
+          "sha256": "9269a466a7d74afc726474c9e398ddcc52c02eac8b710e51b767d7a42fa3973b",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.stop-process.pid",
+      "topic_id": "windows.stop-process",
+      "source_revision": "70d983b34b641b6f0bf2786e44c548a3b2031523bc3b894a1797e3637b8e8ffc",
+      "provenance": [
+        {
+          "source_id": "windows.stop-process",
+          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 进程",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/stop-process",
+          "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.stop-service.name",
+      "topic_id": "windows.stop-service",
+      "source_revision": "b3e177d8c12b86977006d70bcd70c4a10b7435258209ef78849b62531b8f4193",
+      "provenance": [
+        {
+          "source_id": "windows.stop-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/stop-service",
+          "sha256": "e80484aec468c67987b526004a40abb8279c4bab7ad05de1039f9366311ec59f",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.test-netconnection.host-port",
+      "topic_id": "windows.test-netconnection",
+      "source_revision": "edce2895f77f22659412013c3a95cfa622ef090621f03956b387aad09166c14b",
+      "provenance": [
+        {
+          "source_id": "windows.test-netconnection",
+          "title": "AegisCopilot Windows 2.7 种子知识：测试 Windows 主机或端口连通性",
+          "source_url": "https://learn.microsoft.com/powershell/module/nettcpip/test-netconnection",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/test-netconnection",
+          "sha256": "a8c2ebf7cfc9de1064b03226060e1fdcfbe3009daa543a44d2daa934a60b0297",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.winget.install",
+      "topic_id": "windows.winget",
+      "source_revision": "75333485349aab57f810315097ceea9137df7b275e01e157b93aa5cc11d8b7d2",
+      "provenance": [
+        {
+          "source_id": "windows.winget",
+          "title": "AegisCopilot Windows 2.7 种子知识：使用 winget 管理 Windows 软件",
+          "source_url": "https://learn.microsoft.com/windows/package-manager/winget/",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/winget",
+          "sha256": "b81723e72cc1ad1c6ab9ede08999a8ca976cc438f5c80bdcd25024e43ced0dc8",
+          "kind": "generated_seed",
           "role": "topic_basis"
         }
       ]

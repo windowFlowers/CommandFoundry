@@ -169,7 +169,7 @@ app.whenReady().then(async () => {
       sandbox: true,
       backgroundThrottling: false,
       preload: path.resolve(__dirname, "..", "electron", "preload.cjs"),
-      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.5.0"],
+      additionalArguments: [`--aegis-api-base=${apiBaseUrl}`, "--aegis-version=2.9.0"],
     },
   });
   await window.loadURL(frontendUrl);

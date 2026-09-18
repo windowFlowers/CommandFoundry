@@ -25,6 +25,7 @@ const {
   waitForHealth,
 } = require("./process-manager.cjs");
 const { registerAppProtocol } = require("./protocol.cjs");
+const { TerminalManager } = require("./terminal-manager.cjs");
 
 app.setAppUserModelId("com.aegiscopilot.desktop");
 app.setPath("userData", path.join(app.getPath("appData"), "AegisCopilot"));
@@ -50,6 +51,7 @@ let frontendProcess = null;
 let runtime = null;
 let shuttingDown = false;
 let servicesReady = false;
+let terminalManager = null;
 
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 if (!hasSingleInstanceLock) app.quit();
@@ -279,9 +281,22 @@ function registerModelConfigIpc() {
   });
 }
 
+function registerTerminalIpc() {
+  terminalManager = new TerminalManager();
+  terminalManager.on("data", (payload) => mainWindow?.webContents.send("terminal:data", payload));
+  terminalManager.on("exit", (payload) => mainWindow?.webContents.send("terminal:exit", payload));
+  terminalManager.on("error", (payload) => mainWindow?.webContents.send("terminal:error", payload));
+  ipcMain.handle("terminal:create", (_, input = {}) => terminalManager.create(input));
+  ipcMain.handle("terminal:write", (_, input = {}) => terminalManager.write(input));
+  ipcMain.handle("terminal:resize", (_, input = {}) => terminalManager.resize(input));
+  ipcMain.handle("terminal:close", (_, input = {}) => terminalManager.close(input));
+  ipcMain.handle("terminal:list", () => terminalManager.list());
+}
+
 async function shutdown() {
   if (shuttingDown) return;
   shuttingDown = true;
+  terminalManager?.closeAll();
   await stopServices();
 }
 
@@ -289,6 +304,7 @@ async function bootstrap() {
   if (!hasSingleInstanceLock) return;
   try {
     registerModelConfigIpc();
+    registerTerminalIpc();
     await startServices();
     await loadMainWindow();
   } catch (error) {

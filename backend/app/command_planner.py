@@ -263,6 +263,35 @@ def extract_path(text: str) -> str | None:
     return candidate
 
 
+def extract_paths(text: str) -> list[str]:
+    """Extract multiple explicitly written filesystem paths in source order.
+
+    ``extract_path`` intentionally returns the longest path for the common
+    single-path request.  Copy/move/archive requests can contain both a source
+    and a destination, so the planner uses this conservative second parser to
+    stop at the next drive/UNC marker or sentence punctuation.
+    """
+
+    value = str(text or "")
+    patterns = (
+        r"(?i)(?<![A-Za-z0-9_])([A-Za-z]:[\\/][^\r\n,，。；;！？!?]*?)(?=(?:\s*(?:到|至|to|into|and|以及|->|→)\s*)?[A-Za-z]:[\\/]|[,，。；;！？!?]|$)",
+        r"(\\\\[^\r\n,，。；;！？!?]*?)(?=(?:\s*(?:到|至|to|into|and|以及|->|→)\s*)?(?:\\\\|[A-Za-z]:[\\/])|[,，。；;！？!?]|$)",
+        r"(?<![A-Za-z0-9_:/\.])(/[^\r\n,，。；;！？!?]*?)(?=(?:\s*(?:到|至|to|into|and|以及|->|→)\s*)/|[,，。；;！？!?]|$)",
+    )
+    candidates: list[str] = []
+    for pattern in patterns:
+        for match in re.finditer(pattern, value):
+            candidate = _trim_path_context(_clean_scalar(match.group(1)))
+            # A first-turn request often places the requested shell after the
+            # destination (for example ``...\\backup\\a.txt PowerShell``).
+            # The shell is parsed independently; never fold that label into a
+            # filesystem path slot.
+            candidate = re.sub(r"(?i)\s+(?:powershell(?:\.exe)?|pwsh|cmd(?:\.exe)?)\s*$", "", candidate).strip()
+            if candidate and _safe_path(candidate) and candidate not in candidates:
+                candidates.append(candidate)
+    return candidates
+
+
 def _safe_path(value: str) -> str | None:
     value = _clean_scalar(value)
     if not value or len(value) > 1000 or "\x00" in value or "\n" in value or "\r" in value:
@@ -409,7 +438,7 @@ def parse_slot_value(slot: str, text: str) -> str | None:
     # turn for context, but it cannot be interpolated into a command plan.
     if contains_sensitive_input(value):
         return None
-    if slot in {"path", "target_path", "environment_path"}:
+    if slot in {"path", "target_path", "environment_path", "source_path", "destination_path", "archive_path", "file_path", "directory_path"} or slot.endswith("_path"):
         extracted = extract_path(value)
         if extracted:
             return _safe_path(extracted)
@@ -536,6 +565,9 @@ def parse_slot_value(slot: str, text: str) -> str | None:
             candidate = candidates[-1]
         port = int(candidate.group(1))
         return str(port) if 1 <= port <= 65535 else None
+    # Common Windows recipe identifiers.  Keep these marker-driven on the
+    # first turn so ordinary prose cannot become a process/service/package
+    # argument; a one-slot clarification can still provide the bare token.
     return _clean_scalar(value)[:1000] or None
 
 
@@ -551,11 +583,24 @@ def _parse_recipe_slot(spec: SlotSpec, text: str, *, allow_bare: bool = False) -
     # source template that asks the target CLI to prompt securely.
     if spec.secret or spec.slot_type == "credential" or _SENSITIVE_SLOT.search(spec.name):
         return None
+    if spec.validation in {"positive_integer", "tcp_port"}:
+        if spec.validation == "tcp_port":
+            return parse_slot_value("port", value)
+        numeric = re.fullmatch(r"\s*([1-9]\d{0,9})\s*", value)
+        if numeric:
+            return numeric.group(1)
+        marker_numeric = re.search(r"(?i)(?:pid|进程号|端口|port|秒数|seconds?)\s*(?:是|为|:|：)?\s*([1-9]\d{0,9})", value)
+        return marker_numeric.group(1) if marker_numeric else None
     if spec.name in {
         "target_path",
         "environment_name",
         "env_name",
         "path",
+        "source_path",
+        "destination_path",
+        "archive_path",
+        "file_path",
+        "directory_path",
         "port",
         "commit",
         "image",
@@ -563,6 +608,18 @@ def _parse_recipe_slot(spec: SlotSpec, text: str, *, allow_bare: bool = False) -
         "container_name",
         "docker_name",
     }:
+        if spec.name in {"source_path", "destination_path"} or spec.name.endswith("_path") and spec.name not in {"target_path", "environment_path"}:
+            paths = extract_paths(value)
+            if paths:
+                if spec.name == "source_path":
+                    return paths[0]
+                if spec.name == "destination_path":
+                    if len(paths) > 1:
+                        return paths[-1]
+                    if allow_bare:
+                        return paths[0]
+                if spec.name in {"archive_path", "file_path"}:
+                    return paths[-1]
         parsed = parse_slot_value(spec.name, text)
         if parsed is not None:
             return parsed
@@ -574,13 +631,13 @@ def _parse_recipe_slot(spec: SlotSpec, text: str, *, allow_bare: bool = False) -
             return _safe_docker_image(value)
         if allow_bare and spec.name in {"container_name", "docker_name"}:
             return _safe_docker_name(value)
-        if allow_bare and spec.name in {"path", "target_path", "environment_path"}:
+        if allow_bare and (spec.name in {"path", "target_path", "environment_path", "source_path", "destination_path", "archive_path", "file_path", "directory_path"} or spec.name.endswith("_path")):
             bare_path = _safe_relative_path(value, allow_bare=True)
             if bare_path is not None:
                 return bare_path
-        if spec.name in {"path", "target_path", "environment_path"}:
+        if spec.name in {"path", "target_path", "environment_path", "source_path", "destination_path", "archive_path", "file_path", "directory_path"} or spec.name.endswith("_path"):
             marker = re.search(
-                r"(?i)(?:目标目录|目标路径|文件路径|路径|目录|path|directory|folder)\s*(?:是|为|叫做?|name|is|:|：)?\s*(.+)",
+                r"(?i)(?:目标目录|目标路径|文件路径|源路径|来源路径|目标文件|路径|目录|path|directory|folder|source|destination|archive)\s*(?:是|为|叫做?|name|is|:|：)?\s*(.+)",
                 value,
             )
             if marker:
@@ -638,8 +695,25 @@ def _parse_recipe_slot(spec: SlotSpec, text: str, *, allow_bare: bool = False) -
         "container_name": ("container_name", "container name", "name", "容器名", "容器名称"),
         "seconds": ("seconds", "second", "过期秒数", "过期时间", "秒数"),
         "key": ("key", "redis key", "键", "键名"),
+        "pid": ("pid", "进程号", "进程 id", "进程ID", "process id", "owningprocess"),
+        "process_id": ("pid", "进程号", "进程 id", "进程ID", "process id"),
+        "process_name": ("process", "进程", "进程名", "进程名称", "name"),
+        "service": ("service", "服务", "服务名", "服务名称", "name"),
+        "service_name": ("service", "服务", "服务名", "服务名称", "name"),
+        "package": ("package", "包", "软件包", "应用", "应用名", "name"),
+        "package_name": ("package", "包", "软件包", "应用", "应用名", "name"),
+        "package_id": ("package", "包", "软件包", "应用", "应用名", "包 ID", "package id", "id"),
+        "source": ("source", "源", "来源", "source path", "源路径"),
+        "destination": ("destination", "目标", "目标路径", "dest", "目的地"),
+        "query": ("query", "查询", "表达式", "filter", "过滤"),
     }
-    aliases = marker_aliases.get(spec.name, (spec.name, "参数", "值", "名称", "名字"))
+    aliases = marker_aliases.get(
+        spec.name,
+        marker_aliases.get(
+            spec.name.removesuffix("_name"),
+            (spec.name, "参数", "值", "名称", "名字"),
+        ),
+    )
     marker = "|".join(re.escape(alias) for alias in aliases)
     match = re.search(
         rf"(?i)(?:{marker})\s*(?:是|为|叫做?|name|is|:|：)?\s*([A-Za-z0-9_.:/@+\-]+)",
@@ -826,7 +900,10 @@ class CommandPlanner:
     @staticmethod
     def is_template_request(query: str) -> bool:
         return bool(
-            re.search(r"(?i)(?:模板|范例|示例|占位符|placeholder|template|example)", str(query or ""))
+            re.search(
+                r"(?i)(?:模板|范例|示例|占位符|placeholder|template)|(?<![A-Za-z0-9_.-])example(?![A-Za-z0-9_.-])",
+                str(query or ""),
+            )
         )
 
     @staticmethod
@@ -935,9 +1012,33 @@ class CommandPlanner:
         signals = {
             "docker.docker-run": r"(?:docker(?:\.exe)?\s+(?:container\s+)?run)|(?:docker|容器|镜像).{0,24}(?:运行|启动|镜像|容器|run)|(?:运行|启动).{0,24}(?:docker|容器|镜像)",
             "windows.netstat": r"端口|port|netstat|get-nettcpconnection|占用",
+            "windows.get-nettcpconnection": r"get[- ]?nettcpconnection|localport|按端口|指定端口|tcp 连接",
             "sql.mysql-connect": r"mysql.{0,24}(?:连接|登录|数据库|主机|用户|connect)|(?:连接|登录).{0,24}mysql|连接.{0,20}数据库",
             "redis.string-set": r"redis.{0,24}(?:键|值|写入|设置|过期|set|string)|(?:写入|设置|过期).{0,24}redis",
             "windows.new-item": r"new[- ]?item|文件|创建|新建",
+            "windows.copy-item": r"copy[- ]?item|复制|拷贝|copy",
+            "windows.move-item": r"move[- ]?item|移动|重命名|move",
+            "windows.remove-item": r"remove[- ]?item|删除|移除|remove",
+            "windows.get-process": r"get[- ]?process|查看进程|列出进程|进程列表|process",
+            "windows.stop-process": r"stop[- ]?process|停止.{0,12}进程|结束.{0,12}进程|kill process|按 pid 停止",
+            "windows.get-service": r"get[- ]?service|查看.{0,12}服务|服务状态|service status",
+            "windows.start-service": r"start[- ]?service|启动.{0,12}服务|开启.{0,12}服务|service start",
+            "windows.stop-service": r"stop[- ]?service|停止.{0,12}服务|关闭.{0,12}服务|service stop",
+            "windows.restart-service": r"restart[- ]?service|重启.{0,12}服务|service restart",
+            "windows.test-netconnection": r"test[- ]?netconnection|测试网络|测试连通性|telnet|连接测试",
+            "windows.compress-archive": r"compress[- ]?archive|压缩|创建 zip|打包 zip",
+            "windows.expand-archive": r"expand[- ]?archive|解压|展开 zip|解压缩",
+            "windows.winget": r"winget.{0,24}(?:安装|install)|(?:安装|install).{0,24}winget",
+            "windows.get-filehash": r"get[- ]?filehash|文件哈希|校验哈希|sha256",
+            "windows.get-command": r"get[- ]?command|where(?:\.exe)?|查找命令|命令位置",
+            "windows.get-content": r"get[- ]?content|读取文件|查看文件内容|读文本",
+            "windows.select-string": r"select[- ]?string|文本搜索|搜索文件内容|查找文本",
+            "windows.ipconfig": r"ipconfig|查看 ip|网络配置|刷新 dns",
+            "windows.resolve-dnsname": r"resolve[- ]?dnsname|dns|域名解析|解析域名",
+            "windows.invoke-webrequest": r"invoke[- ]?webrequest|powershell.{0,12}http|下载文件|http 请求",
+            "windows.choco": r"choco|chocolatey",
+            "windows.scoop": r"scoop",
+            "windows.robocopy": r"robocopy|同步目录|镜像目录",
         }
         pattern = signals.get(topic_id)
         return bool(pattern and re.search(pattern, str(query or ""), re.IGNORECASE))
@@ -987,8 +1088,39 @@ class CommandPlanner:
         # safely available; that is the intentional template fallback.
         if self.catalog is not None:
             lexical_topic = None
-            if re.search(r"(?i)new[- ]?item|(?:创建|新建|生成).{0,16}(?:文件|file)|(?:文件|file).{0,16}(?:创建|新建)", lowered):
-                lexical_topic = "windows.new-item"
+            windows_lexical = (
+                ("windows.new-item", r"new[- ]?item|(?:创建|新建|生成).{0,16}(?:文件|file)|(?:文件|file).{0,16}(?:创建|新建)"),
+                ("windows.copy-item", r"copy[- ]?item|复制.{0,20}(?:文件|目录|到)|拷贝文件|复制文件"),
+                ("windows.move-item", r"move[- ]?item|移动.{0,20}(?:文件|目录|到)|重命名文件"),
+                ("windows.remove-item", r"remove[- ]?item|删除.{0,20}(?:文件|目录)|移除文件"),
+                ("windows.get-process", r"get[- ]?process|查看进程|列出进程"),
+                ("windows.stop-process", r"stop[- ]?process|停止.{0,12}进程|结束.{0,12}进程"),
+                ("windows.get-service", r"get[- ]?service|查看.{0,12}服务|服务状态"),
+                ("windows.start-service", r"start[- ]?service|启动.{0,12}服务|开启.{0,12}服务"),
+                ("windows.stop-service", r"stop[- ]?service|停止.{0,12}服务|关闭.{0,12}服务"),
+                ("windows.restart-service", r"restart[- ]?service|重启.{0,12}服务"),
+                ("windows.test-netconnection", r"test[- ]?netconnection|测试网络|测试连通性|测试.{0,16}(?:主机|地址|端口)|端口.{0,12}(?:连通|可达)"),
+                ("windows.compress-archive", r"compress[- ]?archive|压缩|创建 zip|打包 zip"),
+                ("windows.expand-archive", r"expand[- ]?archive|解压|展开 zip|解压缩"),
+                ("windows.winget", r"winget.{0,24}(?:安装|install)|(?:安装|install).{0,24}winget"),
+                ("windows.get-filehash", r"get[- ]?filehash|文件哈希|校验哈希|sha256"),
+                ("windows.get-command", r"get[- ]?command|where(?:\.exe)?|查找命令|命令位置"),
+                ("windows.get-content", r"get[- ]?content|读取文件|查看文件内容|读文本"),
+                ("windows.select-string", r"select[- ]?string|文本搜索|搜索文件内容|查找文本"),
+                ("windows.ipconfig", r"ipconfig|查看 ip|网络配置|刷新 dns"),
+                ("windows.get-nettcpconnection", r"get[- ]?nettcpconnection|localport|按端口|指定端口|tcp 连接"),
+                ("windows.resolve-dnsname", r"resolve[- ]?dnsname|dns|域名解析|解析域名"),
+                ("windows.invoke-webrequest", r"invoke[- ]?webrequest|powershell.{0,12}http|下载文件|http 请求"),
+                ("windows.choco", r"choco|chocolatey"),
+                ("windows.scoop", r"scoop"),
+                ("windows.robocopy", r"robocopy|同步目录|镜像目录"),
+            )
+            lexical_match = next(
+                ((topic, pattern) for topic, pattern in windows_lexical if re.search(pattern, lowered, re.IGNORECASE)),
+                None,
+            )
+            if lexical_match:
+                lexical_topic = lexical_match[0]
             elif re.search(
                 r"(?i)\bdocker(?:\.exe)?\s+(?:(?:container)\s+)?run\b|docker.{0,20}(?:运行|启动).{0,20}(?:镜像|容器)|(?:运行|启动).{0,20}docker",
                 lowered,
@@ -1315,6 +1447,11 @@ class CommandPlanner:
         if quoted == '"':
             if '"' in value:
                 return None
+            return value
+        if slot_type == "identifier" and re.fullmatch(r"[0-9]+", value):
+            # Numeric identifiers such as a Windows PID are already
+            # validated as positive integers; keeping them unquoted makes the
+            # resulting PowerShell/CMD invocation clearer and directly usable.
             return value
         if slot_type in {"identifier", "path"}:
             if shell == "powershell":

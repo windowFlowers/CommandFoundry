@@ -1,6 +1,6 @@
 {
   "name": "aegiscopilot-desktop",
-  "version": "2.5.0",
+  "version": "2.9.0",
   "private": true,
   "author": "AegisCopilot Contributors",
     "description": "Local-first developer command RAG assistant",
@@ -74,7 +74,10 @@
     }
   },
   "devDependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.3.0",
     "electron": "39.8.10",
-    "electron-builder": "26.0.12"
+    "electron-builder": "26.0.12",
+    "node-pty": "^1.1.0"
   }
 }

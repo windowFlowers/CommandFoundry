@@ -1,0 +1,62 @@
+.terminal-panel {
+  position: fixed;
+  z-index: 20;
+  left: 320px;
+  right: 0;
+  bottom: 0;
+  min-height: 280px;
+  height: 34vh;
+  display: flex;
+  flex-direction: column;
+  background: #1d2323;
+  color: #edf0ec;
+  border-top: 1px solid #4e5a57;
+  box-shadow: 0 -12px 30px rgba(24, 29, 29, .18);
+}
+.terminal-panel.expanded { height: 70vh; }
+.terminal-panel-head,
+.terminal-session-tabs,
+.terminal-panel-foot { display: flex; align-items: center; }
+.terminal-panel-head { justify-content: space-between; padding: 9px 14px; border-bottom: 1px solid #3b4644; }
+.terminal-panel-title { display: flex; align-items: center; gap: 8px; font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .08em; }
+.terminal-panel-title span { color: #aeb9b4; font-size: 11px; }
+.terminal-panel-actions { display: flex; align-items: center; gap: 5px; }
+.terminal-panel-actions button { min-height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border: 1px solid #596763; border-radius: 5px; background: #27302f; color: #edf0ec; cursor: pointer; font: inherit; font-size: 12px; }
+.terminal-panel-actions button:hover:not(:disabled), .terminal-panel-actions button:focus-visible { background: #34403d; }
+.terminal-panel-actions button:disabled { opacity: .45; cursor: not-allowed; }
+.terminal-session-tabs { gap: 4px; padding: 5px 10px 0; min-height: 37px; background: #222b2a; overflow-x: auto; }
+.terminal-session-tabs button { min-height: 32px; display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border: 1px solid transparent; border-bottom: 0; border-radius: 5px 5px 0 0; background: transparent; color: #aeb9b4; cursor: pointer; font: inherit; font-size: 12px; }
+.terminal-session-tabs button.active { border-color: #596763; background: #1d2323; color: #fff; }
+.terminal-session-tabs button small { color: #7f8e89; }
+.terminal-session-tabs button svg { margin-left: 3px; }
+.terminal-empty { padding: 7px 5px; color: #87948f; font-size: 12px; }
+.terminal-views { position: relative; flex: 1; min-height: 0; padding: 8px 12px; }
+.terminal-view { position: absolute; inset: 8px 12px; display: none; }
+.terminal-view.active { display: block; }
+.terminal-view .xterm { height: 100%; }
+.terminal-error { margin: 0; padding: 5px 12px; color: #ffb4ab; background: #3a2423; font-size: 12px; }
+.terminal-panel-foot { justify-content: space-between; gap: 10px; padding: 5px 12px; color: #9ba7a2; border-top: 1px solid #3b4644; font-size: 11px; }
+.terminal-panel-foot span { display: inline-flex; align-items: center; gap: 4px; }
+.code-toolbar-actions { display: inline-flex; align-items: center; gap: 7px; }
+.execute-command-button { min-height: 32px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border: 1px solid #7e9d92; border-radius: 5px; background: #324843; color: #f5faf5; cursor: pointer; font: inherit; font-size: 12px; }
+.execute-command-button:hover, .execute-command-button:focus-visible { background: #466258; }
+.execute-dialog-backdrop { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(20, 25, 24, .46); }
+.execute-dialog { width: min(620px, 100%); max-height: min(760px, 90vh); overflow: auto; padding: 20px; border: 1px solid #b6beb8; border-radius: 10px; background: #f7f7f3; color: #202625; box-shadow: 0 18px 60px rgba(22, 29, 27, .28); }
+.execute-dialog > header, .execute-dialog > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.execute-dialog h2 { margin: 0; font-size: 20px; }
+.execute-dialog-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 18px 0 12px; }
+.execute-dialog-meta div { display: grid; gap: 4px; padding: 9px; border: 1px solid #d0d6d0; border-radius: 6px; background: #eef0ec; }
+.execute-dialog-meta span { color: #64716b; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.execute-dialog-meta strong { overflow-wrap: anywhere; font-size: 13px; }
+.execute-command-preview { margin: 12px 0; padding: 13px; overflow: auto; border-radius: 6px; background: #1d2323; color: #f4f5ef; white-space: pre-wrap; }
+.execute-warning { display: flex; gap: 7px; margin: 10px 0; padding: 9px; border: 1px solid #d9aa9e; border-radius: 6px; background: #fff0ec; color: #7d2e25; }
+.execute-prerequisites { margin: 8px 0; color: #58645f; font-size: 13px; }
+.execute-confirm-label { display: grid; gap: 6px; margin: 14px 0; font-weight: 600; }
+.execute-confirm-label input { min-height: 42px; padding: 8px 10px; border: 1px solid #9ba7a0; border-radius: 5px; font: inherit; }
+.execute-dialog > footer { justify-content: flex-end; margin-top: 18px; }
+.execute-dialog .danger-button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 900px) {
+  .terminal-panel { left: 0; }
+  .terminal-panel-foot { flex-direction: column; align-items: flex-start; }
+  .execute-dialog-meta { grid-template-columns: 1fr; }
+}

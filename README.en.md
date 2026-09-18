@@ -1,10 +1,10 @@
-# AegisCopilot 2.5
+# AegisCopilot 2.9
 
 Local-first command RAG for developers on Windows.
 
 AegisCopilot turns a natural-language operation into grounded, copyable commands. It retrieves local knowledge, preserves parent/child document context, cites the exact evidence range, and asks for missing command parameters one at a time instead of inventing paths, ports, shells, or credentials.
 
-> AegisCopilot only displays commands for copying. It never executes commands, opens a terminal, or remotely operates the operating system.
+> AegisCopilot never executes commands automatically or remotely. After an explicit confirmation, a direct command may be written to a local PowerShell/CMD terminal; templates and clarification answers remain copy-only.
 
 中文版本：[README.md](README.md)
 
@@ -14,11 +14,13 @@ AegisCopilot turns a natural-language operation into grounded, copyable commands
 - **Safe fallback**: skipped, refused, or invalid input falls back to one clearly labelled template instead of asking indefinitely.
 - **Shell-aware rendering**: PowerShell, CMD, and POSIX variants use dedicated quoting rules. Windows paths with spaces, Unicode, UNC paths, and trailing separators are covered by tests.
 - **Curated recipes**: provenance-backed recipes cover Python virtual environments, Git revert, Docker run, Windows file/port operations, MySQL, and Redis.
+- **Windows developer knowledge**: 33 PowerShell/CMD topics cover files, processes, services, networking, archives, hashes, HTTP, environment variables, winget/Chocolatey/Scoop, and robocopy warnings.
 - **Parent/child retrieval**: small child chunks drive retrieval while bounded parent chunks preserve context for generation; citations point to the exact child/parent locator.
 - **Personalized context**: the current question takes precedence over conversation, knowledge-base and global preferences. At most four redacted memories are used per turn, only to enrich retrieval and presentation—not as command, fact, or risk evidence.
 - **Multiple knowledge bases and uploads**: create and bind multiple knowledge bases; upload TXT, Markdown, PDF, and DOCX files up to 20 MB each.
 - **Offline-first operation**: BM25 and local FastEmbed retrieval work without a cloud key. DeepSeek is optional and may only explain already grounded evidence.
 - **Desktop safety**: API keys are protected by Electron `safeStorage` / Windows DPAPI and are never exposed to the renderer or SQLite.
+- **Embedded terminal**: only PowerShell and CMD are allowed, with at most four temporary PTY sessions. Before execution the UI shows the shell, working directory, full command, risk and warnings; high-risk commands also require typing `确认执行`. Terminal output, input history and working directories are never stored in the app database.
 
 ## Quick manual test
 
@@ -33,7 +35,7 @@ python -m venv 'C:\Users\CZX\Documents\AegisCopilot 手动测试\.venv'
 & 'C:\Users\CZX\Documents\AegisCopilot 手动测试\.venv\Scripts\Activate.ps1'
 ```
 
-Do not execute the generated command during a UI test.
+Do not execute a generated command during the clarification UI test. To verify the terminal, manually use a harmless command only after the confirmation dialog; never use an assistant-generated high-risk command for testing.
 
 ## Architecture
 
@@ -46,7 +48,7 @@ Do not execute the generated command during a UI test.
 | Generation | Optional DeepSeek OpenAI-compatible API |
 | Packaging | PyInstaller onedir, electron-builder Windows x64 |
 
-The command planner persists resumable plans in SQLite schema v5. Plans support restart recovery, cancellation/restart, optimistic locking, source revisions and citation IDs, and expire after 24 hours by default. A knowledge-base rebuild invalidates plans that depend on the old evidence. Credentials are deliberately excluded from plan values and model input. The catalog currently contains eight provenance-backed high-value recipes.
+The command planner persists resumable plans in SQLite schema v5. Plans support restart recovery, cancellation/restart, optimistic locking, source revisions and citation IDs, and expire after 24 hours by default. A knowledge-base rebuild invalidates plans that depend on the old evidence. Credentials are deliberately excluded from plan values and model input. The catalog currently contains 21 provenance-backed high-value recipes.
 
 ## Development setup
 
@@ -84,14 +86,14 @@ npm.cmd run dist:dir
 npm.cmd run dist:win
 ```
 
-The v2.5.0 release gate passed:
+The v2.9.0 release gate passed:
 
-- Backend: 130 tests passed, including the command-planner (18) and recipe-catalog (4) focused subsets.
-- Frontend: 34 tests passed; Vite production build passed.
-- Desktop: 16 tests passed.
-- Packaged backend smoke test passed, including profile/memory CRUD, hybrid retrieval, offline SSE, and the four-step clarification flow.
+- Backend: 137 tests passed.
+- Frontend: 38 tests passed; Vite production build passed.
+- Desktop: 19 tests passed, including PTY allowlisting, session limits, cleanup and preload IPC boundaries.
+- Packaged backend smoke test covers profile/memory CRUD, hybrid retrieval, offline SSE and the one-slot clarification flow.
 
-The Windows x64 installer is generated at `desktop/dist/AegisCopilot Setup 2.5.0.exe` and is intended to be distributed as a GitHub Release asset rather than committed to source history. The v2.5.0 installer SHA-256 is `C29B58A4B42A522C87FF3C3D451AA34AFDEB31A3567472351E0095873DF7E77D`; see [docs/release-2.5.0.md](docs/release-2.5.0.md) for the full verification record.
+The Windows x64 installer is generated at `desktop/dist/AegisCopilot Setup 2.9.0.exe` and is intended to be distributed as a GitHub Release asset rather than committed to source history. Its SHA-256, build commit and complete gate record are documented in [docs/release-2.9.0.md](docs/release-2.9.0.md).
 
 ## Installation and release boundaries
 
@@ -106,8 +108,9 @@ Uploaded documents are extracted, split into parent/child chunks, embedded and i
 
 ## Security boundaries
 
-- No automatic command execution.
-- No terminal automation by the desktop app.
+- No automatic or remote command execution.
+- Direct commands are written to a local PowerShell/CMD PTY only after explicit confirmation. Templates, clarification cards and legacy answers have no execute button.
+- At most four temporary terminal sessions are allowed; sessions are cleaned up on exit and terminal output, input history and working directories are not persisted.
 - No credentials, API keys, tokens, private keys, or connection strings in SQLite, logs, long-term memory, or model prompts.
 - Deterministic rules label/warn about high-risk commands. Direct plans do not return unresolved placeholders; template fallbacks may retain placeholders. The application is not a sandbox and never executes commands on the user's behalf.
 - API keys are encrypted at rest through Electron `safeStorage` / Windows DPAPI.
@@ -116,7 +119,7 @@ Uploaded documents are extracted, split into parent/child chunks, embedded and i
 
 - [Chinese README](README.md)
 - [Project rules](AGENTS.md)
-- [Release verification](docs/release-2.5.0.md)
+- [v2.9.0 release verification](docs/release-2.9.0.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Development, testing and packaging](docs/DEVELOPMENT.md)
 - [RAG evaluation](docs/RAG_EVALUATION.md)

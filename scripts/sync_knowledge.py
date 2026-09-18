@@ -14,6 +14,8 @@ KNOWLEDGE_DIR = ROOT / "knowledge"
 TLDR_REPOSITORY = "https://github.com/tldr-pages/tldr.git"
 TLDR_REVISION = "d7f4fcb00a22fa5e5a595323705df61e1ecff707"
 TLDR_LICENSE = "CC BY 4.0"
+KNOWLEDGE_VERSION = "2.7.0"
+WINDOWS_KNOWLEDGE_REVISION = "v2.7.0"
 
 
 def item(domain: str, page: str, title: str, aliases: list[str], path: str | None = None) -> dict[str, object]:
@@ -142,10 +144,11 @@ EXTRA_CURATED = [
     *auto_items("http", ["ping", "dig", "traceroute", "nc", "ip", "ss", "tcpdump", "whois", "curlie", "aria2c"]),
     *auto_items("python", ["poetry", "pipenv", "pyenv", "conda", "mypy", "tox", "pylint", "ipython", "jupyter", "pydoc", "flake8", "flask", "django-admin", "http-server", "gunicorn"]),
     *auto_items("node", ["deno", "bun", "npm-run-script", "npm-install", "npm-test", "npm-publish", "npm-audit", "npm-cache", "npm-config", "tsc"]),
-    *auto_items("windows", ["powershell", "get-childitem", "set-location", "move-item", "remove-item", "new-item", "get-content", "select-string", "start-process", "taskkill", "start-service", "stop-service", "netstat", "invoke-webrequest", "winget", "choco", "scoop", "robocopy", "test-netconnection", "get-filehash"]),
     *auto_items("kubernetes", ["kubectl", "kubectl-get", "kubectl-describe", "kubectl-logs", "kubectl-apply", "kubectl-create", "kubectl-delete", "kubectl-exec", "kubectl-port-forward", "kubectl-config", "kubectl-rollout", "kubectl-scale", "kubectl-top", "kubectl-cp", "kubectl-explain", "kubectl-expose", "kubectl-label", "kubectl-taint", "kubectl-patch", "kubectl-wait"]),
     *auto_items("network", ["ssh", "ssh-keygen", "ssh-copy-id", "sftp", "rsync", "dig", "nslookup", "ping", "traceroute", "ip", "ss", "netstat", "lsof", "nc", "tcpdump", "nginx", "certbot", "ufw", "firewall-cmd", "hostnamectl"]),
-    *auto_items("java", ["java", "javac", "jar", "javadoc", "kotlin", "mvn", "mvn-archetype", "mvn-compile", "mvn-dependency", "mvn-package", "gradle", "gradle-build", "gradle-clean", "gradle-dependencies", "gradle-init", "gradle-tasks", "gradle-test", "gradle-wrapper", "jps", "keytool"]),
+    # Keep the bundled topic count stable while replacing the old generic
+    # Windows tldr entries with the v2.7 Windows-specific seed set below.
+    *auto_items("java", ["java", "javac", "jar", "kotlin", "mvn", "mvn-compile", "mvn-package"]),
     *auto_items("cicd", ["gh-workflow", "gh-run", "gh-cache", "gh-secret", "gh-variable", "gh-release", "gh-pr", "gh-repo", "act", "ansible-playbook", "terraform", "helm", "gitlab-runner", "jenkins", "packer"]),
     *auto_items("testing", ["pytest", "jest", "vitest", "mocha", "phpunit", "gdb", "lldb", "strace", "valgrind", "k6"]),
 ]
@@ -504,6 +507,147 @@ RECIPE_DEFINITIONS: list[dict[str, object]] = [
             }
         ],
     },
+    {
+        "recipe_id": "windows.copy-item.paths",
+        "topic_id": "windows.copy-item",
+        "title": "复制 Windows 文件或目录",
+        "description": "在 PowerShell 或 CMD 中复制指定来源到目标路径。",
+        "required_slots": [
+            {"name": "source_path", "label": "源路径", "type": "path", "question": "要复制的源文件或目录路径是什么？", "validation": "windows_path"},
+            {"name": "destination_path", "label": "目标路径", "type": "path", "question": "要复制到哪个目标路径？", "validation": "windows_path"},
+        ],
+        "optional_slots": [
+            {"name": "shell", "label": "Shell", "type": "choice", "question": "你准备在哪个 Shell 中运行？", "prompt_if_absent": True, "options": [{"label": "PowerShell", "value": "powershell"}, {"label": "CMD", "value": "cmd"}]},
+        ],
+        "derived_slots": [],
+        "platforms": ["Windows 10/11", "Windows Server"],
+        "shells": ["powershell", "cmd"],
+        "steps": [{"id": "copy", "label": "复制文件或目录", "merge": "newline", "templates": {"powershell": "Copy-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}'", "cmd": "copy /Y \"{{source_path}}\" \"{{destination_path}}\""}, "languages": {"powershell": "powershell", "cmd": "text"}}],
+    },
+    {
+        "recipe_id": "windows.move-item.paths",
+        "topic_id": "windows.move-item",
+        "title": "移动或重命名 Windows 文件",
+        "description": "在 PowerShell 或 CMD 中移动文件或目录，也可用于重命名。",
+        "required_slots": [
+            {"name": "source_path", "label": "源路径", "type": "path", "question": "要移动或重命名的源路径是什么？", "validation": "windows_path"},
+            {"name": "destination_path", "label": "目标路径", "type": "path", "question": "目标路径或新名称是什么？", "validation": "windows_path"},
+        ],
+        "optional_slots": [{"name": "shell", "label": "Shell", "type": "choice", "question": "你准备在哪个 Shell 中运行？", "prompt_if_absent": True, "options": [{"label": "PowerShell", "value": "powershell"}, {"label": "CMD", "value": "cmd"}]}],
+        "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell", "cmd"],
+        "steps": [{"id": "move", "label": "移动或重命名", "merge": "newline", "templates": {"powershell": "Move-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}'", "cmd": "move \"{{source_path}}\" \"{{destination_path}}\""}, "languages": {"powershell": "powershell", "cmd": "text"}}],
+    },
+    {
+        "recipe_id": "windows.remove-item.path",
+        "topic_id": "windows.remove-item",
+        "title": "删除 Windows 文件或目录",
+        "description": "删除指定文件或目录；递归强制删除不可撤销。",
+        "required_slots": [{"name": "path", "label": "目标路径", "type": "path", "question": "要删除的文件或目录路径是什么？", "validation": "windows_path"}],
+        "optional_slots": [{"name": "shell", "label": "Shell", "type": "choice", "question": "你准备在哪个 Shell 中运行？", "prompt_if_absent": True, "options": [{"label": "PowerShell", "value": "powershell"}, {"label": "CMD", "value": "cmd"}]}],
+        "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell", "cmd"],
+        "steps": [{"id": "remove", "label": "删除目标", "merge": "newline", "templates": {"powershell": "Remove-Item -LiteralPath '{{path}}' -Recurse -Force", "cmd": "del /F /A \"{{path}}\""}, "languages": {"powershell": "powershell", "cmd": "text"}}],
+    },
+    {
+        "recipe_id": "windows.stop-process.pid",
+        "topic_id": "windows.stop-process",
+        "title": "停止 Windows 进程",
+        "description": "按 PID 停止指定进程；执行前确认 PID 和未保存数据。",
+        "required_slots": [{"name": "pid", "label": "进程 PID", "type": "identifier", "question": "要停止哪个进程 PID？", "validation": "positive_integer"}],
+        "optional_slots": [{"name": "shell", "label": "Shell", "type": "choice", "question": "你准备在哪个 Shell 中运行？", "prompt_if_absent": True, "options": [{"label": "PowerShell", "value": "powershell"}, {"label": "CMD", "value": "cmd"}]}],
+        "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell", "cmd"],
+        "steps": [{"id": "stop", "label": "停止进程", "merge": "newline", "templates": {"powershell": "Stop-Process -Id {{pid}}", "cmd": "taskkill /PID {{pid}}"}, "languages": {"powershell": "powershell", "cmd": "text"}}],
+    },
+    {
+        "recipe_id": "windows.get-service.name",
+        "topic_id": "windows.get-service",
+        "title": "查看 Windows 服务",
+        "description": "按服务名查看 Windows 服务状态。",
+        "required_slots": [{"name": "service_name", "label": "服务名", "type": "identifier", "question": "要查看哪个 Windows 服务？", "validation": "safe_identifier"}],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "query", "label": "查询服务", "merge": "newline", "templates": {"powershell": "Get-Service -Name '{{service_name}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.start-service.name",
+        "topic_id": "windows.start-service",
+        "title": "启动 Windows 服务",
+        "description": "启动指定 Windows 服务。",
+        "required_slots": [{"name": "service_name", "label": "服务名", "type": "identifier", "question": "要启动哪个 Windows 服务？", "validation": "safe_identifier"}],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "start", "label": "启动服务", "merge": "newline", "templates": {"powershell": "Start-Service -Name '{{service_name}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.stop-service.name",
+        "topic_id": "windows.stop-service",
+        "title": "停止 Windows 服务",
+        "description": "停止指定 Windows 服务。",
+        "required_slots": [{"name": "service_name", "label": "服务名", "type": "identifier", "question": "要停止哪个 Windows 服务？", "validation": "safe_identifier"}],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "stop", "label": "停止服务", "merge": "newline", "templates": {"powershell": "Stop-Service -Name '{{service_name}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.restart-service.name",
+        "topic_id": "windows.restart-service",
+        "title": "重启 Windows 服务",
+        "description": "重启指定 Windows 服务，可能造成短暂中断。",
+        "required_slots": [{"name": "service_name", "label": "服务名", "type": "identifier", "question": "要重启哪个 Windows 服务？", "validation": "safe_identifier"}],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "restart", "label": "重启服务", "merge": "newline", "templates": {"powershell": "Restart-Service -Name '{{service_name}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.test-netconnection.host-port",
+        "topic_id": "windows.test-netconnection",
+        "title": "测试 Windows TCP 端口",
+        "description": "测试主机指定 TCP 端口的连通性。",
+        "required_slots": [
+            {"name": "host", "label": "主机名或 IP", "type": "identifier", "question": "要测试哪个主机或 IP？", "validation": "hostname"},
+            {"name": "port", "label": "端口号", "type": "port", "question": "要测试哪个 TCP 端口？", "validation": "tcp_port"},
+        ],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "test", "label": "测试 TCP 端口", "merge": "newline", "templates": {"powershell": "Test-NetConnection -ComputerName '{{host}}' -Port {{port}}"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.compress-archive.paths",
+        "topic_id": "windows.compress-archive",
+        "title": "压缩 Windows ZIP 文件",
+        "description": "使用 PowerShell 将文件或目录压缩为 ZIP。",
+        "required_slots": [
+            {"name": "source_path", "label": "源路径", "type": "path", "question": "要压缩的文件或目录路径是什么？", "validation": "windows_path"},
+            {"name": "archive_path", "label": "ZIP 路径", "type": "path", "question": "ZIP 文件要保存到哪里？", "validation": "windows_path"},
+        ],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "compress", "label": "压缩 ZIP", "merge": "newline", "templates": {"powershell": "Compress-Archive -Path '{{source_path}}' -DestinationPath '{{archive_path}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.expand-archive.paths",
+        "topic_id": "windows.expand-archive",
+        "title": "解压 Windows ZIP 文件",
+        "description": "使用 PowerShell 将 ZIP 解压到指定目录。",
+        "required_slots": [
+            {"name": "archive_path", "label": "ZIP 路径", "type": "path", "question": "要解压的 ZIP 文件路径是什么？", "validation": "windows_path"},
+            {"name": "destination_path", "label": "目标目录", "type": "path", "question": "要解压到哪个目录？", "validation": "windows_path"},
+        ],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "expand", "label": "解压 ZIP", "merge": "newline", "templates": {"powershell": "Expand-Archive -LiteralPath '{{archive_path}}' -DestinationPath '{{destination_path}}'"}, "languages": {"powershell": "powershell"}}],
+    },
+    {
+        "recipe_id": "windows.winget.install",
+        "topic_id": "windows.winget",
+        "title": "使用 winget 安装 Windows 软件",
+        "description": "使用包 ID 精确安装软件；安装前确认来源和发布者。",
+        "required_slots": [{"name": "package_id", "label": "winget 包 ID", "type": "identifier", "question": "要安装哪个 winget 包 ID？", "validation": "safe_identifier"}],
+        "optional_slots": [{"name": "shell", "label": "Shell", "type": "choice", "question": "你准备在哪个 Shell 中运行？", "prompt_if_absent": True, "options": [{"label": "PowerShell", "value": "powershell"}, {"label": "CMD", "value": "cmd"}]}],
+        "derived_slots": [], "platforms": ["Windows 10/11"], "shells": ["powershell", "cmd"],
+        "steps": [{"id": "install", "label": "安装软件", "merge": "newline", "templates": {"powershell": "winget install --id {{package_id}} --exact", "cmd": "winget install --id {{package_id}} --exact"}, "languages": {"powershell": "powershell", "cmd": "text"}}],
+    },
+    {
+        "recipe_id": "windows.get-filehash.path",
+        "topic_id": "windows.get-filehash",
+        "title": "计算 Windows 文件 SHA-256",
+        "description": "计算文件哈希用于完整性校验。",
+        "required_slots": [{"name": "path", "label": "文件路径", "type": "path", "question": "要计算哪个文件的哈希？", "validation": "windows_path"}],
+        "optional_slots": [], "derived_slots": [], "platforms": ["Windows 10/11", "Windows Server"], "shells": ["powershell"],
+        "steps": [{"id": "hash", "label": "计算 SHA-256", "merge": "newline", "templates": {"powershell": "Get-FileHash -Algorithm SHA256 -LiteralPath '{{path}}'"}, "languages": {"powershell": "powershell"}}],
+    },
 ]
 
 
@@ -803,70 +947,511 @@ def apply_curated_overrides(topic: dict[str, object]) -> dict[str, object]:
     return topic
 
 
-def build_windows_port_topic() -> dict[str, object]:
-    commands = [
-        {
-            "label": "查看所有 TCP 监听端口和 PID",
-            "language": "powershell",
-            "code": "Get-NetTCPConnection -State Listen | Sort-Object -Property LocalPort",
-            "platforms": DOMAIN_PLATFORM["windows"],
-            "prerequisites": ["在 PowerShell 5.1 或更高版本中运行"],
-            "risk": "low",
-            "warning": None,
-        },
-        {
-            "label": "查看指定端口的占用进程",
-            "language": "powershell",
-            "code": "Get-NetTCPConnection -LocalPort <port> | Select-Object LocalAddress, LocalPort, State, OwningProcess",
-            "platforms": DOMAIN_PLATFORM["windows"],
-            "prerequisites": ["将 <port> 替换为实际端口号"],
-            "risk": "low",
-            "warning": None,
-        },
-        {
-            "label": "使用系统自带 netstat 查看端口和 PID",
-            "language": "powershell",
-            "code": "netstat -ano",
-            "platforms": DOMAIN_PLATFORM["windows"],
-            "prerequisites": ["在 PowerShell、命令提示符或 Windows 终端中运行"],
-            "risk": "low",
-            "warning": None,
-        },
-        {
-            "label": "根据 PID 查看进程",
-            "language": "powershell",
-            "code": "Get-Process -Id <pid>",
-            "platforms": DOMAIN_PLATFORM["windows"],
-            "prerequisites": ["先从 OwningProcess 或 netstat 输出取得 PID"],
-            "risk": "low",
-            "warning": None,
-        },
-    ]
-    source_text = "\n".join(str(command["code"]) for command in commands)
+WINDOWS_PLATFORMS = ["Windows 10/11", "Windows Server"]
+WINDOWS_PREREQUISITES = ["在 PowerShell、命令提示符或 Windows 终端中运行"]
+
+
+def windows_command(
+    label: str,
+    code: str,
+    shell: str,
+    *,
+    risk: str = "low",
+    warning: str | None = None,
+    prerequisites: list[str] | None = None,
+) -> dict[str, object]:
+    """Build a Windows command with an explicit syntax highlighter and shell.
+
+    Windows commands are intentionally not parsed from the generic tldr path:
+    the same executable often runs from both PowerShell and cmd.exe, while
+    PowerShell cmdlets and cmd built-ins have different quoting semantics.
+    Keeping ``language`` and ``shell`` explicit lets the UI render the correct
+    copy target and gives the offline evaluation a stable shell contract.
+    """
+
+    normalized_shell = "powershell" if shell == "powershell" else "cmd"
     return {
-        "id": "windows.netstat",
-        "domain": "windows",
-        "title": "查看 Windows 端口占用",
-        "aliases": [
-            "Windows 怎么查看端口占用？",
-            "Windows 查看监听端口和 PID",
-            "PowerShell 查端口占用",
-            "netstat -ano 怎么用",
-        ],
-        "summary": "使用 Get-NetTCPConnection 或 Windows netstat 查看监听端口和对应进程 PID。",
-        "commands": commands,
-        "notes": ["命令只读取网络连接状态；如需查看其他用户的完整进程信息，可使用管理员终端。"],
-        "source": {
-            "source_id": "windows.netstat",
-            "title": "AegisCopilot Windows 端口种子知识",
-            "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
-            "license": "MIT (project-authored)",
-            "revision": "v2.2.0",
-            "path": "generated/windows-port-usage",
-            "sha256": hashlib.sha256(source_text.encode("utf-8")).hexdigest(),
-            "kind": "generated_seed",
-        },
+        "label": label,
+        "language": "powershell" if normalized_shell == "powershell" else "text",
+        "shell": normalized_shell,
+        "code": code,
+        "platforms": WINDOWS_PLATFORMS,
+        "prerequisites": prerequisites or WINDOWS_PREREQUISITES,
+        "risk": risk,
+        "warning": warning,
     }
+
+
+def windows_spec(
+    topic_id: str,
+    title: str,
+    aliases: list[str],
+    summary: str,
+    source_url: str,
+    commands: list[dict[str, object]],
+    notes: list[str] | None = None,
+) -> dict[str, object]:
+    return {
+        "id": f"windows.{topic_id}",
+        "domain": "windows",
+        "title": title,
+        "aliases": aliases,
+        "summary": summary,
+        "commands": commands,
+        "notes": [
+            *(notes or []),
+            "将尖括号中的占位参数替换为实际值；PowerShell 与 CMD 命令不要混用。",
+        ],
+        "source_url": source_url,
+    }
+
+
+WINDOWS_TOPIC_SPECS = [
+    windows_spec(
+        "powershell",
+        "检查 PowerShell 版本与执行策略",
+        ["PowerShell 版本怎么看？", "PowerShell 执行策略怎么查看", "查看 pwsh 版本"],
+        "查看当前 PowerShell 版本与执行策略，不会修改系统策略。",
+        "https://learn.microsoft.com/powershell/scripting/overview",
+        [
+            windows_command("查看 PowerShell 版本", "$PSVersionTable.PSVersion", "powershell"),
+            windows_command("查看执行策略", "Get-ExecutionPolicy -List", "powershell"),
+        ],
+    ),
+    windows_spec(
+        "get-childitem",
+        "列出 Windows 文件和目录",
+        ["PowerShell 查看文件夹内容", "Get-ChildItem 怎么用", "CMD dir 查看文件"],
+        "使用 PowerShell Get-ChildItem 或 CMD dir 列出文件、目录和隐藏项。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-childitem",
+        [
+            windows_command("PowerShell 列出文件和隐藏项", "Get-ChildItem -LiteralPath '<path>' -Force", "powershell"),
+            windows_command("CMD 列出文件和隐藏项", "dir /a \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "copy-item",
+        "复制 Windows 文件或目录",
+        ["PowerShell 复制文件", "Copy-Item 复制目录", "Windows 复制文件夹"],
+        "使用 PowerShell Copy-Item 或 CMD copy 将文件、目录复制到目标路径。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
+        [
+            windows_command("PowerShell 复制文件或目录", "Copy-Item -LiteralPath '<source>' -Destination '<destination>'", "powershell"),
+            windows_command("CMD 复制文件", "copy /Y \"<source>\" \"<destination>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "set-location",
+        "设置 Windows 工作路径",
+        ["PowerShell 设置工作路径", "Set-Location 修改当前路径", "CMD cd /d 切换驱动器"],
+        "使用 PowerShell Set-Location 或 CMD cd /d 设置当前工作路径；CMD 使用 /d 允许同时切换驱动器。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/set-location",
+        [
+            windows_command("PowerShell 切换目录", "Set-Location -LiteralPath '<path>'", "powershell"),
+            windows_command("CMD 切换目录和盘符", "cd /d \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "move-item",
+        "移动或重命名 Windows 文件",
+        ["PowerShell 移动文件", "Move-Item 重命名文件", "CMD move 移动文件"],
+        "移动或重命名文件/目录；目标已存在时先确认覆盖行为。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
+        [
+            windows_command("PowerShell 移动或重命名", "Move-Item -LiteralPath '<source>' -Destination '<destination>'", "powershell"),
+            windows_command("CMD 移动或重命名", "move \"<source>\" \"<destination>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "remove-item",
+        "删除 Windows 文件或目录",
+        ["PowerShell 删除文件", "Remove-Item 递归删除目录", "CMD del 删除文件"],
+        "删除文件或目录；递归/强制删除具有破坏性，必须先核对路径。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
+        [
+            windows_command(
+                "PowerShell 删除文件或目录",
+                "Remove-Item -LiteralPath '<path>' -Recurse -Force",
+                "powershell",
+                risk="high",
+                warning="递归强制删除不可撤销，请先核对目标路径并准备备份。",
+            ),
+            windows_command(
+                "CMD 强制删除文件",
+                "del /F /A \"<path>\"",
+                "cmd",
+                risk="high",
+                warning="强制删除不可撤销，请先核对目标路径并准备备份。",
+            ),
+        ],
+    ),
+    windows_spec(
+        "new-item",
+        "创建 Windows 文件或目录",
+        ["PowerShell 创建文件", "New-Item 新建文件夹", "CMD type nul 创建空文件"],
+        "使用 PowerShell 创建文件/目录，或用 CMD 创建空文件。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/new-item",
+        [
+            windows_command("PowerShell 创建文件", "New-Item -ItemType File -Path '<path>'", "powershell"),
+            windows_command("PowerShell 创建目录", "New-Item -ItemType Directory -Path '<path>'", "powershell"),
+            windows_command("CMD 创建空文件", "type nul > \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "get-content",
+        "读取 Windows 文本文件",
+        ["PowerShell 查看文件内容", "Get-Content 读取日志", "CMD type 查看文本"],
+        "读取文本文件或日志尾部内容；大文件优先使用尾部读取。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-content",
+        [
+            windows_command("PowerShell 读取文件尾部", "Get-Content -LiteralPath '<path>' -Tail 100", "powershell"),
+            windows_command("CMD 查看文本文件", "type \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "select-string",
+        "在 Windows 文件中搜索文本",
+        ["PowerShell 搜索文件内容", "Select-String 查日志", "CMD findstr 搜索文本"],
+        "在文件或日志中按字符串/正则表达式查找匹配行。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/select-string",
+        [
+            windows_command("PowerShell 搜索文本", "Select-String -Path '<path>' -Pattern '<pattern>'", "powershell"),
+            windows_command("CMD 搜索文本", "findstr /N /I \"<pattern>\" \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "get-command",
+        "查找 Windows 可用命令",
+        ["PowerShell 命令在哪里", "Get-Command 查命令", "Windows 查找可执行文件"],
+        "查找 PowerShell cmdlet、别名、函数或 PATH 中的可执行文件。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.core/get-command",
+        [
+            windows_command("PowerShell 查找命令", "Get-Command <command>", "powershell"),
+            windows_command("CMD 查找可执行文件", "where <command>", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "get-environmentvariable",
+        "读取 Windows 环境变量",
+        ["PowerShell 查看环境变量", "Windows 环境变量怎么查", "读取 PATH 环境变量"],
+        "读取当前进程或用户/机器范围的环境变量，不修改环境配置。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_environment_variables",
+        [
+            windows_command("PowerShell 读取当前环境变量", "$env:<name>", "powershell"),
+            windows_command("CMD 读取环境变量", "echo %<name>%", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "get-filehash",
+        "计算 Windows 文件哈希",
+        ["PowerShell 计算 SHA256", "Get-FileHash 校验文件", "Windows 文件 hash 怎么算"],
+        "使用 SHA-256 等算法计算文件摘要，用于下载完整性校验。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/get-filehash",
+        [
+            windows_command("PowerShell 计算 SHA-256", "Get-FileHash -Algorithm SHA256 -LiteralPath '<path>'", "powershell"),
+            windows_command("CMD 使用 certutil 计算 SHA-256", "certutil -hashfile \"<path>\" SHA256", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "compress-archive",
+        "压缩 Windows 文件和目录",
+        ["PowerShell 压缩 zip", "Compress-Archive 怎么用", "Windows 打包 ZIP"],
+        "使用 PowerShell Compress-Archive 将文件或目录压缩为 ZIP。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/compress-archive",
+        [
+            windows_command(
+                "PowerShell 压缩为 ZIP",
+                "Compress-Archive -Path '<source>' -DestinationPath '<archive.zip>'",
+                "powershell",
+            ),
+        ],
+    ),
+    windows_spec(
+        "expand-archive",
+        "解压 Windows ZIP 文件",
+        ["PowerShell 解压 zip", "Expand-Archive 怎么用", "Windows 解压 ZIP"],
+        "使用 PowerShell Expand-Archive 解压 ZIP；覆盖现有文件前先确认目标目录。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
+        [
+            windows_command(
+                "PowerShell 解压 ZIP",
+                "Expand-Archive -LiteralPath '<archive.zip>' -DestinationPath '<destination>'",
+                "powershell",
+                risk="medium",
+                warning="解压可能覆盖目标目录中的同名文件，请先确认目标路径。",
+            ),
+        ],
+    ),
+    windows_spec(
+        "get-process",
+        "查看 Windows 进程",
+        ["PowerShell 查看进程", "Get-Process 查 PID", "Windows 查看进程 CPU"],
+        "按名称或 PID 查看进程、路径和资源信息。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-process",
+        [
+            windows_command("PowerShell 查看进程", "Get-Process -Name '<name>'", "powershell"),
+            windows_command("CMD 查看全部进程", "tasklist", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "start-process",
+        "启动 Windows 程序",
+        ["PowerShell 启动程序", "Start-Process 打开程序", "Windows 启动进程"],
+        "从 PowerShell 启动程序或打开文件；需要参数时显式传递 ArgumentList。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-process",
+        [
+            windows_command("PowerShell 启动程序", "Start-Process -FilePath '<path>'", "powershell"),
+            windows_command("CMD 启动程序", "start \"\" \"<path>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "stop-process",
+        "停止 Windows 进程",
+        ["PowerShell 结束进程", "Stop-Process 按 PID", "Windows 终止进程"],
+        "按名称或 PID 停止进程；强制终止前先确认未保存数据。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
+        [
+            windows_command(
+                "PowerShell 停止进程",
+                "Stop-Process -Id <pid>",
+                "powershell",
+                risk="medium",
+                warning="停止进程可能丢失未保存数据，请先确认 PID 和进程状态。",
+            ),
+            windows_command(
+                "CMD 强制终止进程",
+                "taskkill /PID <pid>",
+                "cmd",
+                risk="medium",
+                warning="终止进程可能丢失未保存数据，请先确认 PID。",
+            ),
+        ],
+    ),
+    windows_spec(
+        "taskkill",
+        "使用 CMD 终止 Windows 进程",
+        ["CMD taskkill 怎么用", "Windows 按进程名结束程序", "taskkill /IM"],
+        "使用 taskkill 按 PID 或镜像名终止进程；/F 强制终止需谨慎。",
+        "https://learn.microsoft.com/windows-server/administration/windows-commands/taskkill",
+        [
+            windows_command(
+                "CMD 按 PID 结束进程",
+                "taskkill /PID <pid>",
+                "cmd",
+                risk="medium",
+                warning="终止进程可能丢失未保存数据，请先确认 PID。",
+            ),
+            windows_command(
+                "CMD 按镜像名强制结束进程",
+                "taskkill /IM <image.exe> /F",
+                "cmd",
+                risk="high",
+                warning="强制结束匹配进程可能导致数据丢失，请先核对镜像名。",
+            ),
+        ],
+    ),
+    windows_spec(
+        "tasklist",
+        "使用 CMD 查看 Windows 进程",
+        ["CMD tasklist 查看进程", "Windows 查看进程列表", "tasklist 按 PID 查"],
+        "使用 tasklist 查看进程列表、PID 和镜像信息。",
+        "https://learn.microsoft.com/windows-server/administration/windows-commands/tasklist",
+        [
+            windows_command("CMD 查看进程列表", "tasklist", "cmd"),
+            windows_command("CMD 按 PID 过滤进程", "tasklist /FI \"PID eq <pid>\"", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "get-service",
+        "查看 Windows 服务",
+        ["PowerShell 查看服务", "Get-Service 查服务状态", "Windows 服务状态"],
+        "按名称查看 Windows 服务状态和启动类型。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-service",
+        [
+            windows_command("PowerShell 查看服务", "Get-Service -Name '<name>'", "powershell"),
+            windows_command("CMD 查询服务", "sc.exe query <service>", "cmd"),
+        ],
+    ),
+    windows_spec(
+        "start-service",
+        "启动 Windows 服务",
+        ["PowerShell 启动服务", "Start-Service 怎么用", "Windows 启动服务"],
+        "启动指定 Windows 服务；需要管理员权限的服务会由系统拒绝或提示。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-service",
+        [
+            windows_command("PowerShell 启动服务", "Start-Service -Name '<name>'", "powershell", risk="medium", warning="启动服务会改变系统状态，请先确认服务名和依赖。"),
+            windows_command("CMD 启动服务", "sc.exe start <service>", "cmd", risk="medium", warning="启动服务会改变系统状态，请先确认服务名和依赖。"),
+        ],
+    ),
+    windows_spec(
+        "stop-service",
+        "停止 Windows 服务",
+        ["PowerShell 停止服务", "Stop-Service 怎么用", "Windows 停止服务"],
+        "停止指定 Windows 服务；停止前确认依赖服务和业务影响。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
+        [
+            windows_command("PowerShell 停止服务", "Stop-Service -Name '<name>'", "powershell", risk="medium", warning="停止服务会影响依赖它的程序，请先确认服务名和业务影响。"),
+            windows_command("CMD 停止服务", "sc.exe stop <service>", "cmd", risk="medium", warning="停止服务会影响依赖它的程序，请先确认服务名和业务影响。"),
+        ],
+    ),
+    windows_spec(
+        "restart-service",
+        "重启 Windows 服务",
+        ["PowerShell 重启服务", "Restart-Service 怎么用", "Windows 重启服务"],
+        "重启指定 Windows 服务；确认短暂中断和依赖服务影响。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
+        [
+            windows_command("PowerShell 重启服务", "Restart-Service -Name '<name>'", "powershell", risk="medium", warning="重启服务会造成短暂中断，请先确认服务名和业务影响。"),
+            windows_command("CMD 停止并启动服务", "sc.exe stop <service> && sc.exe start <service>", "cmd", risk="medium", warning="重启服务会造成短暂中断，请先确认服务名和业务影响。"),
+        ],
+    ),
+    windows_spec(
+        "netstat",
+        "查看 Windows 端口和连接",
+        ["Windows 怎么查看端口占用？", "Windows 查看监听端口和 PID", "netstat -ano 怎么用"],
+        "使用 PowerShell 或 netstat 查看监听端口、连接状态和所属进程 PID。",
+        "https://learn.microsoft.com/windows-server/administration/windows-commands/netstat",
+        [
+            windows_command("PowerShell 查看 TCP 监听端口", "Get-NetTCPConnection -State Listen | Sort-Object -Property LocalPort", "powershell"),
+            windows_command("CMD 查看端口和 PID", "netstat -ano", "cmd"),
+        ],
+        ["如需查看其他用户的完整进程信息，可能需要管理员终端。"],
+    ),
+    windows_spec(
+        "get-nettcpconnection",
+        "按端口查看 Windows TCP 连接",
+        ["PowerShell 查看指定端口", "Get-NetTCPConnection 查端口", "Windows TCP 连接状态"],
+        "按本地端口或状态筛选 TCP 连接，并查看 OwningProcess。",
+        "https://learn.microsoft.com/powershell/module/nettcpip/get-nettcpconnection",
+        [
+            windows_command("PowerShell 查看指定端口", "Get-NetTCPConnection -LocalPort <port> | Select-Object LocalAddress, LocalPort, State, OwningProcess", "powershell"),
+        ],
+    ),
+    windows_spec(
+        "test-netconnection",
+        "测试 Windows 主机或端口连通性",
+        ["PowerShell 测试端口", "Test-NetConnection 检查网络", "Windows 测试 TCP 端口"],
+        "测试 DNS、ICMP 或指定 TCP 端口的连通性。",
+        "https://learn.microsoft.com/powershell/module/nettcpip/test-netconnection",
+        [
+            windows_command("PowerShell 测试 TCP 端口", "Test-NetConnection -ComputerName '<host>' -Port <port>", "powershell"),
+            windows_command("PowerShell 测试 ICMP", "Test-NetConnection -ComputerName '<host>' -InformationLevel Detailed", "powershell"),
+        ],
+    ),
+    windows_spec(
+        "resolve-dnsname",
+        "解析 Windows DNS 记录",
+        ["PowerShell 查 DNS", "Resolve-DnsName 怎么用", "Windows 查看域名解析"],
+        "使用 Resolve-DnsName 查看指定域名的 DNS 记录和解析服务器结果。",
+        "https://learn.microsoft.com/powershell/module/dnsclient/resolve-dnsname",
+        [
+            windows_command("PowerShell 解析 DNS", "Resolve-DnsName -Name '<host>'", "powershell"),
+        ],
+    ),
+    windows_spec(
+        "invoke-webrequest",
+        "使用 PowerShell 发起 HTTP 请求",
+        ["PowerShell HTTP GET", "Invoke-WebRequest 下载文件", "Windows 请求 URL"],
+        "使用 Invoke-WebRequest 获取网页或下载文件；写入文件前确认 URL 和内容来源。",
+        "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/invoke-webrequest",
+        [
+            windows_command("PowerShell 发起 GET 请求", "Invoke-WebRequest -Uri '<url>' -Method Get", "powershell"),
+            windows_command(
+                "PowerShell 下载文件",
+                "Invoke-WebRequest -Uri '<url>' -OutFile '<path>'",
+                "powershell",
+                risk="medium",
+                warning="下载内容可能不可信，写入或执行前请核对来源和哈希。",
+            ),
+        ],
+    ),
+    windows_spec(
+        "winget",
+        "使用 winget 管理 Windows 软件",
+        ["Windows 安装软件 winget", "winget 搜索软件", "winget upgrade 更新软件"],
+        "使用 Windows Package Manager 搜索、安装或升级软件；安装和升级会改变本机状态。",
+        "https://learn.microsoft.com/windows/package-manager/winget/",
+        [
+            windows_command("PowerShell 搜索软件", "winget search <query>", "powershell"),
+            windows_command("PowerShell 精确安装软件", "winget install --id <id> --exact", "powershell", risk="medium", warning="安装软件会改变本机状态，请先核对包 ID、来源和发布者。"),
+            windows_command("CMD 精确升级软件", "winget upgrade --id <id> --exact", "cmd", risk="medium", warning="升级软件可能改变运行环境，请先核对包 ID 和来源。"),
+        ],
+    ),
+    windows_spec(
+        "choco",
+        "使用 Chocolatey 管理 Windows 软件",
+        ["Chocolatey 安装软件", "choco install 怎么用", "choco 搜索包"],
+        "使用 Chocolatey 搜索或安装软件；安装命令需要确认包名和软件源。",
+        "https://docs.chocolatey.org/en-us/choco/commands/",
+        [
+            windows_command("PowerShell 搜索 Chocolatey 包", "choco search <package>", "powershell"),
+            windows_command("CMD 安装 Chocolatey 包", "choco install <package> --yes", "cmd", risk="medium", warning="安装软件会改变本机状态，请先核对包名、来源和安装脚本。"),
+        ],
+    ),
+    windows_spec(
+        "scoop",
+        "使用 Scoop 管理 Windows 软件",
+        ["Scoop 安装软件", "scoop install 怎么用", "scoop 搜索应用"],
+        "使用 Scoop 搜索或安装用户目录软件；安装前确认 bucket 和应用名。",
+        "https://scoop.sh/",
+        [
+            windows_command("PowerShell 搜索 Scoop 应用", "scoop search <app>", "powershell"),
+            windows_command("PowerShell 安装 Scoop 应用", "scoop install <app>", "powershell", risk="medium", warning="安装应用会改变本机环境，请先核对应用名和 bucket。"),
+        ],
+    ),
+    windows_spec(
+        "robocopy",
+        "使用 Robocopy 复制 Windows 目录",
+        ["Windows 文件夹同步 robocopy", "Robocopy 复制目录", "robocopy /MIR 风险"],
+        "使用 Robocopy 复制或镜像目录；/MIR 会删除目标中源目录不存在的文件，必须单独确认。",
+        "https://learn.microsoft.com/windows-server/administration/windows-commands/robocopy",
+        [
+            windows_command("Robocopy 增量复制目录", "robocopy \"<source>\" \"<destination>\" /E /COPY:DAT /DCOPY:DAT /R:2 /W:5", "cmd", risk="medium", warning="复制可能覆盖目标文件，请先确认源目录、目标目录和权限。"),
+            windows_command("Robocopy 镜像目录（高风险）", "robocopy \"<source>\" \"<destination>\" /MIR /R:2 /W:5", "cmd", risk="high", warning="/MIR 会删除目标中源目录不存在的文件，请先预览并准备备份。"),
+        ],
+    ),
+    windows_spec(
+        "where",
+        "使用 CMD where.exe 查询命令路径",
+        ["CMD where.exe 查找命令路径", "Windows exe 路径查询", "where python 路径"],
+        "使用 CMD where.exe 从 PATH 定位可执行命令路径。",
+        "https://learn.microsoft.com/windows-server/administration/windows-commands/where",
+        [
+            windows_command("CMD where.exe 查询路径", "where <command>", "cmd"),
+        ],
+    ),
+]
+
+
+def build_windows_topics() -> list[dict[str, object]]:
+    if not 25 <= len(WINDOWS_TOPIC_SPECS) <= 35:
+        raise RuntimeError(f"Expected 25-35 Windows topics, got {len(WINDOWS_TOPIC_SPECS)}")
+    topic_ids = [str(spec["id"]) for spec in WINDOWS_TOPIC_SPECS]
+    if len(set(topic_ids)) != len(topic_ids):
+        raise RuntimeError("Windows topic specs contain duplicate ids")
+    topics: list[dict[str, object]] = []
+    for spec in WINDOWS_TOPIC_SPECS:
+        aliases = [str(alias).strip() for alias in spec["aliases"]]
+        if len(aliases) < 3 or len(set(aliases)) != len(aliases):
+            raise RuntimeError(f"Windows topic aliases must be unique and contain at least 3 entries: {spec['id']}")
+        payload = {
+            key: spec[key]
+            for key in ("id", "domain", "title", "aliases", "summary", "commands", "notes")
+        }
+        canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        topic = dict(payload)
+        topic["source"] = {
+            "source_id": spec["id"],
+            "title": f"AegisCopilot Windows 2.7 种子知识：{spec['title']}",
+            "source_url": spec["source_url"],
+            "license": "MIT (project-authored)",
+            "revision": WINDOWS_KNOWLEDGE_REVISION,
+            "path": f"generated/windows/{str(spec['id']).split('.', 1)[1]}",
+            "sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "kind": "generated_seed",
+        }
+        topics.append(topic)
+    return topics
 
 
 def build_sql_topics() -> list[dict[str, object]]:
@@ -1016,6 +1601,30 @@ def build_recipe_catalog(topics: list[dict[str, object]]) -> tuple[list[dict[str
     return recipes, hashlib.sha256(canonical_bundle.encode("utf-8")).hexdigest()
 
 
+def build_windows_eval_cases(topics: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Build deterministic, offline retrieval cases for the Windows seed set."""
+
+    windows_topics = [topic for topic in topics if topic["domain"] == "windows"]
+    if not 25 <= len(windows_topics) <= 35:
+        raise RuntimeError(f"Expected 25-35 Windows topics for evaluation, got {len(windows_topics)}")
+    cases: list[dict[str, object]] = []
+    for topic in sorted(windows_topics, key=lambda entry: str(entry["id"])):
+        shells = sorted({str(command["shell"]) for command in topic["commands"] if command.get("shell")})
+        if not shells:
+            raise RuntimeError(f"Windows topic has no explicit shell: {topic['id']}")
+        for alias in topic["aliases"]:
+            cases.append(
+                {
+                    "id": f"windows-{len(cases) + 1:03d}",
+                    "query": str(alias),
+                    "expected_topic_id": topic["id"],
+                    "expected_shells": shells,
+                    "domain": "windows",
+                }
+            )
+    return cases
+
+
 def ensure_source(source_root: Path) -> Path:
     if not (source_root / ".git").exists():
         source_root.parent.mkdir(parents=True, exist_ok=True)
@@ -1037,7 +1646,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
         json.dumps(
             {
                 "schema_version": 1,
-                "generated_for": "AegisCopilot 2.5.0",
+                "generated_for": f"AegisCopilot {KNOWLEDGE_VERSION}",
                 "recipe_count": len(recipes),
                 "recipe_revision": recipe_revision,
                 "recipes": recipes,
@@ -1076,7 +1685,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
     )
     source_lock = {
         "schema_version": 1,
-        "generated_for": "AegisCopilot 2.5.0",
+        "generated_for": f"AegisCopilot {KNOWLEDGE_VERSION}",
         "recipe_schema_version": 1,
         "recipe_revision": recipe_revision,
         "repositories": [
@@ -1125,6 +1734,11 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
         json.dumps(memory_eval_cases, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    windows_eval_cases = build_windows_eval_cases(topics)
+    (KNOWLEDGE_DIR / "windows_eval_dataset.json").write_text(
+        json.dumps(windows_eval_cases, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     notices = f"""# Third-party notices
 
 ## tldr-pages/tldr
@@ -1147,6 +1761,7 @@ Selected command examples are adapted into AegisCopilot's structured knowledge f
 
 Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
 The Python virtual-environment recipes link to the Python `venv` documentation for the platform-specific activation variants. The documentation itself is not redistributed.
+Project-authored Windows command seeds link to Microsoft Learn, Chocolatey and Scoop documentation. The documentation itself is not redistributed.
 """
     (KNOWLEDGE_DIR / "THIRD_PARTY_NOTICES.md").write_text(notices, encoding="utf-8")
 
@@ -1163,7 +1778,7 @@ def main() -> None:
             prepared["domain"] = "node" if prepared["page"] in NODE_PAGES else "python"
         normalized_specs.append(prepared)
     topics = [apply_curated_overrides(parse_tldr(spec, source_root)) for spec in normalized_specs]
-    topics = [build_windows_port_topic() if topic["id"] == "windows.netstat" else topic for topic in topics]
+    topics.extend(build_windows_topics())
     topics.extend(build_sql_topics())
     topics.extend(build_redis_topics())
     if len(topics) != 300:

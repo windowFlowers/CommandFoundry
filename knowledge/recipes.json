@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_for": "AegisCopilot 2.5.0",
-  "recipe_count": 8,
-  "recipe_revision": "3af841c515e2df6c009868a0ce298485d45439583fd4e8aada4ab69fe417c19d",
+  "generated_for": "AegisCopilot 2.7.0",
+  "recipe_count": 21,
+  "recipe_revision": "d6bccea4b2b49448c1a2378b1fa39909e99f74560b58dc372c01b909a92fbfb7",
   "recipes": [
     {
       "recipe_id": "docker.docker-run.image",
@@ -447,6 +447,382 @@
       "source_revision": "94080eef0c5e8ddb2c0289e0c59aeab76a53ee2fbfedea3dbde9046f6fd1dc00"
     },
     {
+      "recipe_id": "windows.compress-archive.paths",
+      "topic_id": "windows.compress-archive",
+      "title": "压缩 Windows ZIP 文件",
+      "description": "使用 PowerShell 将文件或目录压缩为 ZIP。",
+      "required_slots": [
+        {
+          "name": "source_path",
+          "label": "源路径",
+          "type": "path",
+          "question": "要压缩的文件或目录路径是什么？",
+          "validation": "windows_path"
+        },
+        {
+          "name": "archive_path",
+          "label": "ZIP 路径",
+          "type": "path",
+          "question": "ZIP 文件要保存到哪里？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "compress",
+          "label": "压缩 ZIP",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Compress-Archive -Path '{{source_path}}' -DestinationPath '{{archive_path}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.compress-archive",
+          "title": "AegisCopilot Windows 2.7 种子知识：压缩 Windows 文件和目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/compress-archive",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/compress-archive",
+          "sha256": "af14b3a8c81b4e2314713305b2d419278a2da804462ccb53c3382ec89635c463",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "a83684d8659be0bd188eb2d4906df064623ac6d06195b8520c583446bf2be2b8"
+    },
+    {
+      "recipe_id": "windows.copy-item.paths",
+      "topic_id": "windows.copy-item",
+      "title": "复制 Windows 文件或目录",
+      "description": "在 PowerShell 或 CMD 中复制指定来源到目标路径。",
+      "required_slots": [
+        {
+          "name": "source_path",
+          "label": "源路径",
+          "type": "path",
+          "question": "要复制的源文件或目录路径是什么？",
+          "validation": "windows_path"
+        },
+        {
+          "name": "destination_path",
+          "label": "目标路径",
+          "type": "path",
+          "question": "要复制到哪个目标路径？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "copy",
+          "label": "复制文件或目录",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Copy-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}'",
+            "cmd": "copy /Y \"{{source_path}}\" \"{{destination_path}}\""
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.copy-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：复制 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/copy-item",
+          "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "985ea2d7965a14b1981f9a15b73f92bf069d27f2e97eb84756718a89dc411dbd"
+    },
+    {
+      "recipe_id": "windows.expand-archive.paths",
+      "topic_id": "windows.expand-archive",
+      "title": "解压 Windows ZIP 文件",
+      "description": "使用 PowerShell 将 ZIP 解压到指定目录。",
+      "required_slots": [
+        {
+          "name": "archive_path",
+          "label": "ZIP 路径",
+          "type": "path",
+          "question": "要解压的 ZIP 文件路径是什么？",
+          "validation": "windows_path"
+        },
+        {
+          "name": "destination_path",
+          "label": "目标目录",
+          "type": "path",
+          "question": "要解压到哪个目录？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "expand",
+          "label": "解压 ZIP",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Expand-Archive -LiteralPath '{{archive_path}}' -DestinationPath '{{destination_path}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.expand-archive",
+          "title": "AegisCopilot Windows 2.7 种子知识：解压 Windows ZIP 文件",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/expand-archive",
+          "sha256": "6b7623c6e78b373784db2ddcd14220bafed2c8f78fafad900b60c34b7b818846",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "99369b53f5794dced75087e62e0c9b43d2239570c8b485cfb9a485828762a3df"
+    },
+    {
+      "recipe_id": "windows.get-filehash.path",
+      "topic_id": "windows.get-filehash",
+      "title": "计算 Windows 文件 SHA-256",
+      "description": "计算文件哈希用于完整性校验。",
+      "required_slots": [
+        {
+          "name": "path",
+          "label": "文件路径",
+          "type": "path",
+          "question": "要计算哪个文件的哈希？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "hash",
+          "label": "计算 SHA-256",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Get-FileHash -Algorithm SHA256 -LiteralPath '{{path}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.get-filehash",
+          "title": "AegisCopilot Windows 2.7 种子知识：计算 Windows 文件哈希",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/get-filehash",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-filehash",
+          "sha256": "bc35030c6db954354aa252f00eebe9c15f4b36fe54cdd6af2a28d4e43e51c589",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "4eede31120cb5b6238b74b2785d302006c82f057c341d0850274731cd9754f86"
+    },
+    {
+      "recipe_id": "windows.get-service.name",
+      "topic_id": "windows.get-service",
+      "title": "查看 Windows 服务",
+      "description": "按服务名查看 Windows 服务状态。",
+      "required_slots": [
+        {
+          "name": "service_name",
+          "label": "服务名",
+          "type": "identifier",
+          "question": "要查看哪个 Windows 服务？",
+          "validation": "safe_identifier"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "query",
+          "label": "查询服务",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Get-Service -Name '{{service_name}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.get-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-service",
+          "sha256": "75d70763188648981ec31b30328cb2561748e8a1ce0eee87faa4ee7bfa5abf84",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "e730c80bc236d991c3573e991a4afbcf96237025a6aeab227b42fb394b44749c"
+    },
+    {
+      "recipe_id": "windows.move-item.paths",
+      "topic_id": "windows.move-item",
+      "title": "移动或重命名 Windows 文件",
+      "description": "在 PowerShell 或 CMD 中移动文件或目录，也可用于重命名。",
+      "required_slots": [
+        {
+          "name": "source_path",
+          "label": "源路径",
+          "type": "path",
+          "question": "要移动或重命名的源路径是什么？",
+          "validation": "windows_path"
+        },
+        {
+          "name": "destination_path",
+          "label": "目标路径",
+          "type": "path",
+          "question": "目标路径或新名称是什么？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "move",
+          "label": "移动或重命名",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Move-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}'",
+            "cmd": "move \"{{source_path}}\" \"{{destination_path}}\""
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.move-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：移动或重命名 Windows 文件",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/move-item",
+          "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "769d6f074692b609af77b7ea3d36f6684e717e4ddac7a6dd95529dc0ab2dcdd6"
+    },
+    {
       "recipe_id": "windows.netstat.port",
       "topic_id": "windows.netstat",
       "title": "查看 Windows 指定端口占用",
@@ -485,17 +861,17 @@
       "provenance": [
         {
           "source_id": "windows.netstat",
-          "title": "AegisCopilot Windows 端口种子知识",
-          "source_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netstat",
+          "title": "AegisCopilot Windows 2.7 种子知识：查看 Windows 端口和连接",
+          "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netstat",
           "license": "MIT (project-authored)",
-          "revision": "v2.2.0",
-          "path": "generated/windows-port-usage",
-          "sha256": "efd093f262e27204736099bfa1516b3c782cec30a1c208bf2f608feaa2c86021",
+          "revision": "v2.7.0",
+          "path": "generated/windows/netstat",
+          "sha256": "23a48063a0b94757ae06b11c58722a3d2ddfb48880ae5ea0c9ca53c5ec065af4",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
-      "source_revision": "b3d70a8e54869db494da146383ebe7a6ad5db49df9724ee9cfe0a112afde90b3"
+      "source_revision": "eef82290c1c097d905a39ea2bd7605eb0a86d1655c7b06f0bbe51aa0ed03c994"
     },
     {
       "recipe_id": "windows.new-item.file",
@@ -535,17 +911,443 @@
       "provenance": [
         {
           "source_id": "windows.new-item",
-          "title": "tldr: new-item",
-          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/windows/new-item.md",
-          "license": "CC BY 4.0",
-          "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-          "path": "pages/windows/new-item.md",
-          "sha256": "cf940fb722f88c15a441cf628ee0495f8372b03e8f6e4d80bfc00d4eb078e0f7",
-          "kind": "vendored",
+          "title": "AegisCopilot Windows 2.7 种子知识：创建 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/new-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/new-item",
+          "sha256": "b9ff343bf31fca6dcfce851ad4f24fd13157268dec30940adc2bb8958d9e4bb6",
+          "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
-      "source_revision": "1e70f8a176b857d95bb0ce889a78e00a0a756b806495f58914d829ddb8cd0198"
+      "source_revision": "23c244eacf8808f38178d0f07b713a4a2bc6857be96876afcad4019433a83296"
+    },
+    {
+      "recipe_id": "windows.remove-item.path",
+      "topic_id": "windows.remove-item",
+      "title": "删除 Windows 文件或目录",
+      "description": "删除指定文件或目录；递归强制删除不可撤销。",
+      "required_slots": [
+        {
+          "name": "path",
+          "label": "目标路径",
+          "type": "path",
+          "question": "要删除的文件或目录路径是什么？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "remove",
+          "label": "删除目标",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Remove-Item -LiteralPath '{{path}}' -Recurse -Force",
+            "cmd": "del /F /A \"{{path}}\""
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.remove-item",
+          "title": "AegisCopilot Windows 2.7 种子知识：删除 Windows 文件或目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/remove-item",
+          "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "f6d51e7b96b55423d4a899073ad0184fa776e81c1ff52f4cda5eb28cd71bbdbd"
+    },
+    {
+      "recipe_id": "windows.restart-service.name",
+      "topic_id": "windows.restart-service",
+      "title": "重启 Windows 服务",
+      "description": "重启指定 Windows 服务，可能造成短暂中断。",
+      "required_slots": [
+        {
+          "name": "service_name",
+          "label": "服务名",
+          "type": "identifier",
+          "question": "要重启哪个 Windows 服务？",
+          "validation": "safe_identifier"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "restart",
+          "label": "重启服务",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Restart-Service -Name '{{service_name}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.restart-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：重启 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/restart-service",
+          "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "d8c287d93403fe00d4d319e9652bd3c987c10c1113071316951fce74bf1c94bc"
+    },
+    {
+      "recipe_id": "windows.start-service.name",
+      "topic_id": "windows.start-service",
+      "title": "启动 Windows 服务",
+      "description": "启动指定 Windows 服务。",
+      "required_slots": [
+        {
+          "name": "service_name",
+          "label": "服务名",
+          "type": "identifier",
+          "question": "要启动哪个 Windows 服务？",
+          "validation": "safe_identifier"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "start",
+          "label": "启动服务",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Start-Service -Name '{{service_name}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.start-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：启动 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/start-service",
+          "sha256": "9269a466a7d74afc726474c9e398ddcc52c02eac8b710e51b767d7a42fa3973b",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "b0112e6ed49114ef8a91578aecf9f7f85f9b262743eb36c83d647a140f0ee71c"
+    },
+    {
+      "recipe_id": "windows.stop-process.pid",
+      "topic_id": "windows.stop-process",
+      "title": "停止 Windows 进程",
+      "description": "按 PID 停止指定进程；执行前确认 PID 和未保存数据。",
+      "required_slots": [
+        {
+          "name": "pid",
+          "label": "进程 PID",
+          "type": "identifier",
+          "question": "要停止哪个进程 PID？",
+          "validation": "positive_integer"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "stop",
+          "label": "停止进程",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Stop-Process -Id {{pid}}",
+            "cmd": "taskkill /PID {{pid}}"
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.stop-process",
+          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 进程",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/stop-process",
+          "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "70d983b34b641b6f0bf2786e44c548a3b2031523bc3b894a1797e3637b8e8ffc"
+    },
+    {
+      "recipe_id": "windows.stop-service.name",
+      "topic_id": "windows.stop-service",
+      "title": "停止 Windows 服务",
+      "description": "停止指定 Windows 服务。",
+      "required_slots": [
+        {
+          "name": "service_name",
+          "label": "服务名",
+          "type": "identifier",
+          "question": "要停止哪个 Windows 服务？",
+          "validation": "safe_identifier"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "stop",
+          "label": "停止服务",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Stop-Service -Name '{{service_name}}'"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.stop-service",
+          "title": "AegisCopilot Windows 2.7 种子知识：停止 Windows 服务",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/stop-service",
+          "sha256": "e80484aec468c67987b526004a40abb8279c4bab7ad05de1039f9366311ec59f",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "b3e177d8c12b86977006d70bcd70c4a10b7435258209ef78849b62531b8f4193"
+    },
+    {
+      "recipe_id": "windows.test-netconnection.host-port",
+      "topic_id": "windows.test-netconnection",
+      "title": "测试 Windows TCP 端口",
+      "description": "测试主机指定 TCP 端口的连通性。",
+      "required_slots": [
+        {
+          "name": "host",
+          "label": "主机名或 IP",
+          "type": "identifier",
+          "question": "要测试哪个主机或 IP？",
+          "validation": "hostname"
+        },
+        {
+          "name": "port",
+          "label": "端口号",
+          "type": "port",
+          "question": "要测试哪个 TCP 端口？",
+          "validation": "tcp_port"
+        }
+      ],
+      "optional_slots": [],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell"
+      ],
+      "steps": [
+        {
+          "id": "test",
+          "label": "测试 TCP 端口",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Test-NetConnection -ComputerName '{{host}}' -Port {{port}}"
+          },
+          "languages": {
+            "powershell": "powershell"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.test-netconnection",
+          "title": "AegisCopilot Windows 2.7 种子知识：测试 Windows 主机或端口连通性",
+          "source_url": "https://learn.microsoft.com/powershell/module/nettcpip/test-netconnection",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/test-netconnection",
+          "sha256": "a8c2ebf7cfc9de1064b03226060e1fdcfbe3009daa543a44d2daa934a60b0297",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "edce2895f77f22659412013c3a95cfa622ef090621f03956b387aad09166c14b"
+    },
+    {
+      "recipe_id": "windows.winget.install",
+      "topic_id": "windows.winget",
+      "title": "使用 winget 安装 Windows 软件",
+      "description": "使用包 ID 精确安装软件；安装前确认来源和发布者。",
+      "required_slots": [
+        {
+          "name": "package_id",
+          "label": "winget 包 ID",
+          "type": "identifier",
+          "question": "要安装哪个 winget 包 ID？",
+          "validation": "safe_identifier"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "install",
+          "label": "安装软件",
+          "merge": "newline",
+          "templates": {
+            "powershell": "winget install --id {{package_id}} --exact",
+            "cmd": "winget install --id {{package_id}} --exact"
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.winget",
+          "title": "AegisCopilot Windows 2.7 种子知识：使用 winget 管理 Windows 软件",
+          "source_url": "https://learn.microsoft.com/windows/package-manager/winget/",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/winget",
+          "sha256": "b81723e72cc1ad1c6ab9ede08999a8ca976cc438f5c80bdcd25024e43ced0dc8",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "source_revision": "75333485349aab57f810315097ceea9137df7b275e01e157b93aa5cc11d8b7d2"
     }
   ]
 }

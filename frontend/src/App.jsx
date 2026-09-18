@@ -4,6 +4,7 @@ import { DocumentPreviewModal, KnowledgeManager } from "./components/knowledge/K
 import { MemoryDrawer, SettingsDrawer } from "./components/overlays/AppDrawers";
 import { PersonalizationDrawer } from "./components/overlays/PersonalizationDrawer";
 import { ProfileMemoryManager } from "./components/profile/ProfileMemoryManager";
+import { TerminalPanel } from "./components/terminal/TerminalPanel";
 import { Modal } from "./components/ui/Overlays";
 import { ToastRegion } from "./components/ui/ToastRegion";
 import { useProfileMemory } from "./hooks/useProfileMemory";
@@ -13,7 +14,7 @@ import { appendStreamAnswer, memoryStateForAnswer, resetConversationMemory } fro
 const DEFAULT_KNOWLEDGE_BASE_ID = "developer-it";
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.5.0";
+  const appVersion = window.aegisDesktop?.version || "2.9.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
@@ -37,6 +38,7 @@ export function App() {
   const [personalizationState, setPersonalizationState] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 900);
   const [preview, setPreview] = useState(null);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const {
     profile,
     memoryRevision,
@@ -262,6 +264,26 @@ export function App() {
     }
   }
 
+  async function executeCommand(command) {
+    const api = window.aegisDesktop?.terminal;
+    if (!api) {
+      setError("当前运行环境没有可用的内置终端。");
+      setTerminalOpen(true);
+      return;
+    }
+    try {
+      const sessions = await api.list();
+      let session = sessions.find((item) => item.shell === command.shell);
+      if (!session) session = await api.create({ shell: command.shell });
+      const input = `${String(command.code || "").replace(/\r?\n/g, "\r")}\r`;
+      await api.write({ terminalId: session.terminalId, data: input });
+      setTerminalOpen(true);
+    } catch (executionError) {
+      setError(executionError.message || "无法向内置终端发送命令");
+      setTerminalOpen(true);
+    }
+  }
+
   return <div className="app-frame">
     <div className="titlebar" data-ui="titlebar">
       <div className="titlebar-brand"><img src="./app-icon.png" alt="" /><span>AegisCopilot</span><small>v{appVersion}</small></div>
@@ -299,6 +321,8 @@ export function App() {
         onOpenProfile={() => { setSettingsOpen(false); setMemoryDrawerOpen(false); setPersonalizationDrawerOpen(false); setView("profile"); }}
         profile={profile}
         onOpenSettings={() => { setMemoryDrawerOpen(false); setPersonalizationDrawerOpen(false); setSettingsOpen(true); }}
+        onOpenTerminal={() => setTerminalOpen(true)}
+        onExecuteCommand={executeCommand}
         modelStatus={modelStatus}
         activeConversation={activeConversation}
         selectedKnowledgeBaseId={selectedKnowledgeBaseId}
@@ -323,6 +347,7 @@ export function App() {
     <MemoryDrawer open={memoryDrawerOpen} onClose={() => setMemoryDrawerOpen(false)} memory={memoryState} loading={memoryLoading} error={memoryError} onReset={() => setMemoryResetOpen(true)} />
     <PersonalizationDrawer open={personalizationDrawerOpen} onClose={() => setPersonalizationDrawerOpen(false)} personalization={personalizationState} refreshToken={memoryRevision} />
     <DocumentPreviewModal preview={preview} onClose={() => setPreview(null)} />
+    <TerminalPanel open={terminalOpen} onClose={() => setTerminalOpen(false)} />
     {memoryResetOpen && <Modal
       title="清空会话上下文"
       onClose={() => setMemoryResetOpen(false)}

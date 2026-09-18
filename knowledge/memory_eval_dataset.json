@@ -151,10 +151,10 @@
   },
   {
     "id": "memory-015",
-    "previous_query": "如何使用 get-childitem？",
+    "previous_query": "PowerShell 查看文件夹内容",
     "previous_command_labels": [
-      "List all non-hidden items in the current directory",
-      "List only directories in the current directory"
+      "PowerShell 列出文件和隐藏项",
+      "CMD 列出文件和隐藏项"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "windows.get-childitem",
@@ -162,10 +162,10 @@
   },
   {
     "id": "memory-016",
-    "previous_query": "如何使用 get-childitem？",
+    "previous_query": "PowerShell 查看文件夹内容",
     "previous_command_labels": [
-      "List all non-hidden items in the current directory",
-      "List only directories in the current directory"
+      "PowerShell 列出文件和隐藏项",
+      "CMD 列出文件和隐藏项"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "windows.get-childitem",
@@ -389,10 +389,10 @@
   },
   {
     "id": "memory-037",
-    "previous_query": "如何使用 test-netconnection？",
+    "previous_query": "PowerShell 测试端口",
     "previous_command_labels": [
-      "Test a connection and display detailed results",
-      "Test a connection to a remote host using the specified port number"
+      "PowerShell 测试 TCP 端口",
+      "PowerShell 测试 ICMP"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "windows.test-netconnection",
@@ -400,10 +400,10 @@
   },
   {
     "id": "memory-038",
-    "previous_query": "如何使用 test-netconnection？",
+    "previous_query": "PowerShell 测试端口",
     "previous_command_labels": [
-      "Test a connection and display detailed results",
-      "Test a connection to a remote host using the specified port number"
+      "PowerShell 测试 TCP 端口",
+      "PowerShell 测试 ICMP"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "windows.test-netconnection",
@@ -596,16 +596,16 @@
       "Run tests from specific files",
       "Run tests with names matching a specific [k]eyword expression"
     ],
-    "follow_up": "如何使用 get-childitem？",
+    "follow_up": "PowerShell 查看文件夹内容",
     "expected_topic_id": "windows.get-childitem",
     "category": "new-topic"
   },
   {
     "id": "memory-057",
-    "previous_query": "如何使用 get-childitem？",
+    "previous_query": "PowerShell 查看文件夹内容",
     "previous_command_labels": [
-      "List all non-hidden items in the current directory",
-      "List only directories in the current directory"
+      "PowerShell 列出文件和隐藏项",
+      "CMD 列出文件和隐藏项"
     ],
     "follow_up": "如何使用 ssh？",
     "expected_topic_id": "network.ssh",

@@ -5,6 +5,7 @@ import "@fontsource-variable/noto-sans-sc";
 import "@fontsource-variable/jetbrains-mono";
 import { App } from "./App";
 import "./styles-next.css";
+import "./styles-terminal.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

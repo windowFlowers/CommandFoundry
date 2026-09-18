@@ -54,7 +54,7 @@ try {
         throw "Packaged backend did not become ready."
     }
 
-    if ($health.version -ne "2.5.0") {
+    if ($health.version -ne "2.9.0") {
         throw "Unexpected backend version: $($health.version)"
     }
 

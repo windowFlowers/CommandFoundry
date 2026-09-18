@@ -18,6 +18,7 @@ import {
   Send,
   Settings,
   Shell,
+  Terminal,
   Trash2,
   UserRound,
   WifiOff,
@@ -91,7 +92,37 @@ function referencesForIds(citationIds, citationMap) {
   return [...new Set(citationIds || [])].map((id) => citationMap.get(id)).filter(Boolean);
 }
 
-function CommandCard({ command, index, citationMap, onPreviewDocument }) {
+function ExecuteCommandDialog({ command, onClose, onConfirm }) {
+  const [typed, setTyped] = useState("");
+  const [workingDirectory, setWorkingDirectory] = useState("默认用户目录（确认后创建）");
+  const highRisk = command.risk === "high";
+  const canConfirm = !highRisk || typed.trim() === "确认执行";
+  const shellLabel = shellText[command.shell] || command.language;
+  useEffect(() => {
+    let active = true;
+    window.aegisDesktop?.terminal?.list?.().then((sessions) => {
+      if (!active) return;
+      const session = (sessions || []).find((item) => item.shell === command.shell);
+      if (session?.cwd) setWorkingDirectory(session.cwd);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [command.shell]);
+  return (
+    <div className="execute-dialog-backdrop" role="presentation">
+      <section className="execute-dialog" role="dialog" aria-modal="true" aria-labelledby="execute-command-title">
+        <header><h2 id="execute-command-title">确认在终端执行</h2><button type="button" className="icon-button" onClick={onClose} aria-label="取消执行">×</button></header>
+        <div className="execute-dialog-meta"><div><span>Shell</span><strong>{shellLabel}</strong></div><div><span>工作目录</span><strong>{workingDirectory}</strong></div><div><span>风险等级</span><strong className={`risk-badge ${command.risk}`}>{riskText[command.risk] || command.risk}</strong></div></div>
+        <pre className="execute-command-preview"><code>{command.code}</code></pre>
+        {command.warning && <p className="execute-warning"><AlertTriangle size={15} />{command.warning}</p>}
+        {command.prerequisites?.length > 0 && <p className="execute-prerequisites">执行前：{command.prerequisites.join("；")}</p>}
+        {highRisk && <label className="execute-confirm-label">高风险命令请输入“确认执行”<input value={typed} onChange={(event) => setTyped(event.target.value)} placeholder="确认执行" autoComplete="off" /></label>}
+        <footer><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="danger-button" type="button" disabled={!canConfirm} onClick={() => onConfirm(command)}>确认执行</button></footer>
+      </section>
+    </div>
+  );
+}
+
+function CommandCard({ command, index, citationMap, onPreviewDocument, onExecute }) {
   const titleId = useId();
   const references = referencesForIds(command.citation_ids, citationMap);
   return (
@@ -101,7 +132,7 @@ function CommandCard({ command, index, citationMap, onPreviewDocument }) {
         <span className={`risk-badge ${command.risk}`}>{riskText[command.risk] || command.risk}</span>
       </header>
       <div className="code-shell">
-        <div className="code-toolbar"><span>{shellText[command.shell] || command.language}</span><CopyButton value={command.code} /></div>
+        <div className="code-toolbar"><span>{shellText[command.shell] || command.language}</span><div className="code-toolbar-actions"><CopyButton value={command.code} />{onExecute && <button className="execute-command-button" type="button" onClick={() => onExecute(command)}><Terminal size={14} />在终端执行</button>}</div></div>
         <pre><code>{command.code}</code></pre>
       </div>
       <div className="command-meta">
@@ -224,8 +255,9 @@ function ClarificationCard({ clarification, onSubmit, disabled = false, stale = 
   );
 }
 
-function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, busy = false, interactive = false }) {
+function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, onExecuteCommand, busy = false, interactive = false }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [executeCommand, setExecuteCommand] = useState(null);
   const titleId = useId();
   const citations = answer.citations || [];
   const citationMap = new Map(
@@ -260,7 +292,10 @@ function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOp
       {answerKind === "clarification" && <ClarificationCard clarification={clarification} onSubmit={onSubmit} disabled={busy} stale={!interactive} />}
       {answerKind === "template" && <div className="answer-kind-note" data-ui="template-note"><span>模板示例</span><span>需要替换参数</span></div>}
       {answerKind !== "clarification" && visibleCommands.length > 0 && (
-        <div className="commands-list">{visibleCommands.map((command, index) => <CommandCard key={`${command.label}-${index}`} command={command} index={index} citationMap={citationMap} onPreviewDocument={onPreviewDocument} />)}</div>
+        <div className="commands-list">{visibleCommands.map((command, index) => {
+          const executable = answerKind === "direct" && ["powershell", "cmd"].includes(command.shell) && !/[<>]/.test(command.code) && onExecuteCommand;
+          return <CommandCard key={`${command.label}-${index}`} command={command} index={index} citationMap={citationMap} onPreviewDocument={onPreviewDocument} onExecute={executable ? setExecuteCommand : null} />;
+        })}</div>
       )}
       {answer.notes?.length > 0 && <ul className="notes-list">{answer.notes.map((note, index) => <li key={`${note}-${index}`}>{note}</li>)}</ul>}
       {citations.length > 0 && (
@@ -282,6 +317,7 @@ function AnswerCard({ answer, entryNumber, onPreviewDocument, onOpenMemory, onOp
           )}
         </div>
       )}
+      {executeCommand && <ExecuteCommandDialog command={executeCommand} onClose={() => setExecuteCommand(null)} onConfirm={async (command) => { setExecuteCommand(null); await onExecuteCommand(command); }} />}
     </article>
   );
 }
@@ -315,7 +351,7 @@ function EmptyState({ onExample }) {
   );
 }
 
-function Sidebar({ open, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onCollapse, collapseRef, onOpenKnowledge, knowledgeBaseCount, onOpenProfile, profile, onOpenSettings, modelStatus }) {
+function Sidebar({ open, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onCollapse, collapseRef, onOpenKnowledge, knowledgeBaseCount, onOpenProfile, profile, onOpenSettings, onOpenTerminal, modelStatus }) {
   return (
     <aside className={`sidebar ${open ? "" : "collapsed"}`} aria-hidden={!open} inert={open ? undefined : ""} data-ui="sidebar">
       <div className="sidebar-head">
@@ -337,6 +373,7 @@ function Sidebar({ open, conversations, activeId, onNewConversation, onSelectCon
         ))}
       </nav>
       <div className="sidebar-status">
+        <button type="button" onClick={onOpenTerminal} data-ui="open-terminal"><Terminal size={17} /><span>终端</span><small>PowerShell / CMD</small></button>
         <button type="button" onClick={onOpenKnowledge} data-ui="open-knowledge"><FolderCog size={17} /><span>知识库管理</span><small>{knowledgeBaseCount} 个知识库</small></button>
         <button type="button" onClick={onOpenProfile} data-ui="open-profile"><UserRound size={17} /><span>我的记忆</span><small>{profile ? profile.personalization_enabled ? `${profile.active_memory_count || 0} 条` : "已关闭" : "读取中"}</small></button>
         <button type="button" onClick={onOpenSettings} data-ui="open-settings"><Settings size={17} /><span>模型设置</span><small>{modelStatus.configured ? "已配置" : "本地模式"}</small></button>
@@ -345,7 +382,7 @@ function Sidebar({ open, conversations, activeId, onNewConversation, onSelectCon
   );
 }
 
-function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeBases, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
+function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeBases, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, onExecuteCommand, query, onQueryChange, composerRef, bottomRef }) {
   const selectedKnowledgeBase = knowledgeBases.find((item) => item.id === selectedKnowledgeBaseId);
   const deletedKnowledgeBase = activeConversation?.knowledge_base_deleted
     && activeConversation.knowledge_base_id === selectedKnowledgeBaseId;
@@ -387,7 +424,7 @@ function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation
             {messages.map((message, index) => message.role === "user" ? (
               <UserMessage key={message.id} message={message} entryNumber={String(index + 1).padStart(2, "0")} />
             ) : (
-              <AnswerCard key={message.id} answer={message.answer} entryNumber={String(index + 1).padStart(2, "0")} onPreviewDocument={onPreviewDocument} onOpenMemory={onOpenMemory} onOpenPersonalization={onOpenPersonalization} onSubmit={onSubmit} busy={busy} interactive={message.id === latestClarificationId} />
+              <AnswerCard key={message.id} answer={message.answer} entryNumber={String(index + 1).padStart(2, "0")} onPreviewDocument={onPreviewDocument} onOpenMemory={onOpenMemory} onOpenPersonalization={onOpenPersonalization} onSubmit={onSubmit} onExecuteCommand={onExecuteCommand} busy={busy} interactive={message.id === latestClarificationId} />
             ))}
             {busy && <div className="thinking" role="status"><LoaderCircle size={17} /><span>{statusText || "正在准备回答"}</span></div>}
             {error && <div className="error-banner" role="alert"><WifiOff size={17} /><span>{error}</span></div>}
@@ -424,7 +461,7 @@ function ChatPanel({ sidebarOpen, onExpandSidebar, expandRef, activeConversation
   );
 }
 
-export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onOpenKnowledge, knowledgeBases, onOpenProfile, profile, onOpenSettings, modelStatus, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, query, onQueryChange, composerRef, bottomRef }) {
+export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations, activeId, onNewConversation, onSelectConversation, onDeleteConversation, onOpenKnowledge, knowledgeBases, onOpenProfile, profile, onOpenSettings, onOpenTerminal, modelStatus, activeConversation, selectedKnowledgeBaseId, onKnowledgeBaseChange, knowledgeStatus, messages, answerAnnouncement, busy, statusText, error, onPreviewDocument, onOpenMemory, onOpenPersonalization, onSubmit, onExecuteCommand, query, onQueryChange, composerRef, bottomRef }) {
   const expandRef = useRef(null);
   const collapseRef = useRef(null);
 
@@ -454,6 +491,7 @@ export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations,
         onOpenProfile={onOpenProfile}
         profile={profile}
         onOpenSettings={onOpenSettings}
+        onOpenTerminal={onOpenTerminal}
         modelStatus={modelStatus}
       />
       <ChatPanel
@@ -474,6 +512,7 @@ export function ChatWorkspace({ sidebarOpen, onSidebarOpenChange, conversations,
         onOpenMemory={onOpenMemory}
         onOpenPersonalization={onOpenPersonalization}
         onSubmit={onSubmit}
+        onExecuteCommand={onExecuteCommand}
         query={query}
         onQueryChange={onQueryChange}
         composerRef={composerRef}

@@ -1,4 +1,4 @@
-# AegisCopilot v2.5 Electron 桌面端
+# AegisCopilot v2.9 Electron 桌面端
 
 Electron 桌面版提供两条运行路径：开发模式自动启动仓库中的 FastAPI/Vite，发布模式运行内置 React 资源和 PyInstaller 后端。
 
@@ -36,7 +36,7 @@ npm.cmd run dist:win
 输出：
 
 - `dist/win-unpacked/AegisCopilot.exe`：未安装目录
-- `dist/AegisCopilot Setup 2.5.0.exe`：Windows x64 NSIS 安装包
+- `dist/AegisCopilot Setup 2.9.0.exe`：Windows x64 NSIS 安装包
 
 ## 数据与模型
 
@@ -54,3 +54,11 @@ npm.cmd run dist:win
 - 不包含自动更新、托盘常驻和 macOS/Linux 安装包
 - 构建时会把“命令提示符 + 分层知识页”图标和 AegisCopilot 产品信息写入 Windows EXE
 - 从旧版升级后，已固定到任务栏的旧快捷方式可能仍使用 Windows 图标缓存；解除固定后从新安装的开始菜单重新固定
+
+## 内置终端与执行确认
+
+- 终端由 Electron 主进程通过 `node-pty` 管理，渲染进程只能通过 preload IPC 访问。
+- 只允许 `powershell.exe` 和 `cmd.exe`，默认 PowerShell、默认工作目录为用户目录，最多 4 个临时会话。
+- 只有无占位符的 `direct` 命令显示“在终端执行”；模板、澄清卡片和旧版回答没有该按钮。
+- 用户确认后才向 PTY 写入命令并回车；高风险命令需要额外输入“确认执行”。应用不会自动或远程执行命令。
+- 终端输出、输入历史和工作目录不会保存到 SQLite，也不会在重启后恢复。
