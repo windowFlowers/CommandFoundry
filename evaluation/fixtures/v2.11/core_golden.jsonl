@@ -1,0 +1,137 @@
+{"id":"golden-v211-001","query":"如何使用 act？","expected_topic_id":"cicd.act","category":"cicd","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-002","query":"如何使用 ansible-playbook？","expected_topic_id":"cicd.ansible-playbook","category":"cicd","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-003","query":"如何使用 gh-cache？","expected_topic_id":"cicd.gh-cache","category":"cicd","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-004","query":"如何使用 gh-pr？","expected_topic_id":"cicd.gh-pr","category":"cicd","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-005","query":"如何使用 gh-release？","expected_topic_id":"cicd.gh-release","category":"cicd","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-006","query":"如何使用 gh-repo？","expected_topic_id":"cicd.gh-repo","category":"cicd","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-007","query":"如何使用 gh-run？","expected_topic_id":"cicd.gh-run","category":"cicd","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-008","query":"如何使用 gh-secret？","expected_topic_id":"cicd.gh-secret","category":"cicd","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-009","query":"如何使用 gh-variable？","expected_topic_id":"cicd.gh-variable","category":"cicd","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-010","query":"如何使用 gh-workflow？","expected_topic_id":"cicd.gh-workflow","category":"cicd","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-011","query":"Docker 帮助","expected_topic_id":"docker.docker","category":"docker","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-012","query":"使用 Dockerfile 构建","expected_topic_id":"docker.docker-build","category":"docker","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-013","query":"如何使用 docker-commit？","expected_topic_id":"docker.docker-commit","category":"docker","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-014","query":"启动 compose","expected_topic_id":"docker.docker-compose","category":"docker","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-015","query":"从容器复制文件","expected_topic_id":"docker.docker-cp","category":"docker","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-016","query":"进入 Docker 容器","expected_topic_id":"docker.docker-exec","category":"docker","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-017","query":"列出本地镜像","expected_topic_id":"docker.docker-images","category":"docker","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-018","query":"查看容器详细配置","expected_topic_id":"docker.docker-inspect","category":"docker","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-019","query":"如何使用 docker-load？","expected_topic_id":"docker.docker-load","category":"docker","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-020","query":"如何使用 docker-login？","expected_topic_id":"docker.docker-login","category":"docker","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-021","query":"添加文件到暂存区","expected_topic_id":"git.git-add","category":"git","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-022","query":"如何使用 git-archive？","expected_topic_id":"git.git-archive","category":"git","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-023","query":"如何使用 git-bisect？","expected_topic_id":"git.git-bisect","category":"git","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-024","query":"如何使用 git-blame？","expected_topic_id":"git.git-blame","category":"git","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-025","query":"新建分支","expected_topic_id":"git.git-branch","category":"git","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-026","query":"复制某个提交","expected_topic_id":"git.git-cherry-pick","category":"git","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-027","query":"如何使用 git-clean？","expected_topic_id":"git.git-clean","category":"git","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-028","query":"下载 Git 仓库","expected_topic_id":"git.git-clone","category":"git","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-029","query":"创建 Git 提交","expected_topic_id":"git.git-commit","category":"git","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-030","query":"如何使用 git-config？","expected_topic_id":"git.git-config","category":"git","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-031","query":"HTTP 并发压测","expected_topic_id":"http.ab","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-032","query":"如何使用 aria2c？","expected_topic_id":"http.aria2c","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-033","query":"curl GET","expected_topic_id":"http.curl","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-034","query":"如何使用 curlie？","expected_topic_id":"http.curlie","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-035","query":"如何使用 dig？","expected_topic_id":"http.dig","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-036","query":"调用 gRPC 服务","expected_topic_id":"http.grpcurl","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-037","query":"HTTPie GET","expected_topic_id":"http.http","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-038","query":"HTTP ping","expected_topic_id":"http.httping","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-039","query":"如何使用 ip？","expected_topic_id":"http.ip","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-040","query":"格式化 JSON","expected_topic_id":"http.jq","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-041","query":"如何使用 jar？","expected_topic_id":"java.jar","category":"java","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-042","query":"如何使用 java？","expected_topic_id":"java.java","category":"java","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-043","query":"如何使用 javac？","expected_topic_id":"java.javac","category":"java","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-044","query":"如何使用 kotlin？","expected_topic_id":"java.kotlin","category":"java","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-045","query":"如何使用 mvn？","expected_topic_id":"java.mvn","category":"java","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-046","query":"如何使用 mvn-compile？","expected_topic_id":"java.mvn-compile","category":"java","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-047","query":"如何使用 mvn-package？","expected_topic_id":"java.mvn-package","category":"java","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-048","query":"如何使用 kubectl？","expected_topic_id":"kubernetes.kubectl","category":"kubernetes","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-049","query":"如何使用 kubectl-apply？","expected_topic_id":"kubernetes.kubectl-apply","category":"kubernetes","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-050","query":"如何使用 kubectl-config？","expected_topic_id":"kubernetes.kubectl-config","category":"kubernetes","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-051","query":"如何使用 kubectl-cp？","expected_topic_id":"kubernetes.kubectl-cp","category":"kubernetes","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-052","query":"如何使用 kubectl-create？","expected_topic_id":"kubernetes.kubectl-create","category":"kubernetes","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-053","query":"如何使用 kubectl-delete？","expected_topic_id":"kubernetes.kubectl-delete","category":"kubernetes","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-054","query":"如何使用 kubectl-describe？","expected_topic_id":"kubernetes.kubectl-describe","category":"kubernetes","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-055","query":"如何使用 kubectl-exec？","expected_topic_id":"kubernetes.kubectl-exec","category":"kubernetes","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-056","query":"如何使用 kubectl-explain？","expected_topic_id":"kubernetes.kubectl-explain","category":"kubernetes","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-057","query":"如何使用 kubectl-expose？","expected_topic_id":"kubernetes.kubectl-expose","category":"kubernetes","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-058","query":"如何使用 cat？","expected_topic_id":"linux.cat","category":"linux","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-059","query":"切换目录","expected_topic_id":"linux.cd","category":"linux","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-060","query":"给脚本执行权限","expected_topic_id":"linux.chmod","category":"linux","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-061","query":"更改文件用户","expected_topic_id":"linux.chown","category":"linux","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-062","query":"复制文件","expected_topic_id":"linux.cp","category":"linux","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-063","query":"磁盘剩余空间","expected_topic_id":"linux.df","category":"linux","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-064","query":"文件夹大小","expected_topic_id":"linux.du","category":"linux","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-065","query":"按名称找文件","expected_topic_id":"linux.find","category":"linux","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-066","query":"在文件中搜索","expected_topic_id":"linux.grep","category":"linux","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-067","query":"如何使用 head？","expected_topic_id":"linux.head","category":"linux","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-068","query":"如何使用 certbot？","expected_topic_id":"network.certbot","category":"network","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-069","query":"如何使用 dig？","expected_topic_id":"network.dig","category":"network","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-070","query":"如何使用 firewall-cmd？","expected_topic_id":"network.firewall-cmd","category":"network","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-071","query":"如何使用 hostnamectl？","expected_topic_id":"network.hostnamectl","category":"network","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-072","query":"如何使用 ip？","expected_topic_id":"network.ip","category":"network","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-073","query":"lsof 查看端口占用","expected_topic_id":"network.lsof","category":"network","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-074","query":"如何使用 nc？","expected_topic_id":"network.nc","category":"network","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-075","query":"如何使用 netstat？","expected_topic_id":"network.netstat","category":"network","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-076","query":"如何使用 nginx？","expected_topic_id":"network.nginx","category":"network","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-077","query":"如何使用 nslookup？","expected_topic_id":"network.nslookup","category":"network","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-078","query":"如何使用 bun？","expected_topic_id":"node.bun","category":"node","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-079","query":"启用 pnpm yarn","expected_topic_id":"node.corepack","category":"node","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-080","query":"如何使用 deno？","expected_topic_id":"node.deno","category":"node","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-081","query":"JavaScript lint","expected_topic_id":"node.eslint","category":"node","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-082","query":"执行 JavaScript 文件","expected_topic_id":"node.node","category":"node","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-083","query":"npm 安装依赖","expected_topic_id":"node.npm","category":"node","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-084","query":"如何使用 npm-audit？","expected_topic_id":"node.npm-audit","category":"node","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-085","query":"如何使用 npm-cache？","expected_topic_id":"node.npm-cache","category":"node","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-086","query":"如何使用 npm-config？","expected_topic_id":"node.npm-config","category":"node","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-087","query":"如何使用 npm-install？","expected_topic_id":"node.npm-install","category":"node","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-088","query":"Python 格式化","expected_topic_id":"python.black","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-089","query":"如何使用 conda？","expected_topic_id":"python.conda","category":"python","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-090","query":"如何使用 django-admin？","expected_topic_id":"python.django-admin","category":"python","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-091","query":"如何使用 flake8？","expected_topic_id":"python.flake8","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-092","query":"如何使用 flask？","expected_topic_id":"python.flask","category":"python","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-093","query":"如何使用 gunicorn？","expected_topic_id":"python.gunicorn","category":"python","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-094","query":"如何使用 http-server？","expected_topic_id":"python.http-server","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-095","query":"如何使用 ipython？","expected_topic_id":"python.ipython","category":"python","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-096","query":"如何使用 jupyter？","expected_topic_id":"python.jupyter","category":"python","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-097","query":"如何使用 mypy？","expected_topic_id":"python.mypy","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-098","query":"Redis 怎么删除  键？","expected_topic_id":"redis.delete-key","category":"redis","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-099","query":"Redis 怎么设置  过期时间？","expected_topic_id":"redis.expire","category":"redis","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-100","query":"Redis 怎么读写  Hash？","expected_topic_id":"redis.hash","category":"redis","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-101","query":"Redis 怎么查看  服务状态？","expected_topic_id":"redis.info","category":"redis","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-102","query":"Redis 怎么操作  List？","expected_topic_id":"redis.list","category":"redis","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-103","query":"Redis 怎么查看  键内存占用？","expected_topic_id":"redis.memory-usage","category":"redis","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-104","query":"Redis 怎么使用 redis-cli 管道批量写入？","expected_topic_id":"redis.pipeline","category":"redis","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-105","query":"Redis 怎么使用  发布订阅？","expected_topic_id":"redis.pubsub","category":"redis","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-106","query":"Redis 怎么渐进扫描  键？","expected_topic_id":"redis.scan-keys","category":"redis","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-107","query":"Redis 怎么操作  Set？","expected_topic_id":"redis.set","category":"redis","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-108","query":"备份 MySQL","expected_topic_id":"sql.backup","category":"sql","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-109","query":"MySQL 新建数据库","expected_topic_id":"sql.create-database","category":"sql","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-110","query":"MySQL 添加索引","expected_topic_id":"sql.create-index","category":"sql","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-111","query":"MySQL 新建表","expected_topic_id":"sql.create-table","category":"sql","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-112","query":"MySQL 创建账号","expected_topic_id":"sql.create-user","category":"sql","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-113","query":"MySQL 怎么创建视图","expected_topic_id":"sql.create-view","category":"sql","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-114","query":"MySQL 删除记录","expected_topic_id":"sql.delete-rows","category":"sql","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-115","query":"MySQL EXPLAIN","expected_topic_id":"sql.explain-query","category":"sql","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-116","query":"MySQL 插入记录","expected_topic_id":"sql.insert-row","category":"sql","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-117","query":"MySQL JOIN","expected_topic_id":"sql.join-tables","category":"sql","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-118","query":"如何使用 gdb？","expected_topic_id":"testing.gdb","category":"testing","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-119","query":"如何使用 jest？","expected_topic_id":"testing.jest","category":"testing","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-120","query":"如何使用 k6？","expected_topic_id":"testing.k6","category":"testing","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-121","query":"如何使用 lldb？","expected_topic_id":"testing.lldb","category":"testing","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-122","query":"如何使用 mocha？","expected_topic_id":"testing.mocha","category":"testing","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-123","query":"如何使用 phpunit？","expected_topic_id":"testing.phpunit","category":"testing","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-124","query":"如何使用 pytest？","expected_topic_id":"testing.pytest","category":"testing","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-125","query":"如何使用 strace？","expected_topic_id":"testing.strace","category":"testing","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-126","query":"如何使用 valgrind？","expected_topic_id":"testing.valgrind","category":"testing","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-127","query":"如何使用 vitest？","expected_topic_id":"testing.vitest","category":"testing","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-128","query":"Chocolatey 安装软件","expected_topic_id":"windows.choco","category":"windows","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-129","query":"PowerShell 压缩 zip","expected_topic_id":"windows.compress-archive","category":"windows","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-130","query":"PowerShell 复制文件","expected_topic_id":"windows.copy-item","category":"windows","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-131","query":"PowerShell 解压 zip","expected_topic_id":"windows.expand-archive","category":"windows","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-132","query":"PowerShell 查看文件夹内容","expected_topic_id":"windows.get-childitem","category":"windows","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-133","query":"PowerShell 命令在哪里","expected_topic_id":"windows.get-command","category":"windows","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-134","query":"PowerShell 查看文件内容","expected_topic_id":"windows.get-content","category":"windows","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-135","query":"PowerShell 查看环境变量","expected_topic_id":"windows.get-environmentvariable","category":"windows","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-136","query":"PowerShell 计算 SHA256","expected_topic_id":"windows.get-filehash","category":"windows","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-137","query":"PowerShell 查看指定端口","expected_topic_id":"windows.get-nettcpconnection","category":"windows","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}

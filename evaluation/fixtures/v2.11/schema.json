@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "2.11",
+  "dataset_format": "jsonl",
+  "minimum_cases": 100,
+  "allowed_categories": [
+    "cicd",
+    "docker",
+    "git",
+    "http",
+    "java",
+    "kubernetes",
+    "linux",
+    "network",
+    "node",
+    "python",
+    "redis",
+    "sql",
+    "testing",
+    "windows"
+  ],
+  "allowed_difficulties": ["easy", "medium", "hard"],
+  "answer_required_fields": [
+    "answerability",
+    "reference_answer",
+    "reference_commands",
+    "risk_level",
+    "adversarial_tags"
+  ],
+  "answer_scenarios": [
+    "direct",
+    "clarification",
+    "template",
+    "unanswerable_refusal",
+    "prompt_injection",
+    "placeholder_safety"
+  ],
+  "required_fields": {
+    "id": "string",
+    "query": "string",
+    "expected_topic_id": "string",
+    "category": "string",
+    "difficulty": "string",
+    "expected_relevance": "integer",
+    "source": "string"
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "query",
+    "expected_topic_id",
+    "category",
+    "difficulty",
+    "expected_relevance",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^golden-v211-[0-9]{3,}$"
+    },
+    "query": {"type": "string", "minLength": 1},
+    "relevant_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_topic_id": {"type": "string", "minLength": 1},
+    "expected_source_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_parent_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_child_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_document_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "qrels": {
+      "type": "object",
+      "additionalProperties": {"type": "number", "minimum": 0}
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "cicd",
+        "docker",
+        "git",
+        "http",
+        "java",
+        "kubernetes",
+        "linux",
+        "network",
+        "node",
+        "python",
+        "redis",
+        "sql",
+        "testing",
+        "windows"
+      ]
+    },
+    "domain": {"type": "string", "minLength": 1},
+    "document_type": {"type": "string", "minLength": 1},
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "expected_relevance": {"type": "integer", "minimum": 0},
+    "source": {"type": "string", "minLength": 1},
+    "should_answer": {"type": "boolean"},
+    "expected_citation_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_placeholders": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "forbidden_patterns": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "previous_query": {"type": "string"},
+    "previous_command_labels": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "turns": {"type": "array", "items": {"type": "object"}},
+    "answerability": {
+      "type": "string",
+      "enum": ["direct", "clarification", "template", "answerable", "unanswerable"]
+    },
+    "reference_answer": {"type": "string"},
+    "reference_commands": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "platform": {"type": "string"},
+    "shell": {"type": "string"},
+    "adversarial_tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "metadata": {"type": "object"}
+  }
+}

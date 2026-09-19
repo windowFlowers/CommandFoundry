@@ -104,3 +104,31 @@ npm run verify:uploads
 真实模型验证只输出请求证据，不输出 API Key、Authorization、完整请求正文或模型原始响应。
 
 当前 Windows 构建未配置代码签名。自动化测试只验证 NSIS 配置、图标资源、Windows 版本信息写入脚本和打包路径；未知发布者提示、SmartScreen、安装、v2.3→v2.4 覆盖升级及卸载仍需在干净 Windows 环境人工验收。
+
+## v2.11 评测闭环
+
+v2.11 将评测从“单独看检索命中率”升级为发布候选门禁。评测数据、报告和门禁实现分别位于 `evaluation/fixtures/v2.11`、`backend/app/evaluation.py`、`backend/app/evaluation_gate.py` 和 `scripts/run_evaluation.py`。
+
+v2.11 核心黄金集包含 143 条分层用例（137 条检索用例 + 6 条答案/安全用例），覆盖全部内置知识领域；qrels 使用 TREC 四列格式，允许一个查询对应多个相关来源。现有 300 条单轮、60 条多轮、60 条个性化和 Windows 专项集合继续作为兼容回归集。
+
+离线评测：
+
+```powershell
+cd C:\Users\CZX\Documents\Codex\AegisCopilot-v2
+.\backend\.venv\Scripts\python.exe scripts\validate_evaluation_data.py
+.\backend\.venv\Scripts\python.exe scripts\run_evaluation.py --suite all --mode offline --output .runtime\evaluation-report.json
+```
+
+报告记录 Git revision、知识库/数据集指纹、模型配置指纹、检索参数、Precision@k、Recall@k、MRR、NDCG、父块/子块召回、来源与引用 Precision/Recall、正确性/完整性、按主题/平台/Shell/文档类型/难度切片、延迟、失败用例和脱敏 trace。API Key、Authorization、密码、Token、私钥、完整敏感路径和原始终端输出不会进入发布报告。
+
+发布候选真实模型评测使用当前应用配置，并通过与 `/chat/stream` 相同的后端服务链路运行：
+
+```powershell
+.\backend\.venv\Scripts\python.exe scripts\run_evaluation.py --suite core --mode model --provider current --baseline .runtime\baseline.json --output .runtime\candidate.json --redact --fail-on-gate
+```
+
+硬门禁包括无效引用、未解析占位符、凭证泄露、Prompt Injection/高风险命令安全、schema/执行错误、首个基线中的失败用例、Git/知识 revision 不匹配和模型伪造命令；质量指标允许相对基线下降最多 1 个百分点，p95 延迟和成本允许上升最多 20%。没有基线时只能把完整且至少有一个通过用例的结果作为首个基线，不能用空报告或失败报告绕过门禁。profile 指纹变化时标记为不可比较，不能静默覆盖基线。
+
+CI 不访问真实 API Key，只运行离线数据校验、离线评测、后端/前端/桌面测试和构建。真实模型评测、Computer Use 桌面验收、安装包构建和发布必须按“评测通过后再打包”的顺序手动执行。
+
+GitHub Actions 的 `Release candidate RAG evaluation` 工作流只能手动触发。它从 secrets 读取当前 provider 配置，上传脱敏报告；`scripts/check_release_evaluation.py` 会核对报告对应的 Git commit、`topics.json` 指纹和门禁结果。未明确允许创建首个基线时，缺少 baseline 会直接失败。

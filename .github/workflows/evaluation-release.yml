@@ -1,0 +1,76 @@
+name: Release candidate RAG evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Evaluation suite name"
+        required: false
+        default: core
+      baseline:
+        description: "Repository-relative baseline report path (leave empty only when creating the first baseline)"
+        required: false
+        default: ""
+      allow_new_baseline:
+        description: "Allow a first baseline without comparison"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run release-candidate model evaluation
+        env:
+          AEGIS_LLM_PROVIDER: ${{ secrets.AEGIS_LLM_PROVIDER }}
+          AEGIS_LLM_MODEL: ${{ secrets.AEGIS_LLM_MODEL }}
+          AEGIS_LLM_BASE_URL: ${{ secrets.AEGIS_LLM_BASE_URL }}
+          AEGIS_LLM_API_KEY: ${{ secrets.AEGIS_LLM_API_KEY }}
+          AEGIS_STORAGE_DIR: ${{ runner.temp }}/commandfoundry-storage
+          AEGIS_EMBEDDING_ENABLED: "0"
+        run: |
+          args=(--suite "${{ inputs.suite }}" --mode model --provider current --output "$RUNNER_TEMP/evaluation-report.json" --redact)
+          if [ -n "${{ inputs.baseline }}" ]; then
+            args+=(--baseline "${{ inputs.baseline }}" --fail-on-gate)
+          elif [ "${{ inputs.allow_new_baseline }}" != "true" ]; then
+            echo "A baseline is required unless allow_new_baseline is explicitly selected."
+            exit 1
+          fi
+          python scripts/run_evaluation.py "${args[@]}"
+
+      - name: Verify release report identity and gate
+        run: |
+          args=("$RUNNER_TEMP/evaluation-report.json")
+          if [ -n "${{ inputs.baseline }}" ]; then
+            args+=(--baseline "${{ inputs.baseline }}" --require-baseline)
+          fi
+          python scripts/check_release_evaluation.py "${args[@]}"
+
+      - name: Upload redacted evaluation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: commandfoundry-rag-evaluation-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/evaluation-report.json
+            ${{ runner.temp }}/evaluation-summary.md
+            ${{ runner.temp }}/bad-cases.jsonl
+            ${{ runner.temp }}/run-manifest.json
+          if-no-files-found: error

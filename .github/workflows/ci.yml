@@ -39,6 +39,15 @@ jobs:
       - name: Run repository guard
         run: python scripts/check_placeholder_corruption.py
 
+      - name: Validate offline evaluation fixtures
+        run: python scripts/validate_evaluation_data.py
+
+      - name: Run v2.11 offline golden evaluation
+        run: python scripts/run_evaluation.py --suite core --mode offline --output "${{ runner.temp }}/commandfoundry-evaluation.json"
+
+      - name: Verify offline report identity and hard gates
+        run: python scripts/check_release_evaluation.py "${{ runner.temp }}/commandfoundry-evaluation.json"
+
       - name: Run backend tests
         working-directory: backend
         run: pytest -q
