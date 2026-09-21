@@ -62,3 +62,27 @@ test("shows the source of each uploaded document", () => {
   assert.match(source, /<span role="columnheader">来源<\/span>/);
   assert.match(source, /document\.source_kind === "upload" \? "本地上传"/);
 });
+
+
+test("renders deterministic cleaning quality without exposing document content", () => {
+  assert.match(source, /export function DocumentQualitySummary\(\{ document \}\)/);
+  assert.match(source, /document\?\.quality_report \|\| document\?\.quality/);
+  assert.match(source, /data-ui="document-quality"/);
+  assert.match(source, /data-quality-status=\{status \|\| "unknown"\}/);
+  assert.match(source, /cleaned_content_sha256/);
+  assert.match(source, /removed_headers_footers/);
+  assert.match(source, /removed_exact_duplicates/);
+  assert.match(source, /removed_near_duplicates/);
+  assert.match(source, /report\.warnings\.length/);
+  assert.match(source, /DocumentQualitySummary document=\{document\}/);
+  assert.doesNotMatch(source, /document\.raw_content/);
+  assert.doesNotMatch(source, /document\.original_content/);
+});
+
+
+test("keeps quality states backwards compatible when older document responses omit a report", () => {
+  assert.match(source, /if \(!hasReport\) return null/);
+  assert.match(source, /清洗通过/);
+  assert.match(source, /清洗有警告/);
+  assert.match(source, /清洗已拒绝/);
+});

@@ -433,6 +433,30 @@ class UserMemoryExtractionTaskStatusResponse(BaseModel):
 
 
 DocumentStatus = Literal["pending", "indexing", "ready", "failed"]
+DocumentQualityStatus = Literal["clean", "warning", "rejected"]
+
+
+class DocumentQualityReport(BaseModel):
+    """Deterministic, non-semantic cleaning facts for an uploaded document.
+
+    The report deliberately contains counts and stable diagnostic labels only.
+    It must never contain excerpts from the uploaded document, because the
+    document may include credentials or other private material.
+    """
+
+    cleaning_revision: str
+    status: DocumentQualityStatus
+    raw_chars: int = 0
+    clean_chars: int = 0
+    raw_blocks: int = 0
+    clean_blocks: int = 0
+    removed_blank_lines: int = 0
+    removed_headers_footers: int = 0
+    removed_exact_duplicates: int = 0
+    removed_near_duplicates: int = 0
+    suspicious_markers: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    cleaned_content_sha256: str = ""
 
 
 class KnowledgeBase(BaseModel):
@@ -476,6 +500,11 @@ class KnowledgeDocument(BaseModel):
     index_revision: str = ""
     rebuild_status: DocumentStatus = "pending"
     rebuild_error: str = ""
+    cleaning_status: DocumentQualityStatus | Literal["pending"] = "pending"
+    cleaning_revision: str = ""
+    quality_report: DocumentQualityReport | None = None
+    cleaning_warnings: list[str] = Field(default_factory=list)
+    cleaned_content_sha256: str = ""
     created_at: datetime
     updated_at: datetime
 

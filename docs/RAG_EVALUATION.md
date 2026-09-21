@@ -129,6 +129,14 @@ cd C:\Users\CZX\Documents\Codex\AegisCopilot-v2
 
 硬门禁包括无效引用、未解析占位符、凭证泄露、Prompt Injection/高风险命令安全、schema/执行错误、首个基线中的失败用例、Git/知识 revision 不匹配和模型伪造命令；质量指标允许相对基线下降最多 1 个百分点，p95 延迟和成本允许上升最多 20%。没有基线时只能把完整且至少有一个通过用例的结果作为首个基线，不能用空报告或失败报告绕过门禁。profile 指纹变化时标记为不可比较，不能静默覆盖基线。
 
+## v2.12 数据清洗专项
+
+v2.12 的清洗器是确定性的、无模型的 extraction → cleaning → parent/child chunking 中间阶段。专项回归位于 `backend/tests/test_v212_cleaning.py` 和 `backend/tests/test_knowledge_sync_quality.py`，验证 BOM/换行/控制字符、Markdown 围栏、PDF 重复页眉页脚、DOCX 结构、相邻重复与高置信度近重复、中文命令、质量报告和索引重启恢复。代码块、表格和命令缩进不会参与近重复删除；原始文件和原始哈希不进入清洗输出。
+
+内置知识同步由 `scripts/sync_knowledge.py` 统一规范化和校验，生成 `knowledge/quality_report.json`，并把 `cleaning_revision` 与质量报告哈希写入 `manifest.json`、`sources.lock.json` 和 `recipes.json`。重复 topic/source ID、空字段、无效来源、Shell/平台/语言不一致会阻断同步；同一命令在不同 topic 中不会被全局合并。
+
+数据清洗通过不等同于可发布：v2.12 仍需重新运行 v2.11 离线评测、当前 provider 真实模型评测、硬/容差门禁和桌面验收。OCR、扫描 PDF、HTML、XLSX、PPTX、图片和新的向量数据库均延期，不进入本版本评测范围。
+
 CI 不访问真实 API Key，只运行离线数据校验、离线评测、后端/前端/桌面测试和构建。真实模型评测、Computer Use 桌面验收、安装包构建和发布必须按“评测通过后再打包”的顺序手动执行。
 
 GitHub Actions 的 `Release candidate RAG evaluation` 工作流只能手动触发。它从 secrets 读取当前 provider 配置，上传脱敏报告；`scripts/check_release_evaluation.py` 会核对报告对应的 Git commit、`topics.json` 指纹和门禁结果。未明确允许创建首个基线时，缺少 baseline 会直接失败。

@@ -27,6 +27,10 @@ def test_required_showcase_queries_hit_correct_topic_first() -> None:
         assert retriever.retrieve(query, top_k=3)[0].topic.id == expected
 
 
+def test_nfkc_cleaning_keeps_fullwidth_query_aliases_retrievable() -> None:
+    assert retriever.retrieve("如何使用 kubectl？", top_k=3)[0].topic.id == "kubernetes.kubectl"
+
+
 def test_catalog_sources_are_traceable_to_manifest() -> None:
     source_ids = {item["source_id"] for item in catalog.manifest["sources"]}
     assert len(catalog.topics) == 300

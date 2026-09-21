@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sqlite3
@@ -18,6 +19,7 @@ from .models import (
     KnowledgeDocument,
     KnowledgeDocumentContent,
     KnowledgeDocumentDetail,
+    DocumentQualityReport,
     LOCAL_USER_PROFILE_ID,
     MemoryMessagePreview,
     MemorySummary,
@@ -25,10 +27,11 @@ from .models import (
     UserProfile,
     utc_now,
 )
+from .cleaning import CLEANING_REVISION
 
 
 BUILTIN_KNOWLEDGE_BASE_NAME = "开发者 IT 知识库"
-DATABASE_SCHEMA_VERSION = 6
+DATABASE_SCHEMA_VERSION = 7
 DOCUMENT_INDEX_SCHEMA_VERSION = 2
 GLOBAL_MEMORY_CATEGORIES = {"response_style", "expertise"}
 SCOPED_MEMORY_CATEGORIES = {"platform", "toolchain", "project_constraint"}
@@ -66,6 +69,8 @@ class ConversationRepository:
                 labels.append("v2.5")
             if version < 6:
                 labels.append("v2.10")
+            if version < 7:
+                labels.append("v2.12")
             for label in labels:
                 backup_path = self.database_path.with_name(
                     f"{self.database_path.name}.pre-{label}.backup"
@@ -258,6 +263,10 @@ class ConversationRepository:
                     index_revision TEXT NOT NULL DEFAULT '',
                     rebuild_status TEXT NOT NULL DEFAULT 'pending',
                     rebuild_error TEXT NOT NULL DEFAULT '',
+                    cleaning_status TEXT NOT NULL DEFAULT 'pending',
+                    cleaning_revision TEXT NOT NULL DEFAULT '',
+                    quality_json TEXT NOT NULL DEFAULT '{}',
+                    cleaned_content_sha256 TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     UNIQUE(knowledge_base_id, sha256)
@@ -340,6 +349,10 @@ class ConversationRepository:
                 "index_revision": "TEXT NOT NULL DEFAULT ''",
                 "rebuild_status": "TEXT NOT NULL DEFAULT 'pending'",
                 "rebuild_error": "TEXT NOT NULL DEFAULT ''",
+                "cleaning_status": "TEXT NOT NULL DEFAULT 'pending'",
+                "cleaning_revision": "TEXT NOT NULL DEFAULT ''",
+                "quality_json": "TEXT NOT NULL DEFAULT '{}'",
+                "cleaned_content_sha256": "TEXT NOT NULL DEFAULT ''",
             }
             for name, definition in document_additions.items():
                 if name not in document_columns:
@@ -386,9 +399,27 @@ class ConversationRepository:
                 (now,),
             )
             connection.execute(
-                "UPDATE knowledge_documents SET rebuild_status = 'pending', rebuild_error = '' "
+                "UPDATE knowledge_documents SET rebuild_status = 'pending', "
+                "rebuild_error = '', cleaning_status = 'pending' "
                 "WHERE index_schema_version < ?",
                 (DOCUMENT_INDEX_SCHEMA_VERSION,),
+            )
+            # v2.12 changes only the extracted/indexed representation.  Keep a
+            # ready old index searchable while the background worker rebuilds it
+            # with the current deterministic cleaning revision.
+            connection.execute(
+                "UPDATE knowledge_documents SET rebuild_status = 'pending', "
+                "rebuild_error = '', cleaning_status = 'pending' "
+                "WHERE cleaning_revision IS NULL OR cleaning_revision != ?",
+                (CLEANING_REVISION,),
+            )
+            connection.execute(
+                "UPDATE conversation_command_plans SET status = 'expired', next_slot = NULL, "
+                "state_version = state_version + 1, updated_at = ? "
+                "WHERE status = 'pending' AND knowledge_base_id IN ("
+                "SELECT DISTINCT knowledge_base_id FROM knowledge_documents "
+                "WHERE cleaning_revision IS NULL OR cleaning_revision != ?) ",
+                (now, CLEANING_REVISION),
             )
             connection.execute(
                 "UPDATE conversation_memory SET status = 'pending' WHERE status = 'summarizing'"
@@ -2134,6 +2165,11 @@ class ConversationRepository:
         """
 
     def _document_from_row(self, row: sqlite3.Row) -> KnowledgeDocument:
+        quality_payload = row["quality_json"] or "{}"
+        try:
+            quality = DocumentQualityReport.model_validate(json.loads(quality_payload))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            quality = None
         return KnowledgeDocument(
             id=row["id"],
             knowledge_base_id=row["knowledge_base_id"],
@@ -2151,6 +2187,11 @@ class ConversationRepository:
             index_revision=row["index_revision"] or "",
             rebuild_status=row["rebuild_status"] or row["status"],
             rebuild_error=row["rebuild_error"] or "",
+            cleaning_status=row["cleaning_status"] or "pending",
+            cleaning_revision=row["cleaning_revision"] or "",
+            quality_report=quality,
+            cleaning_warnings=list(quality.warnings) if quality is not None else [],
+            cleaned_content_sha256=row["cleaned_content_sha256"] or "",
             created_at=self._parse_time(row["created_at"]),
             updated_at=self._parse_time(row["updated_at"]),
         )
@@ -2273,7 +2314,8 @@ class ConversationRepository:
             status = "pending" if row["status"] != "ready" else "ready"
             connection.execute(
                 "UPDATE knowledge_documents SET status = ?, rebuild_status = 'pending', "
-                "rebuild_error = '', error = CASE WHEN ? = 'ready' THEN error ELSE '' END, updated_at = ? "
+                "rebuild_error = '', cleaning_status = 'pending', "
+                "error = CASE WHEN ? = 'ready' THEN error ELSE '' END, updated_at = ? "
                 "WHERE id = ?",
                 (status, status, now, document_id),
             )
@@ -2322,6 +2364,36 @@ class ConversationRepository:
                 ),
             )
 
+    def record_document_quality(
+        self,
+        document_id: str,
+        report: DocumentQualityReport,
+    ) -> None:
+        """Persist a cleaning result without replacing the active index.
+
+        Rejected content is recorded for the document detail UI while an
+        existing ready index remains available to search.  The original file
+        and raw SHA-256 are never touched.
+        """
+
+        now = utc_now().isoformat()
+        payload = json.dumps(report.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
+        with self._lock, self._connect() as connection:
+            cursor = connection.execute(
+                "UPDATE knowledge_documents SET cleaning_status = ?, cleaning_revision = ?, "
+                "quality_json = ?, cleaned_content_sha256 = ?, updated_at = ? WHERE id = ?",
+                (
+                    report.status,
+                    report.cleaning_revision,
+                    payload,
+                    report.cleaned_content_sha256,
+                    now,
+                    document_id,
+                ),
+            )
+            if cursor.rowcount == 0:
+                raise KeyError(document_id)
+
     def replace_document_index(
         self,
         *,
@@ -2331,6 +2403,7 @@ class ConversationRepository:
         index_revision: str,
         parents: list[dict],
         children: list[dict],
+        quality_report: DocumentQualityReport | dict | None = None,
     ) -> None:
         """Atomically replace a document's active parent/child index."""
         now = utc_now().isoformat()
@@ -2372,11 +2445,37 @@ class ConversationRepository:
                     for child in children
                 ],
             )
+            if quality_report is None:
+                quality = DocumentQualityReport(
+                    cleaning_revision=CLEANING_REVISION,
+                    status="clean",
+                    raw_chars=len(content),
+                    clean_chars=len(content),
+                    raw_blocks=len(parents),
+                    clean_blocks=len(parents),
+                    cleaned_content_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                )
+            elif isinstance(quality_report, DocumentQualityReport):
+                quality = quality_report
+            else:
+                quality = DocumentQualityReport.model_validate(quality_report)
+            quality_json = json.dumps(quality.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
             connection.execute(
                 "UPDATE knowledge_documents SET content = ?, status = 'ready', error = '', "
                 "index_schema_version = ?, index_revision = ?, rebuild_status = 'ready', rebuild_error = '', "
+                "cleaning_status = ?, cleaning_revision = ?, quality_json = ?, cleaned_content_sha256 = ?, "
                 "updated_at = ? WHERE id = ?",
-                (content, DOCUMENT_INDEX_SCHEMA_VERSION, index_revision, now, document_id),
+                (
+                    content,
+                    DOCUMENT_INDEX_SCHEMA_VERSION,
+                    index_revision,
+                    quality.status,
+                    quality.cleaning_revision,
+                    quality_json,
+                    quality.cleaned_content_sha256,
+                    now,
+                    document_id,
+                ),
             )
 
     def replace_chunks(

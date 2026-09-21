@@ -136,6 +136,21 @@ def test_upload_validation_and_failed_empty_document() -> None:
         assert empty.status_code == 400
 
 
+def test_extraction_rejection_exposes_quality_report_without_raw_content() -> None:
+    with TestClient(app) as client:
+        knowledge_base = client.post("/knowledge-bases", json={"name": "清洗拒绝验收"}).json()
+        response = client.post(
+            f"/knowledge-bases/{knowledge_base['id']}/documents",
+            files={"file": ("broken.pdf", b"not a PDF", "application/pdf")},
+        )
+        assert response.status_code == 202
+        document = _wait_for_document(client, response.json()["id"], expected="ready")
+        assert document["status"] == "failed"
+        assert document["cleaning_status"] == "rejected"
+        assert document["quality_report"]["suspicious_markers"] == ["extraction_failed"]
+        assert "not a PDF" not in str(document["quality_report"])
+
+
 def test_all_supported_document_formats_extract_index_and_preview() -> None:
     fixtures = [
         ("health.txt", b"PowerShell health check\n\nGet-Service -Name Spooler", "Get-Service"),
@@ -157,6 +172,9 @@ def test_all_supported_document_formats_extract_index_and_preview() -> None:
             assert response.status_code == 202
             document = _wait_for_document(client, response.json()["id"])
             assert document["status"] == "ready"
+            assert document["cleaning_status"] == "clean"
+            assert document["quality_report"]["cleaning_revision"] == "v2.12.0"
+            assert document["cleaned_content_sha256"]
             preview = client.get(f"/knowledge-documents/{document['id']}/content").json()
             assert marker in preview["content"]
 

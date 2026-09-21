@@ -409,7 +409,7 @@
   },
   {
     "id": "windows-043",
-    "query": "Windows 怎么查看端口占用？",
+    "query": "Windows 怎么查看端口占用?",
     "expected_topic_id": "windows.netstat",
     "expected_shells": [
       "cmd",
@@ -469,7 +469,7 @@
   },
   {
     "id": "windows-049",
-    "query": "PowerShell 版本怎么看？",
+    "query": "PowerShell 版本怎么看?",
     "expected_topic_id": "windows.powershell",
     "expected_shells": [
       "powershell"

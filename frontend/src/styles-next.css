@@ -764,6 +764,27 @@ code { color: var(--command-ink); font-family: var(--font-mono); font-size: 13px
 .document-row small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .document-row strong { color: var(--ink); font-size: 13px; font-weight: 610; }
 .document-row small { color: var(--danger); font-size: 11px; }
+.document-quality {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.35;
+}
+.document-quality > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.document-quality-status { padding: 2px 5px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper-muted); color: var(--ink-secondary); }
+.document-quality.quality-clean .document-quality-status { border-color: #bdd3c0; background: var(--success-soft); color: var(--success); }
+.document-quality.quality-warning .document-quality-status,
+.document-quality.quality-pending .document-quality-status { border-color: #d8cbb6; background: var(--warning-soft); color: var(--warning); }
+.document-quality.quality-rejected .document-quality-status,
+.document-quality.quality-failed .document-quality-status { border-color: #dfbcb4; background: var(--danger-soft); color: var(--danger); }
+.document-quality-warning { color: var(--warning); }
+.document-quality-revision,
+.document-quality-hash { color: var(--ink-on-tint); }
 .document-row > div:last-child { display: flex; justify-content: flex-end; gap: 4px; }
 .document-row > div:last-child button { width: 44px; padding: 0; }
 .document-row > div:last-child button:first-child { width: 52px; }

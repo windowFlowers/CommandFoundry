@@ -41,6 +41,81 @@ export function sourceLocatorParts(locator) {
   return parts;
 }
 
+const QUALITY_STATUS_LABELS = {
+  clean: "清洗通过",
+  warning: "清洗有警告",
+  rejected: "清洗已拒绝",
+  failed: "清洗失败",
+  pending: "待清洗",
+};
+
+function qualityReportFor(document) {
+  const report = document?.quality_report || document?.quality || {};
+  return {
+    ...report,
+    status: report.status || document?.cleaning_status || document?.quality_status || "",
+    cleaning_revision: report.cleaning_revision || document?.cleaning_revision || "",
+    cleaned_content_sha256: report.cleaned_content_sha256 || document?.cleaned_content_sha256 || "",
+    warnings: Array.isArray(report.warnings)
+      ? report.warnings
+      : Array.isArray(document?.cleaning_warnings) ? document.cleaning_warnings : [],
+  };
+}
+
+export function qualityStatusLabel(status) {
+  return QUALITY_STATUS_LABELS[status] || status || "未提供清洗报告";
+}
+
+function qualityCount(report, key) {
+  const value = Number(report?.[key]);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function formatQualityCount(value) {
+  return value == null ? null : new Intl.NumberFormat("zh-CN").format(value);
+}
+
+export function DocumentQualitySummary({ document }) {
+  const report = qualityReportFor(document);
+  const hasReport = Boolean(
+    document?.quality_report || document?.quality || document?.cleaning_status ||
+    document?.quality_status || document?.cleaning_revision || document?.cleaned_content_sha256,
+  );
+  if (!hasReport) return null;
+
+  const status = report.status || "";
+  const rawBlocks = qualityCount(report, "raw_blocks");
+  const cleanBlocks = qualityCount(report, "clean_blocks");
+  const rawChars = qualityCount(report, "raw_chars");
+  const cleanChars = qualityCount(report, "clean_chars");
+  const removed = [
+    ["空行", qualityCount(report, "removed_blank_lines")],
+    ["页眉页脚", qualityCount(report, "removed_headers_footers")],
+    ["重复块", qualityCount(report, "removed_exact_duplicates")],
+    ["近重复", qualityCount(report, "removed_near_duplicates")],
+  ].filter(([, value]) => value != null && value > 0);
+  const warningCount = report.warnings.length;
+  const summary = [
+    rawBlocks != null && cleanBlocks != null ? `${formatQualityCount(cleanBlocks)}/${formatQualityCount(rawBlocks)} 块` : null,
+    rawChars != null && cleanChars != null ? `${formatQualityCount(cleanChars)}/${formatQualityCount(rawChars)} 字符` : null,
+    removed.length ? `清理 ${formatQualityCount(removed.reduce((total, [, value]) => total + value, 0))} 项` : null,
+  ].filter(Boolean).join(" · ");
+  const shortHash = report.cleaned_content_sha256 ? report.cleaned_content_sha256.slice(0, 12) : "";
+
+  return <div
+    className={`document-quality quality-${status || "unknown"}`}
+    data-ui="document-quality"
+    data-quality-status={status || "unknown"}
+    aria-label={`清洗状态：${qualityStatusLabel(status)}${warningCount ? `，${warningCount} 项警告` : ""}`}
+  >
+    <span className="document-quality-status">{qualityStatusLabel(status)}</span>
+    {summary && <span className="document-quality-stats">{summary}</span>}
+    {report.cleaning_revision && <span className="document-quality-revision">规则 {report.cleaning_revision}</span>}
+    {shortHash && <span className="document-quality-hash" title="清洗内容校验哈希">SHA {shortHash}</span>}
+    {warningCount > 0 && <span className="document-quality-warning" title="清洗报告包含警告">⚠ {warningCount} 项警告</span>}
+  </div>;
+}
+
 function highlightedSlices(preview) {
   const content = preview?.content || "";
   const rawStart = preview?.highlight_start ?? preview?.locator?.char_start;
@@ -294,7 +369,7 @@ export function KnowledgeManager({ knowledgeBases, initialId, onRefresh, onBack,
           <div className="document-table-head" role="row"><span role="columnheader">文档</span><span role="columnheader">状态</span><span role="columnheader">来源</span><span role="columnheader">大小</span><span role="columnheader">更新时间</span><span role="columnheader">操作</span></div>
           {documents.length === 0 ? <div className="empty-documents" role="row"><span role="cell"><FileText size={24} />还没有上传文档</span></div> : documents.map((document, index) => (
             <div className="document-row" key={document.id} role="row" data-ui="document-row">
-              <div role="cell"><span className="document-number">{String(index + 1).padStart(2, "0")}</span><FileText size={17} /><span><strong>{document.filename}</strong>{document.error && <small>{document.error}</small>}</span></div>
+              <div role="cell"><span className="document-number">{String(index + 1).padStart(2, "0")}</span><FileText size={17} /><span><strong>{document.filename}</strong>{document.error && <small>{document.error}</small>}<DocumentQualitySummary document={document} /></span></div>
               <span className={`document-status ${document.rebuild_status || document.status}`} role="cell">{
                 document.rebuild_status === "indexing" && document.status === "ready" ? `重建中 · ${document.chunk_count} 子块` :
                 document.rebuild_status === "failed" && document.status === "ready" ? `旧索引可用 · 重建失败` :

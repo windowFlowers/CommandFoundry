@@ -173,7 +173,7 @@
   },
   {
     "id": "memory-017",
-    "previous_query": "Kubernetes 怎么查看容器日志？",
+    "previous_query": "Kubernetes 怎么查看容器日志?",
     "previous_command_labels": [
       "Show logs for a single-container pod",
       "Show logs for a specified container in a pod"
@@ -184,7 +184,7 @@
   },
   {
     "id": "memory-018",
-    "previous_query": "Kubernetes 怎么查看容器日志？",
+    "previous_query": "Kubernetes 怎么查看容器日志?",
     "previous_command_labels": [
       "Show logs for a single-container pod",
       "Show logs for a specified container in a pod"
@@ -195,7 +195,7 @@
   },
   {
     "id": "memory-019",
-    "previous_query": "如何使用 ssh？",
+    "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
       "Connect to a remote server",
       "Connect to a remote server with a specific [i]dentity (private key)"
@@ -206,7 +206,7 @@
   },
   {
     "id": "memory-020",
-    "previous_query": "如何使用 ssh？",
+    "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
       "Connect to a remote server",
       "Connect to a remote server with a specific [i]dentity (private key)"
@@ -217,7 +217,7 @@
   },
   {
     "id": "memory-021",
-    "previous_query": "Redis 怎么读取  字符串？",
+    "previous_query": "Redis 怎么读取  字符串?",
     "previous_command_labels": [
       "读取 Redis 字符串"
     ],
@@ -227,7 +227,7 @@
   },
   {
     "id": "memory-022",
-    "previous_query": "Redis 怎么读取  字符串？",
+    "previous_query": "Redis 怎么读取  字符串?",
     "previous_command_labels": [
       "读取 Redis 字符串"
     ],
@@ -237,7 +237,7 @@
   },
   {
     "id": "memory-023",
-    "previous_query": "如何使用 mvn？",
+    "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
       "Compile a project",
       "Compile and package the compiled code in its distributable format, such as a `jar`"
@@ -248,7 +248,7 @@
   },
   {
     "id": "memory-024",
-    "previous_query": "如何使用 mvn？",
+    "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
       "Compile a project",
       "Compile and package the compiled code in its distributable format, such as a `jar`"
@@ -259,7 +259,7 @@
   },
   {
     "id": "memory-025",
-    "previous_query": "如何使用 gh-workflow？",
+    "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
       "Interactively select a workflow to view the latest jobs for",
       "View a specific workflow in the default browser"
@@ -270,7 +270,7 @@
   },
   {
     "id": "memory-026",
-    "previous_query": "如何使用 gh-workflow？",
+    "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
       "Interactively select a workflow to view the latest jobs for",
       "View a specific workflow in the default browser"
@@ -281,7 +281,7 @@
   },
   {
     "id": "memory-027",
-    "previous_query": "如何使用 pytest？",
+    "previous_query": "如何使用 pytest?",
     "previous_command_labels": [
       "Run tests from specific files",
       "Run tests with names matching a specific [k]eyword expression"
@@ -292,7 +292,7 @@
   },
   {
     "id": "memory-028",
-    "previous_query": "如何使用 pytest？",
+    "previous_query": "如何使用 pytest?",
     "previous_command_labels": [
       "Run tests from specific files",
       "Run tests with names matching a specific [k]eyword expression"
@@ -411,7 +411,7 @@
   },
   {
     "id": "memory-039",
-    "previous_query": "Linux 怎么查看端口占用？",
+    "previous_query": "Linux 怎么查看端口占用?",
     "previous_command_labels": [
       "查看 TCP 监听端口和进程",
       "Show all TCP/UDP/RAW/UNIX sockets"
@@ -422,7 +422,7 @@
   },
   {
     "id": "memory-040",
-    "previous_query": "Linux 怎么查看端口占用？",
+    "previous_query": "Linux 怎么查看端口占用?",
     "previous_command_labels": [
       "查看 TCP 监听端口和进程",
       "Show all TCP/UDP/RAW/UNIX sockets"
@@ -542,56 +542,56 @@
       "Create a `package.json` file with default values (omit `--yes` to do it interactively)",
       "Download all the packages listed as dependencies in `package.json`"
     ],
-    "follow_up": "如何使用 kubectl-get？",
+    "follow_up": "如何使用 kubectl-get?",
     "expected_topic_id": "kubernetes.kubectl-get",
     "category": "new-topic"
   },
   {
     "id": "memory-052",
-    "previous_query": "如何使用 kubectl-get？",
+    "previous_query": "如何使用 kubectl-get?",
     "previous_command_labels": [
       "Get all namespaces in the current cluster",
       "Get nodes in a specified namespace"
     ],
-    "follow_up": "Redis 怎么读取  字符串？",
+    "follow_up": "Redis 怎么读取  字符串?",
     "expected_topic_id": "redis.string-get",
     "category": "new-topic"
   },
   {
     "id": "memory-053",
-    "previous_query": "Redis 怎么读取  字符串？",
+    "previous_query": "Redis 怎么读取  字符串?",
     "previous_command_labels": [
       "读取 Redis 字符串"
     ],
-    "follow_up": "如何使用 mvn？",
+    "follow_up": "如何使用 mvn?",
     "expected_topic_id": "java.mvn",
     "category": "new-topic"
   },
   {
     "id": "memory-054",
-    "previous_query": "如何使用 mvn？",
+    "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
       "Compile a project",
       "Compile and package the compiled code in its distributable format, such as a `jar`"
     ],
-    "follow_up": "如何使用 gh-workflow？",
+    "follow_up": "如何使用 gh-workflow?",
     "expected_topic_id": "cicd.gh-workflow",
     "category": "new-topic"
   },
   {
     "id": "memory-055",
-    "previous_query": "如何使用 gh-workflow？",
+    "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
       "Interactively select a workflow to view the latest jobs for",
       "View a specific workflow in the default browser"
     ],
-    "follow_up": "如何使用 pytest？",
+    "follow_up": "如何使用 pytest?",
     "expected_topic_id": "testing.pytest",
     "category": "new-topic"
   },
   {
     "id": "memory-056",
-    "previous_query": "如何使用 pytest？",
+    "previous_query": "如何使用 pytest?",
     "previous_command_labels": [
       "Run tests from specific files",
       "Run tests with names matching a specific [k]eyword expression"
@@ -607,18 +607,18 @@
       "PowerShell 列出文件和隐藏项",
       "CMD 列出文件和隐藏项"
     ],
-    "follow_up": "如何使用 ssh？",
+    "follow_up": "如何使用 ssh?",
     "expected_topic_id": "network.ssh",
     "category": "new-topic"
   },
   {
     "id": "memory-058",
-    "previous_query": "如何使用 ssh？",
+    "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
       "Connect to a remote server",
       "Connect to a remote server with a specific [i]dentity (private key)"
     ],
-    "follow_up": "如何使用 pwd？",
+    "follow_up": "如何使用 pwd?",
     "expected_topic_id": "linux.pwd",
     "category": "new-topic"
   },

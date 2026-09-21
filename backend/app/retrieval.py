@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from collections import Counter
 from pathlib import Path
 from threading import RLock
@@ -207,7 +208,9 @@ class HybridRetriever:
         if not query_tokens or not self.catalog.topics or self._bm25 is None:
             return []
         raw_bm25 = np.asarray(self._bm25.get_scores(query_tokens), dtype=np.float32)
-        normalized_query = re.sub(r"\s+", "", query.casefold())
+        normalized_query = re.sub(
+            r"\s+", "", unicodedata.normalize("NFKC", query).casefold()
+        )
         lexical_bonus = np.zeros(len(self.catalog.topics), dtype=np.float32)
         token_overlap = np.zeros(len(self.catalog.topics), dtype=np.float32)
         query_token_set = set(query_tokens)
@@ -221,7 +224,10 @@ class HybridRetriever:
             if overlap and small_corpus:
                 lexical_bonus[index] += 4.0 * overlap / max(1, len(query_token_set))
             names = [topic.title, *topic.aliases]
-            normalized_names = [re.sub(r"\s+", "", name.casefold()) for name in names]
+            normalized_names = [
+                re.sub(r"\s+", "", unicodedata.normalize("NFKC", name).casefold())
+                for name in names
+            ]
             if normalized_query in normalized_names:
                 lexical_bonus[index] = 25.0
             elif any(normalized_query and normalized_query in name for name in normalized_names):

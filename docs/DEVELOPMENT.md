@@ -36,6 +36,8 @@ v2.4 的数据库 schema 版本为 4。已有 `user_version=3` 的 v2.3 数据�
 
 v2.10 将数据库 schema 更新为 6：把 v2.5 长期记忆来源的 `local/deepseek/manual` 限制扩展为任意已配置 provider id。首次打开旧数据库时会在迁移前创建 `.pre-v2.10.backup`，已有对话、文档和记忆内容会原样保留。
 
+v2.12 将数据库 schema 更新为 7：上传文档增加独立的清洗状态、清洗 revision、脱敏质量报告和清洗正文哈希。迁移前会创建 `.pre-v2.12.backup`；原始文件、原始 SHA-256 和旧 active parent/child index 保留，后台清洗重建成功后才原子替换。TXT、Markdown、文本型 PDF 和 DOCX 之外的扩展名仍然拒绝，本版本不做 OCR、HTML、XLSX、PPTX 或图片解析。
+
 ## 重新生成知识
 
 `scripts/sync_knowledge.py` 固定使用 tldr 提交 `d7f4fcb00a22fa5e5a595323705df61e1ecff707`，生成主题、manifest、评测集和声明：
@@ -61,6 +63,8 @@ npm test
 ```
 
 测试覆盖单轮/多轮检索评测、父子块检索、四格式精确定位、上下文预算与隔离、摘要恢复和并发、长期记忆信号门与 60 条评测、知识库作用域、冲突替代、敏感数据拒绝、后台提取竞态与状态脱敏、任务/索引重启恢复、来源追溯、模型引用校验、无有效引用段的本地回退、上传命令证据、原子重建回滚、模型失败回退、危险命令、SSE、会话 CRUD、密钥密文、preload 边界、进程路径和自定义协议。
+
+数据质量专项测试位于 `backend/tests/test_v212_cleaning.py` 和 `backend/tests/test_knowledge_sync_quality.py`，覆盖清洗规则、代码/表格保护、PDF 页眉页脚、质量 API 字段、知识同步校验、清洗 revision 和迁移恢复。发布候选必须按“数据质量专项 → v2.11 离线 → 当前 provider 真实模型 → 风险门禁 → 桌面验收 → 安装包”的顺序执行；源码开发阶段不生成中间安装包。
 
 2026-09-16 的本地回归结果为：Backend 108 passed、Frontend 29 passed、Desktop 16 passed，Vite 生产构建通过；隔离服务下的四格式上传、预览、重复拒绝和重建验收通过。测试数会随用例变化，发布时应以同一提交上重新运行的结果为准。
 

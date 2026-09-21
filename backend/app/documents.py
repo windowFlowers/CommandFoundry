@@ -10,8 +10,9 @@ from uuid import uuid4
 import numpy as np
 
 from .extraction import ExtractionError, ExtractionService
+from .cleaning import CLEANING_REVISION, clean_extracted_document
 from .chunking import INDEX_SCHEMA_VERSION, chunk_document
-from .models import KnowledgeDocument
+from .models import DocumentQualityReport, KnowledgeDocument
 from .repository import ConversationRepository
 from .retrieval import EmbeddingEngine, KnowledgeIndexManager, tokenize
 
@@ -151,8 +152,32 @@ class DocumentIndexService:
         try:
             self.repository.mark_document_rebuilding(document_id)
             content = Path(stored_path).read_bytes()
-            extracted = self.extractor.extract(document.filename, content)
-            chunked = chunk_document(extracted, document.sha256)
+            try:
+                extracted = self.extractor.extract(document.filename, content)
+            except ExtractionError:
+                # Extraction failures (empty/scanned/corrupt documents) still
+                # receive a non-sensitive quality report.  This makes the
+                # rejection visible in the document UI while preserving an
+                # already-ready index during a failed rebuild.
+                self.repository.record_document_quality(
+                    document_id,
+                    DocumentQualityReport(
+                        cleaning_revision=CLEANING_REVISION,
+                        status="rejected",
+                        raw_chars=len(content),
+                        clean_chars=0,
+                        raw_blocks=0,
+                        clean_blocks=0,
+                        suspicious_markers=["extraction_failed"],
+                        warnings=["文档提取阶段没有产生可索引的文本"],
+                    ),
+                )
+                raise
+            cleaned = clean_extracted_document(extracted, raw_bytes=content)
+            if cleaned.report.status == "rejected":
+                self.repository.record_document_quality(document_id, cleaned.report)
+                raise ExtractionError(cleaned.report.warnings[0] if cleaned.report.warnings else "文档内容无法可靠清洗")
+            chunked = chunk_document(cleaned.document, document.sha256)
             if not chunked.children:
                 raise ExtractionError("文档没有可索引的文本")
             retrieval_texts = [child.retrieval_text for child in chunked.children]
@@ -193,16 +218,23 @@ class DocumentIndexService:
                     }
                 )
             revision_payload = "\x00".join(
-                [str(INDEX_SCHEMA_VERSION), document.sha256, *(item["stable_id"] for item in child_rows)]
+                [
+                    str(INDEX_SCHEMA_VERSION),
+                    CLEANING_REVISION,
+                    document.sha256,
+                    cleaned.report.cleaned_content_sha256,
+                    *(item["stable_id"] for item in child_rows),
+                ]
             )
             index_revision = hashlib.sha256(revision_payload.encode("utf-8")).hexdigest()
             self.repository.replace_document_index(
                 document_id=document_id,
                 knowledge_base_id=document.knowledge_base_id,
-                content=extracted.content,
+                content=cleaned.document.content,
                 index_revision=index_revision,
                 parents=parent_rows,
                 children=child_rows,
+                quality_report=cleaned.report,
             )
             self.indexes.invalidate(document.knowledge_base_id)
         except Exception as exc:

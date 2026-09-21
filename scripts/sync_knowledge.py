@@ -6,6 +6,8 @@ import json
 import re
 import shutil
 import subprocess
+import unicodedata
+from collections import Counter
 from pathlib import Path
 
 
@@ -16,6 +18,16 @@ TLDR_REVISION = "d7f4fcb00a22fa5e5a595323705df61e1ecff707"
 TLDR_LICENSE = "CC BY 4.0"
 KNOWLEDGE_VERSION = "2.7.0"
 WINDOWS_KNOWLEDGE_REVISION = "v2.7.0"
+# The built-in bundle has a separate, deterministic cleaning revision.  It is
+# intentionally independent from the topic/source revisions: changing the
+# shape of the generated JSON must not make us claim that the upstream source
+# changed.
+CLEANING_REVISION = "v2.12.0"
+CLEANING_REPORT_SCHEMA_VERSION = 1
+ALLOWED_COMMAND_LANGUAGES = {"bash", "sql", "powershell", "text"}
+ALLOWED_COMMAND_SHELLS = {"bash", "posix", "powershell", "cmd", "sql", "text"}
+ALLOWED_RISKS = {"low", "medium", "high"}
+PLACEHOLDER_RE = re.compile(r"(?<!<)<([^<>\r\n]+)>(?!>)")
 
 
 def item(domain: str, page: str, title: str, aliases: list[str], path: str | None = None) -> dict[str, object]:
@@ -796,6 +808,257 @@ def normalize_placeholders(command: str) -> str:
     command = re.sub(r"\{\{\[-[^|]+\|(--[^\]]+)\]\}\}", r"\1", command)
     command = re.sub(r"\{\{([^{}]+)\}\}", lambda match: f"<{match.group(1)}>", command)
     return command
+
+
+def _normalize_text(value: object, *, code: bool = False) -> str:
+    """Normalize generated text without changing command semantics."""
+
+    text = unicodedata.normalize("NFC" if code else "NFKC", str(value))
+    text = text.replace("\r\n", "\n").replace("\r", "\n").replace("\ufeff", "")
+    text = "".join(
+        character
+        for character in text
+        if character in {"\n", "\t"}
+        or not unicodedata.category(character).startswith("C")
+    )
+    lines = [line.rstrip() for line in text.split("\n")]
+    if code:
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        while lines and not lines[-1].strip():
+            lines.pop()
+        return "\n".join(lines)
+    lines = [line.strip() if line.strip() else "" for line in lines]
+    compact: list[str] = []
+    blank_run = 0
+    for line in lines:
+        if not line:
+            blank_run += 1
+            if blank_run <= 2:
+                compact.append("")
+        else:
+            blank_run = 0
+            compact.append(line)
+    while compact and not compact[0]:
+        compact.pop(0)
+    while compact and not compact[-1]:
+        compact.pop()
+    return "\n".join(compact)
+
+
+def _normalize_placeholder_tokens(command: str) -> str:
+    """Normalize existing placeholders; never infer slots from angle brackets."""
+
+    command = normalize_placeholders(command)
+
+    def replace(match: re.Match[str]) -> str:
+        # Keep spaces and punctuation inside a source example intact.  They
+        # may be meaningful shell/SQL syntax; only surrounding whitespace is
+        # formatting noise.
+        name = match.group(1).strip()
+        return f"<{name}>" if name else match.group(0)
+
+    return PLACEHOLDER_RE.sub(replace, command)
+
+
+def _deduplicate_strings(values: object, *, field: str, topic_id: str) -> tuple[list[str], int]:
+    if not isinstance(values, list):
+        raise ValueError(f"{topic_id}: {field} must be a list")
+    result: list[str] = []
+    seen: set[str] = set()
+    removed = 0
+    for value in values:
+        if not isinstance(value, str):
+            raise ValueError(f"{topic_id}: {field} contains a non-string value")
+        normalized = _normalize_text(value)
+        if not normalized:
+            removed += 1
+            continue
+        key = normalized.casefold()
+        if key in seen:
+            removed += 1
+            continue
+        seen.add(key)
+        result.append(normalized)
+    return result, removed
+
+
+def _placeholder_syntax_is_valid(command: str) -> bool:
+    """Reject only an unambiguously empty slot.
+
+    tldr examples legitimately use angle brackets for jq/Go-template syntax,
+    comparison operators, and shell redirects.  A balance check therefore
+    corrupts valid source commands (for example ``<+|->``).  Runtime recipe
+    validation remains responsible for deciding whether a command contains a
+    renderable slot; the sync step only blocks the clearly malformed ``<>``.
+    """
+
+    return "<>" not in command
+
+
+def clean_topic_payload(topic: dict[str, object]) -> tuple[dict[str, object], dict[str, int]]:
+    """Clean and validate one topic before it enters the bundled catalogue.
+
+    This operates on structured, source-backed data and never invents
+    summaries, commands, citations, or provenance. Invalid records fail sync.
+    """
+
+    cleaned = json.loads(json.dumps(topic, ensure_ascii=False))
+    topic_id = str(cleaned.get("id", "")).strip()
+    domain = _normalize_text(cleaned.get("domain", ""))
+    if not topic_id or not domain:
+        raise ValueError("topic must have non-empty id and domain")
+    cleaned["id"] = topic_id
+    cleaned["domain"] = domain
+    for field in ("title", "summary"):
+        value = _normalize_text(cleaned.get(field, ""))
+        if not value:
+            raise ValueError(f"{topic_id}: {field} must not be empty")
+        cleaned[field] = value
+    aliases, removed_aliases = _deduplicate_strings(cleaned.get("aliases", []), field="aliases", topic_id=topic_id)
+    if not aliases:
+        raise ValueError(f"{topic_id}: aliases must contain at least one value")
+    cleaned["aliases"] = aliases
+    notes, removed_notes = _deduplicate_strings(cleaned.get("notes", []), field="notes", topic_id=topic_id)
+    cleaned["notes"] = notes
+
+    commands = cleaned.get("commands")
+    if not isinstance(commands, list) or not commands:
+        raise ValueError(f"{topic_id}: commands must be a non-empty list")
+    normalized_commands: list[dict[str, object]] = []
+    seen_commands: set[tuple[str, str, str, tuple[str, ...]]] = set()
+    removed_commands = 0
+    for command in commands:
+        if not isinstance(command, dict):
+            raise ValueError(f"{topic_id}: command must be an object")
+        normalized = dict(command)
+        label = _normalize_text(normalized.get("label", ""))
+        code = _normalize_placeholder_tokens(_normalize_text(normalized.get("code", ""), code=True))
+        language = _normalize_text(normalized.get("language", "bash")).lower()
+        shell_value = normalized.get("shell")
+        shell = _normalize_text(shell_value).lower() if shell_value is not None else ""
+        if not label or not code:
+            raise ValueError(f"{topic_id}: command label/code must not be empty")
+        if language not in ALLOWED_COMMAND_LANGUAGES:
+            raise ValueError(f"{topic_id}: unsupported command language {language!r}")
+        if shell and shell not in ALLOWED_COMMAND_SHELLS:
+            raise ValueError(f"{topic_id}: unsupported command shell {shell!r}")
+        if shell == "powershell" and language not in {"powershell", "text"}:
+            raise ValueError(f"{topic_id}: PowerShell command has incompatible language {language!r}")
+        if shell == "cmd" and language not in {"powershell", "text"}:
+            raise ValueError(f"{topic_id}: CMD command has incompatible language {language!r}")
+        if shell in {"bash", "posix"} and language not in {"bash", "text"}:
+            raise ValueError(f"{topic_id}: POSIX command has incompatible language {language!r}")
+        if not _placeholder_syntax_is_valid(code):
+            raise ValueError(f"{topic_id}: malformed placeholder or redirection in command: {code}")
+        platform_values, _ = _deduplicate_strings(normalized.get("platforms", []), field="platforms", topic_id=topic_id)
+        prerequisite_values, _ = _deduplicate_strings(normalized.get("prerequisites", []), field="prerequisites", topic_id=topic_id)
+        platform_text = " ".join(platform_values).casefold()
+        if shell in {"powershell", "cmd"} and "windows" not in platform_text:
+            raise ValueError(f"{topic_id}: {shell} command must declare a Windows platform")
+        if shell in {"bash", "posix"} and "windows" in platform_text and domain == "windows":
+            raise ValueError(f"{topic_id}: POSIX shell is incompatible with a Windows-only topic")
+        risk = _normalize_text(normalized.get("risk", "low")).lower()
+        if risk not in ALLOWED_RISKS:
+            raise ValueError(f"{topic_id}: unsupported command risk {risk!r}")
+        warning_value = normalized.get("warning")
+        warning = _normalize_text(warning_value) if warning_value is not None else None
+        normalized.update(
+            {
+                "label": label,
+                "language": language,
+                "code": code,
+                "platforms": platform_values,
+                "prerequisites": prerequisite_values,
+                "risk": risk,
+                "warning": warning or None,
+            }
+        )
+        if shell:
+            normalized["shell"] = shell
+        # Trailing/outer whitespace is formatting noise for de-duplication,
+        # but the stored code still keeps meaningful indentation/newlines.
+        key = (code.strip(), language, shell, tuple(platform_values))
+        if key in seen_commands:
+            removed_commands += 1
+            continue
+        seen_commands.add(key)
+        normalized_commands.append(normalized)
+    if not normalized_commands:
+        raise ValueError(f"{topic_id}: all commands were empty or duplicates")
+    if domain == "windows" and any(not command.get("shell") for command in normalized_commands):
+        raise ValueError(f"{topic_id}: Windows commands must declare an explicit shell")
+    cleaned["commands"] = normalized_commands
+
+    source = cleaned.get("source")
+    if not isinstance(source, dict):
+        raise ValueError(f"{topic_id}: source metadata is required")
+    source = dict(source)
+    required_source_fields = ("source_id", "title", "revision", "path", "sha256", "kind", "license", "source_url")
+    for field in required_source_fields:
+        if field not in source or not str(source[field]).strip():
+            raise ValueError(f"{topic_id}: source.{field} must not be empty")
+    source["source_id"] = str(source["source_id"]).strip()
+    source["title"] = _normalize_text(source["title"])
+    source["revision"] = _normalize_text(source["revision"])
+    source["path"] = _normalize_text(source["path"])
+    source["license"] = _normalize_text(source["license"])
+    source["source_url"] = str(source["source_url"]).strip()
+    source["sha256"] = str(source["sha256"]).strip().lower()
+    if not source["source_url"].startswith(("https://", "http://")):
+        raise ValueError(f"{topic_id}: source URL must use http(s)")
+    if not re.fullmatch(r"[0-9a-f]{64}", source["sha256"]):
+        raise ValueError(f"{topic_id}: source sha256 must be a 64-character hex digest")
+    source["cleaning_revision"] = CLEANING_REVISION
+    cleaned["source"] = source
+    return cleaned, {
+        "removed_aliases": removed_aliases,
+        "removed_notes": removed_notes,
+        "removed_commands": removed_commands,
+    }
+
+
+def clean_and_validate_topics(topics: list[dict[str, object]]) -> tuple[list[dict[str, object]], dict[str, object]]:
+    """Clean all topics and reject duplicate IDs/sources before writing files."""
+
+    cleaned_topics: list[dict[str, object]] = []
+    topic_ids: set[str] = set()
+    source_ids: set[str] = set()
+    totals = Counter()
+    warnings: list[str] = []
+    for topic in topics:
+        cleaned, stats = clean_topic_payload(topic)
+        topic_id = str(cleaned["id"])
+        source_id = str(cleaned["source"]["source_id"])
+        if topic_id in topic_ids:
+            raise ValueError(f"duplicate topic id: {topic_id}")
+        if source_id in source_ids:
+            raise ValueError(f"duplicate source id: {source_id}")
+        topic_ids.add(topic_id)
+        source_ids.add(source_id)
+        totals.update(stats)
+        cleaned_topics.append(cleaned)
+    cleaned_topics.sort(key=lambda entry: str(entry["id"]))
+    quality = {
+        "schema_version": CLEANING_REPORT_SCHEMA_VERSION,
+        "cleaning_revision": CLEANING_REVISION,
+        "status": "clean" if not warnings else "warning",
+        "topic_count": len(cleaned_topics),
+        "source_count": len(source_ids),
+        "alias_count": sum(len(topic["aliases"]) for topic in cleaned_topics),
+        "command_count": sum(len(topic["commands"]) for topic in cleaned_topics),
+        "removed_aliases": int(totals["removed_aliases"]),
+        "removed_notes": int(totals["removed_notes"]),
+        "removed_commands": int(totals["removed_commands"]),
+        "warnings": warnings,
+        "rules": {
+            "unicode": "NFKC for prose, NFC for commands",
+            "line_endings": "LF",
+            "placeholder_policy": "normalize existing placeholders only",
+            "cross_topic_deduplication": False,
+        },
+    }
+    return cleaned_topics, quality
 
 
 def risk_for(command: str) -> tuple[str, str | None]:
@@ -1586,6 +1849,7 @@ def build_recipe_catalog(topics: list[dict[str, object]]) -> tuple[list[dict[str
                 canonical_record = json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
                 record["sha256"] = hashlib.sha256(canonical_record.encode("utf-8")).hexdigest()
         payload["provenance"] = provenance
+        payload["cleaning_revision"] = CLEANING_REVISION
         recipe_without_revision = dict(payload)
         recipe_without_revision.pop("source_revision", None)
         canonical_recipe = json.dumps(
@@ -1643,8 +1907,15 @@ def ensure_source(source_root: Path) -> Path:
 
 def write_outputs(topics: list[dict[str, object]]) -> None:
     KNOWLEDGE_DIR.mkdir(parents=True, exist_ok=True)
-    topics.sort(key=lambda entry: str(entry["id"]))
+    topics, quality_report = clean_and_validate_topics(topics)
     recipes, recipe_revision = build_recipe_catalog(topics)
+    quality_bundle = json.dumps(quality_report, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    quality_report_sha256 = hashlib.sha256(quality_bundle.encode("utf-8")).hexdigest()
+    quality_report["report_sha256"] = quality_report_sha256
+    (KNOWLEDGE_DIR / "quality_report.json").write_text(
+        json.dumps(quality_report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     (KNOWLEDGE_DIR / "topics.json").write_text(
         json.dumps(topics, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -1656,6 +1927,8 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
                 "generated_for": f"CommandFoundry {KNOWLEDGE_VERSION}",
                 "recipe_count": len(recipes),
                 "recipe_revision": recipe_revision,
+                "cleaning_revision": CLEANING_REVISION,
+                "quality_report_sha256": quality_report_sha256,
                 "recipes": recipes,
             },
             ensure_ascii=False,
@@ -1666,7 +1939,9 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
     )
     domains = sorted({str(topic["domain"]) for topic in topics})
     manifest = {
-        "schema_version": 3,
+        "schema_version": 4,
+        "cleaning_revision": CLEANING_REVISION,
+        "quality_report_sha256": quality_report_sha256,
         "topic_count": len(topics),
         "recipe_count": len(recipes),
         "recipe_schema_version": 1,
@@ -1681,6 +1956,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
                 "recipe_id": recipe["recipe_id"],
                 "topic_id": recipe["topic_id"],
                 "source_revision": recipe["source_revision"],
+                "cleaning_revision": CLEANING_REVISION,
                 "provenance": recipe["provenance"],
             }
             for recipe in recipes
@@ -1693,6 +1969,8 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
     source_lock = {
         "schema_version": 1,
         "generated_for": f"CommandFoundry {KNOWLEDGE_VERSION}",
+        "cleaning_revision": CLEANING_REVISION,
+        "quality_report_sha256": quality_report_sha256,
         "recipe_schema_version": 1,
         "recipe_revision": recipe_revision,
         "repositories": [
@@ -1707,6 +1985,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
                 "source_url": topic["source"]["source_url"],
                 "license": topic["source"]["license"],
                 "sha256": topic["source"]["sha256"],
+                "cleaning_revision": CLEANING_REVISION,
             }
             for topic in topics
         ],
@@ -1715,6 +1994,7 @@ def write_outputs(topics: list[dict[str, object]]) -> None:
                 "recipe_id": recipe["recipe_id"],
                 "topic_id": recipe["topic_id"],
                 "source_revision": recipe["source_revision"],
+                "cleaning_revision": CLEANING_REVISION,
                 "provenance": recipe["provenance"],
             }
             for recipe in recipes
