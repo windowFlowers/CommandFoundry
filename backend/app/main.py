@@ -12,7 +12,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from .answering import AnswerService
-from .command_planner import CommandPlanner, contains_sensitive_input, redact_sensitive_input
+from .command_planner import (
+    CommandPlanner,
+    contains_sensitive_input,
+    redact_sensitive_input,
+    refusal_reason_for,
+)
 from .config import settings
 from .documents import MAX_UPLOAD_BYTES, DocumentIndexService
 from .extraction import ExtractionError
@@ -475,7 +480,8 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
             knowledge_base_id=requested_base_id,
         )
         credential_reply = command_planner.pending_slot_is_sensitive(pending_plan)
-        sensitive_input = credential_reply or contains_sensitive_input(request.query)
+        refusal_reason = refusal_reason_for(request.query)
+        sensitive_input = credential_reply or contains_sensitive_input(request.query) or bool(refusal_reason)
         safe_query = redact_sensitive_input(request.query, whole=credential_reply)
         memory = memory_service.build_context(current, safe_query)
         personalization = personalization_service.build_context(
@@ -537,7 +543,17 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                 context=memory.info,
                 personalization=personalization.info,
             )
-            if planned_answer is not None:
+            if refusal_reason:
+                # Refusal is deterministic and citation-free.  Do not let a
+                # retrieved document or a model response reinterpret a
+                # credential request or prompt-injection attempt.
+                repository.cancel_command_plan(current.id)
+                answer = answer_service.refusal(
+                    refusal_reason,
+                    context=memory.info,
+                    personalization=personalization.info,
+                )
+            elif planned_answer is not None:
                 answer = planned_answer
             elif command_planner.is_template_request(request.query):
                 # An explicit request for a template is always deterministic;

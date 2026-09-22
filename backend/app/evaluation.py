@@ -910,6 +910,14 @@ def validate_answer(
             default=-1,
         )
         risk_correct = actual_risk == risk_order[case.risk_level]
+    # A clarification deliberately contains no executable command.  Shell,
+    # platform and risk labels therefore are not applicable until the user
+    # supplies the missing slot; do not turn an otherwise correct question
+    # into a failed answer merely because its command list is empty.
+    if expected_kind == "clarification":
+        shell_correct = None
+        platform_correct = None
+        risk_correct = None
     if any(value is False for value in (shell_correct, platform_correct, risk_correct)):
         command_correct = False
 

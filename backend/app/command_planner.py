@@ -129,6 +129,16 @@ _SENSITIVE_SLOT = re.compile(
     r"令牌|密钥|私钥|口令|密码|凭证)",
     re.IGNORECASE,
 )
+_CREDENTIAL_REQUEST = re.compile(
+    r"(?i)(?:提供|给我|告诉我|显示|获取|请求|provide|give\s+me|show|reveal|retrieve).{0,32}"
+    r"(?:凭据|密码|口令|密钥|令牌|token|password|secret|private[_ -]?key|credential|api[_ -]?key)"
+)
+_PROMPT_INJECTION_REQUEST = re.compile(
+    r"(?i)(?:忽略|无视|绕过|ignore|disregard|override).{0,64}(?:之前|先前|系统|开发者|提示|instruction|previous|system|developer)"
+    r"|(?:系统提示词|系统提示|system\s+prompt|developer\s+message|显示提示词|披露提示词)"
+    r"|(?:\brm\b|\bdel(?:ete)?\b|remove-item|rmdir)\s+(?:-[^\s]+\s+)*(?:/|\\|\*|所有|全部|all)"
+    r"|(?:删除|移除).{0,16}(?:所有|全部)文件"
+)
 
 
 def _clean_scalar(value: str) -> str:
@@ -144,6 +154,24 @@ def contains_sensitive_input(text: str) -> bool:
 
     value = str(text or "")
     return any(pattern.search(value) for pattern in _SENSITIVE_INPUT_PATTERNS)
+
+
+def refusal_reason_for(text: str) -> Literal["credential_request", "prompt_injection"] | None:
+    """Classify only high-signal requests that must never reach the model.
+
+    This is intentionally narrower than credential *input* detection. A
+    normal question about connecting to MySQL is answerable; asking the
+    assistant to provide credentials or to disclose/override its instructions
+    is not. The refusal is deterministic and cannot be overridden by
+    retrieved text or model output.
+    """
+
+    value = str(text or "")
+    if _CREDENTIAL_REQUEST.search(value):
+        return "credential_request"
+    if _PROMPT_INJECTION_REQUEST.search(value):
+        return "prompt_injection"
+    return None
 
 
 def redact_sensitive_input(text: str, *, whole: bool = False) -> str:

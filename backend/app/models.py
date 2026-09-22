@@ -239,6 +239,9 @@ class Answer(BaseModel):
     summary_segments: list[AnswerSegment] = Field(default_factory=list)
     clarification: ClarificationInfo | None = None
     command_plan: CommandPlanInfo | None = None
+    # Structured refusal signal for safety-sensitive or unanswerable turns.
+    # Older persisted answers simply deserialize this as ``None``.
+    refusal_reason: str | None = None
 
 
 class ChatRequest(BaseModel):

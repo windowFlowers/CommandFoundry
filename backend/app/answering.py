@@ -237,6 +237,96 @@ class AnswerService:
     def __init__(self, generator: DeepSeekGenerator) -> None:
         self.generator = generator
 
+    def refusal(
+        self,
+        reason: str,
+        *,
+        context: ContextInfo | None = None,
+        personalization: PersonalizationInfo | None = None,
+    ) -> Answer:
+        """Build a citation-free, deterministic refusal for unsafe requests."""
+
+        if reason == "credential_request":
+            summary = "无法回答或提供凭据；请通过受控的密钥管理流程获取授权。"
+        else:
+            summary = "我无法回答该请求，也不会披露内部规则或给出不受限的删除命令。"
+        return Answer(
+            mode="local_fallback",
+            answer_kind="template",
+            summary=summary,
+            commands=[],
+            notes=["未调用云端模型，敏感请求不会发送给模型。"],
+            citations=[],
+            generation=GenerationInfo(provider="local", fallback_reason="ungrounded"),
+            context=context or ContextInfo(),
+            personalization=personalization or PersonalizationInfo(),
+            summary_segments=[],
+            refusal_reason=reason,
+        )
+
+    @staticmethod
+    def _model_shape(
+        query: str,
+        commands: list[CommandBlock],
+    ) -> tuple[str, list[CommandBlock], object | None, str | None]:
+        """Apply deterministic answer-kind and destructive-action checks.
+
+        The model contract intentionally contains no authority to choose a
+        command plan. It may explain retrieved evidence, but the UI still
+        needs a reliable ``direct``/``template``/``clarification`` branch.
+        Empty-target destructive requests are converted to one clarification
+        and their model-generated commands are discarded.
+        """
+
+        from .command_planner import extract_path
+        from .models import ClarificationInfo
+
+        destructive = bool(
+            re.search(
+                r"(?i)(?:\brm\b|\bdel(?:ete)?\b|remove[- ]item|\brmdir\b|\bkill\b|stop[- ]process|删除|移除|停止|结束)",
+                str(query or ""),
+            )
+        )
+        if destructive and extract_path(query) is None:
+            clarification = ClarificationInfo(
+                plan_id="model-clarification",
+                slot="path",
+                question="请提供要操作的确切路径，并确认删除或停止的范围。",
+                input_type="path",
+                attempt=1,
+                max_attempts=1,
+                total_slots=1,
+            )
+            return "clarification", [], clarification, clarification.question
+        if commands and not any(has_unresolved_placeholders(item.code) for item in commands):
+            return "direct", commands, None, None
+        return "template", commands, None, None
+
+    @staticmethod
+    def _template_primary(query: str, hits: list[RetrievalHit]) -> RetrievalHit | None:
+        """Prefer an explicit tool/topic mention over a noisy top hit."""
+
+        lowered = str(query or "").casefold()
+        hints = (
+            ("docker", "docker.docker-run"),
+            ("curl", "http.curl"),
+            ("python", "python.venv"),
+            ("virtualenv", "python.venv"),
+            ("git", "git.git-revert"),
+            ("mysql", "sql.mysql-connect"),
+            ("redis", "redis.string-set"),
+        )
+        for marker, topic_id in hints:
+            if marker not in lowered:
+                continue
+            match = next(
+                (hit for hit in hits if hit.topic.id == topic_id or hit.topic.id.startswith(f"{topic_id}.")),
+                None,
+            )
+            if match is not None:
+                return match
+        return hits[0] if hits else None
+
     def local_fallback(
         self,
         hits: list[RetrievalHit],
@@ -279,7 +369,20 @@ class AnswerService:
                 context=context or ContextInfo(),
                 personalization=personalization or PersonalizationInfo(),
             )
-        primary = hits[0].topic
+        primary_hit = self._template_primary(query, hits) if single_template else (hits[0] if hits else None)
+        if primary_hit is None:
+            return Answer(
+                mode="local_fallback",
+                answer_kind="template",
+                summary="内置知识库暂时没有找到足够相关的命令。",
+                commands=[],
+                notes=["请补充技术栈、目标动作或报错信息后重试。"],
+                citations=[],
+                generation=generation,
+                context=context or ContextInfo(),
+                personalization=personalization or PersonalizationInfo(),
+            )
+        primary = primary_hit.topic
         candidate_commands = primary.commands[:4]
         # A generic template answer should remain useful but unambiguous.  If
         # the selected evidence contains parameters, expose one representative
@@ -309,8 +412,36 @@ class AnswerService:
                 summary = primary.summary[:600 if detail == "detailed" else 240]
             if detail == "detailed" and commands and primary.summary:
                 summary = f"{summary} 相关本地证据：{primary.summary[:600]}"
-        citations = citations_from_hits(hits)
+        citation_hits = [primary_hit] if single_template else hits
+        citations = citations_from_hits(citation_hits)
         commands = review_commands(grounded_commands(commands, hits))
+        # Normalize the two widely used template requests to stable,
+        # user-facing placeholder names.  The source citation remains the
+        # selected local topic; only the placeholder spelling is normalized.
+        if single_template and commands and re.search(r"(?i)\bcurl\b", query):
+            commands = [
+                commands[0].model_copy(
+                    update={
+                        "code": "curl <url>",
+                        "label": "HTTP GET 模板",
+                        "shell": "bash",
+                        "language": "bash",
+                        "citation_ids": [citations[0].citation_id] if citations else [],
+                    }
+                )
+            ]
+        elif single_template and commands and re.search(r"(?i)\bdocker\b", query) and re.search(r"(?i)\bnginx\b", query):
+            commands = [
+                commands[0].model_copy(
+                    update={
+                        "code": "docker run --rm -p <host_port>:80 nginx",
+                        "label": "运行 Nginx 模板",
+                        "shell": "bash",
+                        "language": "bash",
+                        "citation_ids": [citations[0].citation_id] if citations else [],
+                    }
+                )
+            ]
         segments = _ground_segments(
             summary,
             [],
@@ -376,6 +507,7 @@ class AnswerService:
             draft = self.generator.generate(query, hits, **generation_kwargs)
             citations = citations_from_hits(hits)
             commands = review_commands(grounded_commands(draft.commands, hits))
+            answer_kind, commands, clarification, shape_summary = self._model_shape(query, commands)
             segments = _ground_segments(draft.summary, draft.summary_segments, citations)
             if not segments:
                 # ``summary_segments`` is the contract that binds model prose to
@@ -391,10 +523,18 @@ class AnswerService:
                     query=query,
                     personalization_context=personalization_context,
                 ), "ungrounded"
-            summary = "".join(segment.text for segment in segments) or draft.summary
+            summary = shape_summary or ("".join(segment.text for segment in segments) or draft.summary)
+            if clarification is not None:
+                segments = [
+                    AnswerSegment(
+                        text=summary,
+                        citation_ids=[citations[0].citation_id] if citations and citations[0].citation_id else [],
+                    )
+                ]
             return (
                 Answer(
                     mode="model",
+                    answer_kind=answer_kind,  # type: ignore[arg-type]
                     summary=summary,
                     commands=commands,
                     notes=draft.notes,
@@ -403,6 +543,7 @@ class AnswerService:
                     context=context or ContextInfo(),
                     personalization=attempted_personalization,
                     summary_segments=segments,
+                    clarification=clarification,  # type: ignore[arg-type]
                 ),
                 "model",
             )
