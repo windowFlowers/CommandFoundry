@@ -1,6 +1,6 @@
 {
   "name": "commandfoundry-desktop",
-  "version": "2.10.0",
+  "version": "2.12.0",
   "private": true,
   "author": "CommandFoundry Contributors",
   "description": "Local-first developer command RAG assistant",
