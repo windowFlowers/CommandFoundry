@@ -1013,8 +1013,16 @@ class CommandPlanner:
             "docker.docker-run": r"(?:docker(?:\.exe)?\s+(?:container\s+)?run)|(?:docker|容器|镜像).{0,24}(?:运行|启动|镜像|容器|run)|(?:运行|启动).{0,24}(?:docker|容器|镜像)",
             "windows.netstat": r"端口|port|netstat|get-nettcpconnection|占用",
             "windows.get-nettcpconnection": r"get[- ]?nettcpconnection|localport|按端口|指定端口|tcp 连接",
-            "sql.mysql-connect": r"mysql.{0,24}(?:连接|登录|数据库|主机|用户|connect)|(?:连接|登录).{0,24}mysql|连接.{0,20}数据库",
-            "redis.string-set": r"redis.{0,24}(?:键|值|写入|设置|过期|set|string)|(?:写入|设置|过期).{0,24}redis",
+            # A database/topic hit is not enough to start a command plan.  In
+            # particular, “MySQL 新建数据库” is a DDL question, not a
+            # request to connect with the mysql client.  Require an explicit
+            # connection/login signal before collecting credentials or host
+            # details.
+            "sql.mysql-connect": r"mysql(?:\.exe)?.{0,24}(?:连接|登录|connect|client|host|user|用户|主机|地址|端口|连接字符串|connection\s*string)|(?:连接|登录|connect).{0,24}(?:mysql|数据库)",
+            # “批量写入” and other generic Redis questions should remain
+            # ordinary RAG answers.  Only the SET/key/value/expiry vocabulary
+            # is sufficiently specific to open the string-set recipe.
+            "redis.string-set": r"redis(?:-cli)?.{0,24}(?:\bset\b|键值|key\b|value\b|键|值|设置(?:键|值)|过期|expire|ttl)|(?:\bset\b|设置(?:键|值)|过期|expire|ttl).{0,24}redis",
             "windows.new-item": r"new[- ]?item|文件|创建|新建",
             "windows.copy-item": r"copy[- ]?item|复制|拷贝|copy",
             "windows.move-item": r"move[- ]?item|移动|重命名|move",
@@ -1025,7 +1033,7 @@ class CommandPlanner:
             "windows.start-service": r"start[- ]?service|启动.{0,12}服务|开启.{0,12}服务|service start",
             "windows.stop-service": r"stop[- ]?service|停止.{0,12}服务|关闭.{0,12}服务|service stop",
             "windows.restart-service": r"restart[- ]?service|重启.{0,12}服务|service restart",
-            "windows.test-netconnection": r"test[- ]?netconnection|测试网络|测试连通性|telnet|连接测试",
+            "windows.test-netconnection": r"test[- ]?netconnection|测试网络|测试连通性|测试.{0,16}(?:主机|地址|端口)|端口.{0,12}(?:连通|可达)|telnet|连接测试",
             "windows.compress-archive": r"compress[- ]?archive|压缩|创建 zip|打包 zip",
             "windows.expand-archive": r"expand[- ]?archive|解压|展开 zip|解压缩",
             "windows.winget": r"winget.{0,24}(?:安装|install)|(?:安装|install).{0,24}winget",
@@ -1041,7 +1049,54 @@ class CommandPlanner:
             "windows.robocopy": r"robocopy|同步目录|镜像目录",
         }
         pattern = signals.get(topic_id)
-        return bool(pattern and re.search(pattern, str(query or ""), re.IGNORECASE))
+        text = str(query or "")
+        if not pattern or not re.search(pattern, text, re.IGNORECASE):
+            return False
+
+        # Windows recipes are deliberately conservative.  Common words such
+        # as “复制”, “删除”, “端口” and “服务” occur in Docker, Linux, Git and
+        # database questions too; they must not create a Windows plan merely
+        # because a Windows topic happened to be retrieved.  An explicit
+        # Windows/PowerShell/CMD signal (or a Windows cmdlet) is required.
+        if topic_id.startswith("windows."):
+            if CommandPlanner._posix_platform_signal(text) and not CommandPlanner._windows_platform_signal(text):
+                return False
+            return CommandPlanner._windows_platform_signal(text)
+        return True
+
+    @staticmethod
+    def _windows_platform_signal(query: str) -> bool:
+        """Return whether the current turn explicitly selects Windows.
+
+        Do not infer a platform from a retrieved topic or from generic action
+        words.  A cmdlet is itself a strong Windows signal, while a bare
+        ``netstat``/``cp``/``rm`` command remains platform-neutral.
+        """
+
+        text = str(query or "")
+        if re.search(
+            r"(?i)(?:\bwindows\b|\bwin32\b|\bpowershell(?:\.exe)?\b|\bpwsh\b|\bcmd(?:\.exe)?\b|命令提示符|Windows下|Windows\s*中|在Windows)",
+            text,
+        ):
+            return True
+        return bool(
+            re.search(
+                r"(?i)\b(?:Get|Set|New|Copy|Move|Remove|Stop|Start|Restart|Test|Compress|Expand|Invoke|Select|Resolve)-(?:Item|Process|Service|NetTCPConnection|NetConnection|Archive|WebRequest|String|DnsName|FileHash|Content|Command)\b",
+                text,
+            )
+        )
+
+    @staticmethod
+    def _posix_platform_signal(query: str) -> bool:
+        """Return whether the current turn explicitly selects POSIX/Linux."""
+
+        text = str(query or "")
+        return bool(
+            re.search(
+                r"(?i)(?:\b(?:linux|unix|posix|bash|zsh|sh|macos|mac\s*os)\b|\blsof\b|\bss\b|\bgrep\b|\bawk\b|\bsed\b|\brm\b|\bcp\b|\bmv\b|\bsource\b|/[^\s]+)",
+                text,
+            )
+        )
 
     def _recipe_for(self, query: str, hits: list[RetrievalHit], plan: dict | None = None) -> Recipe | None:
         topic_ids = {hit.topic.id for hit in hits}
@@ -1151,7 +1206,12 @@ class CommandPlanner:
                     (item for item in getattr(self.catalog, "recipes", []) if item.topic_id == lexical_topic),
                     None,
                 )
-                if candidate is not None:
+                # The lexical hint must pass the same current-turn intent
+                # guard as the normal retrieval path.  This prevents a
+                # generic “复制文件” or “查看服务状态” question from falling
+                # through to a Windows recipe solely because the catalog has a
+                # matching English command name.
+                if candidate is not None and self._catalog_intent(query, lexical_topic):
                     return self._catalog_recipe(candidate)
         return None
 

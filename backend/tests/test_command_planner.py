@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.command_planner import (
+    CommandPlanner,
     contains_sensitive_input,
     detect_shell,
     extract_path,
@@ -239,6 +241,42 @@ def test_windows_path_only_offers_windows_shells_and_template_request_closes_pla
             )
         )
         assert (fresh.get("clarification") or {}).get("slot") != "shell"
+
+
+@pytest.mark.parametrize(
+    ("query", "topic_id"),
+    [
+        ("从容器复制文件", "windows.copy-item"),
+        ("复制某个提交", "windows.copy-item"),
+        ("lsof 查看端口占用", "windows.netstat"),
+        ("如何使用 netstat？", "windows.netstat"),
+        ("Redis 怎么查看服务状态？", "windows.get-service"),
+        ("Redis 怎么使用 redis-cli 管道批量写入？", "redis.string-set"),
+        ("MySQL 新建数据库", "sql.mysql-connect"),
+        ("MySQL 删除记录", "sql.mysql-connect"),
+    ],
+)
+def test_catalog_intent_does_not_start_unrelated_recipe(query: str, topic_id: str) -> None:
+    """Retrieval hits must not turn generic cross-platform questions into plans."""
+
+    assert CommandPlanner._catalog_intent(query, topic_id) is False
+
+
+@pytest.mark.parametrize(
+    ("query", "topic_id"),
+    [
+        ("Windows PowerShell 创建一个文件", "windows.new-item"),
+        (r"Windows 复制 C:\\work\\a.txt 到 C:\\backup\\a.txt", "windows.copy-item"),
+        ("Get-NetTCPConnection 查看端口 8080", "windows.get-nettcpconnection"),
+        ("Windows 查看服务状态", "windows.get-service"),
+        ("Redis SET 一个键值并设置过期", "redis.string-set"),
+        ("连接 MySQL 数据库", "sql.mysql-connect"),
+    ],
+)
+def test_catalog_intent_keeps_explicit_command_requests(query: str, topic_id: str) -> None:
+    """Explicit platform/action signals still enable curated recipes."""
+
+    assert CommandPlanner._catalog_intent(query, topic_id) is True
 
 
 def test_catalog_recipe_renders_posix_shell_and_does_not_use_natural_language_as_image() -> None:
