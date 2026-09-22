@@ -298,7 +298,13 @@ class AnswerService:
                 total_slots=1,
             )
             return "clarification", [], clarification, clarification.question
-        if commands and not any(has_unresolved_placeholders(item.code) for item in commands):
+        # Treat every angle-bracket expression as non-direct here, including
+        # tldr's choice syntax such as ``<[n|neighbor]>``.  It is useful source
+        # notation but still requires a user decision before execution.
+        if commands and not any(
+            re.search(r"<[^<>\r\n]+>|\{\{[^{}\r\n]+\}\}", item.code)
+            for item in commands
+        ):
             return "direct", commands, None, None
         return "template", commands, None, None
 

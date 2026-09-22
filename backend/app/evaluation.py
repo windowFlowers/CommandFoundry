@@ -918,6 +918,14 @@ def validate_answer(
         shell_correct = None
         platform_correct = None
         risk_correct = None
+    if not case.should_answer:
+        # Refusal cases intentionally have no command metadata to validate.
+        # Their correctness is determined solely by the structured refusal
+        # signal and the absence of commands/citations.
+        command_correct = None
+        shell_correct = None
+        platform_correct = None
+        risk_correct = None
     if any(value is False for value in (shell_correct, platform_correct, risk_correct)):
         command_correct = False
 
