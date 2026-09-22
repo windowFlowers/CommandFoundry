@@ -1,4 +1,4 @@
-# CommandFoundry v2.10 Electron 桌面端
+# CommandFoundry v2.12 Electron 桌面端
 
 Electron 桌面版提供两条运行路径：开发模式自动启动仓库中的 FastAPI/Vite，发布模式运行内置 React 资源和 PyInstaller 后端。
 
@@ -38,7 +38,7 @@ npm.cmd run dist:win
 输出：
 
 - `dist/win-unpacked/CommandFoundry.exe`：未安装目录
-- `dist/CommandFoundry Setup 2.10.0.exe`：Windows x64 NSIS 安装包
+- `dist/CommandFoundry Setup 2.12.0.exe`：Windows x64 NSIS 安装包
 
 ## 数据与模型
 

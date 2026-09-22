@@ -17,7 +17,7 @@ const MIN_TERMINAL_WIDTH = 360;
 const MAX_TERMINAL_WIDTH = 760;
 
 export function App() {
-  const appVersion = window.aegisDesktop?.version || "2.10.0";
+  const appVersion = window.aegisDesktop?.version || "2.12.0";
   const [view, setView] = useState("chat");
   const [conversations, setConversations] = useState([]);
   const [knowledgeBases, setKnowledgeBases] = useState([]);
