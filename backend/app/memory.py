@@ -246,6 +246,21 @@ def resolve_contextual_query(query: str, turn: ConversationTurn | None) -> str:
         ordinal_index = {"一": 0, "1": 0, "二": 1, "2": 1, "三": 2, "3": 2}[ordinal.group(1)]
         if ordinal_index < len(commands):
             selected_label = commands[ordinal_index].label[:80]
+        # A model answer can expose several grounded citations while choosing
+        # to render only one representative command.  Ordinal follow-ups must
+        # still be able to point at the second/third evidence item; otherwise
+        # the resolver falls back to the first command and retrieves the wrong
+        # topic.  Citation metadata is local, opaque and already validated by
+        # the answer service, so it is safe to use as a deterministic hint.
+        if not selected_label and turn.assistant.answer is not None:
+            citations = turn.assistant.answer.citations[:6]
+            if ordinal_index < len(citations):
+                citation = citations[ordinal_index]
+                selected_label = " ".join(
+                    item
+                    for item in (citation.source_id, citation.title)
+                    if str(item or "").strip()
+                )[:120]
     if selected_label:
         technology_context = previous_technology or previous
         return f"{technology_context}；上一回答指向方案：{selected_label}；追问：{current}"

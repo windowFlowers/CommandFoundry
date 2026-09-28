@@ -59,6 +59,34 @@ def test_advanced_retrieval_preserves_showcase_first_hits() -> None:
         assert hits[0].topic.id == expected
 
 
+def test_hybrid_retrieval_keeps_explicit_ascii_topic_identifiers() -> None:
+    cases = {
+        "Get-ChildItem 怎么用": "windows.get-childitem",
+        "Resolve-DnsName 怎么用": "windows.resolve-dnsname",
+        "Restart-Service 怎么用": "windows.restart-service",
+        "PostgreSQL CREATE VIEW": "sql.postgres-create-view",
+        "PostgreSQL EXPLAIN ANALYZE": "sql.postgres-explain",
+        "PostgreSQL INSERT RETURNING": "sql.postgres-insert",
+    }
+    for query, expected in cases.items():
+        hits = retriever.retrieve_advanced(query, top_k=3)
+        assert hits
+        assert hits[0].topic.id == expected
+
+
+def test_index_manager_preserves_advanced_order_after_parent_collapse() -> None:
+    """The API-facing manager must not undo lexical identifier ranking."""
+
+    hits = main_module.index_manager.retrieve_advanced(
+        "developer-it",
+        "Get-ChildItem 怎么用",
+        top_k=4,
+    )
+
+    assert hits
+    assert hits[0].topic.id == "windows.get-childitem"
+
+
 def test_retrieval_confidence_is_a_conservative_no_answer_signal() -> None:
     assert retrieval_confidence([]) == 0.0
     assert has_sufficient_evidence([]) is False

@@ -469,5 +469,5 @@ def test_unanswerable_case_with_qrels_evaluates_retrieval_not_refusal() -> None:
     result = case_result(case, ["security.credentials"], k=1)
 
     assert result.passed is True
-    assert result.retrieval_no_answer_correct is None
+    assert result.retrieval_no_answer_correct is True
     assert result.no_answer_correct is None

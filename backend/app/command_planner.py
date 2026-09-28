@@ -134,10 +134,12 @@ _CREDENTIAL_REQUEST = re.compile(
     r"(?:凭据|密码|口令|密钥|令牌|token|password|secret|private[_ -]?key|credential|api[_ -]?key)"
 )
 _PROMPT_INJECTION_REQUEST = re.compile(
-    r"(?i)(?:忽略|无视|绕过|ignore|disregard|override).{0,64}(?:之前|先前|系统|开发者|提示|instruction|previous|system|developer)"
+    r"(?i)(?:忽略|无视|绕过|ignore|disregard|override).{0,64}(?:之前|先前|系统|开发者|提示|知识库|上下文|规则|约束|安全|instruction|previous|system|developer)"
     r"|(?:系统提示词|系统提示|system\s+prompt|developer\s+message|显示提示词|披露提示词)"
     r"|(?:\brm\b|\bdel(?:ete)?\b|remove-item|rmdir)\s+(?:-[^\s]+\s+)*(?:/|\\|\*|所有|全部|all)"
     r"|(?:删除|移除).{0,16}(?:所有|全部)文件"
+    r"|(?:执行|运行).{0,32}(?:上面|上述|危险|不受限).{0,32}(?:命令|指令)"
+    r"|(?:隐藏|掩盖|绕过).{0,16}(?:风险|警告|安全)"
 )
 
 
@@ -935,6 +937,49 @@ class CommandPlanner:
         )
 
     @staticmethod
+    def _is_new_topic_turn(query: str, plan: dict) -> bool:
+        """Detect an explicit new task before a pending slot is consumed."""
+
+        value = str(query or "").casefold()
+        template_id = str(plan.get("template_id") or "").casefold()
+        template_family = template_id.split(".", 1)[0]
+        if not template_family:
+            return False
+        families = {
+            family
+            for family, pattern in (
+                ("python", r"python|virtualenv|venv|pip"),
+                ("git", r"\bgit\b|commit|revert|回滚|提交"),
+                ("docker", r"docker|容器|镜像"),
+                ("node", r"\b(?:npm|npx|pnpm|yarn|node)\b|依赖"),
+                ("sql", r"mysql|postgres|postgresql|sql|数据库|视图"),
+                ("redis", r"redis"),
+                ("network", r"ssh|scp|rsync|网络|dns|ping|端口|tcp"),
+                ("http", r"curl|wget|http|https|接口|api"),
+                ("kubernetes", r"kubernetes|k8s|kubectl|pod|集群"),
+                ("java", r"java|maven|gradle|jar"),
+                ("cicd", r"github actions|jenkins|gitlab ci|pipeline|流水线"),
+                ("testing", r"pytest|jest|playwright|测试|单元测试"),
+                ("windows", r"windows|powershell|cmd|服务|进程|端口"),
+                ("linux", r"linux|bash|shell|目录|文件"),
+            )
+            if re.search(pattern, value, re.IGNORECASE)
+        }
+        if not families or template_family in families:
+            return False
+        # A bare shell/path/name reply can legitimately be a slot value.  Only
+        # treat a mismatched family as a new task when the turn also contains
+        # an action/question signal.
+        return bool(
+            re.search(
+                r"(?:怎么|如何|请|帮我|安装|创建|查看|删除|运行|启动|停止|执行|依赖|命令|用法|"
+                r"install|create|show|view|delete|run|start|stop|command|usage)",
+                value,
+                re.IGNORECASE,
+            )
+        )
+
+    @staticmethod
     def pending_slot_is_sensitive(plan: dict | None) -> bool:
         if not plan or plan.get("status") != "pending":
             return False
@@ -1038,7 +1083,11 @@ class CommandPlanner:
         """
 
         signals = {
-            "docker.docker-run": r"(?:docker(?:\.exe)?\s+(?:container\s+)?run)|(?:docker|容器|镜像).{0,24}(?:运行|启动|镜像|容器|run)|(?:运行|启动).{0,24}(?:docker|容器|镜像)",
+            # Mentioning a container is a knowledge question by itself.  A
+            # Docker run plan requires an explicit run/start action; otherwise
+            # queries such as “进入 Docker 容器” are incorrectly turned into
+            # an image-slot clarification.
+            "docker.docker-run": r"(?:docker(?:\.exe)?\s+(?:container\s+)?run)|(?:docker|容器|镜像).{0,24}(?:运行|启动|run)(?!中|的|着)|(?:运行|启动)(?!中|的|着).{0,24}(?:docker|容器|镜像)",
             "windows.netstat": r"端口|port|netstat|get-nettcpconnection|占用",
             "windows.get-nettcpconnection": r"get[- ]?nettcpconnection|localport|按端口|指定端口|tcp 连接",
             # A database/topic hit is not enough to start a command plan.  In
@@ -1046,21 +1095,22 @@ class CommandPlanner:
             # request to connect with the mysql client.  Require an explicit
             # connection/login signal before collecting credentials or host
             # details.
-            "sql.mysql-connect": r"mysql(?:\.exe)?.{0,24}(?:连接|登录|connect|client|host|user|用户|主机|地址|端口|连接字符串|connection\s*string)|(?:连接|登录|connect).{0,24}(?:mysql|数据库)",
+            "sql.mysql-connect": r"mysql(?:\.exe)?.{0,24}(?:连接|登录|connect|client|host|user|用户|主机|地址|端口|连接字符串|connection\s*string)|(?:连接|登录|connect).{0,24}mysql",
             # “批量写入” and other generic Redis questions should remain
             # ordinary RAG answers.  Only the SET/key/value/expiry vocabulary
             # is sufficiently specific to open the string-set recipe.
-            "redis.string-set": r"redis(?:-cli)?.{0,24}(?:\bset\b|键值|key\b|value\b|键|值|设置(?:键|值)|过期|expire|ttl)|(?:\bset\b|设置(?:键|值)|过期|expire|ttl).{0,24}redis",
-            "windows.new-item": r"new[- ]?item|文件|创建|新建",
-            "windows.copy-item": r"copy[- ]?item|复制|拷贝|copy",
-            "windows.move-item": r"move[- ]?item|移动|重命名|move",
-            "windows.remove-item": r"remove[- ]?item|删除|移除|remove",
+            "redis.string-set": r"redis(?:-cli)?.{0,24}(?:\bset\b.{0,24}(?:key\b|value\b|键|值|过期|expire|ttl)|键值|设置(?:键|值)|过期|expire|ttl)|(?:\bset\b.{0,24}(?:key\b|value\b|键|值|过期|expire|ttl)|设置(?:键|值)|过期|expire|ttl).{0,24}redis",
+            "windows.get-childitem": r"(?<![a-z])get[- ]?childitem(?![a-z])|(?:\bcmd(?:\.exe)?\b\s*)?\bdir\b|列出.{0,12}(?:文件|目录)|查看文件夹内容|目录列表",
+            "windows.new-item": r"(?<![a-z])new[- ]?item(?![a-z])|(?:创建|新建).{0,16}(?:文件|目录|文件夹)|(?:文件|目录|文件夹).{0,16}(?:创建|新建)",
+            "windows.copy-item": r"(?<![a-z])copy[- ]?item(?![a-z])|复制|拷贝|(?<![a-z])copy(?![a-z])",
+            "windows.move-item": r"(?<![a-z])move[- ]?item(?![a-z])|移动|重命名|(?<![a-z])move(?![a-z])",
+            "windows.remove-item": r"(?<![a-z])remove[- ]?item(?![a-z])|删除|移除|(?<![a-z])remove(?![a-z])",
             "windows.get-process": r"get[- ]?process|查看进程|列出进程|进程列表|process",
             "windows.stop-process": r"stop[- ]?process|停止.{0,12}进程|结束.{0,12}进程|kill process|按 pid 停止",
             "windows.get-service": r"get[- ]?service|查看.{0,12}服务|服务状态|service status",
-            "windows.start-service": r"start[- ]?service|启动.{0,12}服务|开启.{0,12}服务|service start",
-            "windows.stop-service": r"stop[- ]?service|停止.{0,12}服务|关闭.{0,12}服务|service stop",
-            "windows.restart-service": r"restart[- ]?service|重启.{0,12}服务|service restart",
+            "windows.start-service": r"(?<![a-z])start[- ]?service(?![a-z])|启动.{0,12}服务|开启.{0,12}服务|service start",
+            "windows.stop-service": r"(?<![a-z])stop[- ]?service(?![a-z])|停止.{0,12}服务|关闭.{0,12}服务|service stop",
+            "windows.restart-service": r"(?<![a-z])restart[- ]?service(?![a-z])|重启.{0,12}服务|service restart",
             "windows.test-netconnection": r"test[- ]?netconnection|测试网络|测试连通性|测试.{0,16}(?:主机|地址|端口)|端口.{0,12}(?:连通|可达)|telnet|连接测试",
             "windows.compress-archive": r"compress[- ]?archive|压缩|创建 zip|打包 zip",
             "windows.expand-archive": r"expand[- ]?archive|解压|展开 zip|解压缩",
@@ -1172,16 +1222,17 @@ class CommandPlanner:
         if self.catalog is not None:
             lexical_topic = None
             windows_lexical = (
-                ("windows.new-item", r"new[- ]?item|(?:创建|新建|生成).{0,16}(?:文件|file)|(?:文件|file).{0,16}(?:创建|新建)"),
-                ("windows.copy-item", r"copy[- ]?item|复制.{0,20}(?:文件|目录|到)|拷贝文件|复制文件"),
-                ("windows.move-item", r"move[- ]?item|移动.{0,20}(?:文件|目录|到)|重命名文件"),
-                ("windows.remove-item", r"remove[- ]?item|删除.{0,20}(?:文件|目录)|移除文件"),
+                ("windows.get-childitem", r"(?<![a-z])get[- ]?childitem(?![a-z])|(?:\bcmd(?:\.exe)?\b\s*)?\bdir\b|列出.{0,12}(?:文件|目录)|查看文件夹内容|目录列表"),
+                ("windows.new-item", r"(?<![a-z])new[- ]?item(?![a-z])|(?:创建|新建|生成).{0,16}(?:文件|目录|文件夹|file)|(?:文件|目录|文件夹|file).{0,16}(?:创建|新建)"),
+                ("windows.copy-item", r"(?<![a-z])copy[- ]?item(?![a-z])|复制.{0,20}(?:文件|目录|到)|拷贝文件|复制文件"),
+                ("windows.move-item", r"(?<![a-z])move[- ]?item(?![a-z])|移动.{0,20}(?:文件|目录|到)|重命名文件"),
+                ("windows.remove-item", r"(?<![a-z])remove[- ]?item(?![a-z])|删除.{0,20}(?:文件|目录)|移除文件"),
                 ("windows.get-process", r"get[- ]?process|查看进程|列出进程"),
                 ("windows.stop-process", r"stop[- ]?process|停止.{0,12}进程|结束.{0,12}进程"),
                 ("windows.get-service", r"get[- ]?service|查看.{0,12}服务|服务状态"),
-                ("windows.start-service", r"start[- ]?service|启动.{0,12}服务|开启.{0,12}服务"),
-                ("windows.stop-service", r"stop[- ]?service|停止.{0,12}服务|关闭.{0,12}服务"),
-                ("windows.restart-service", r"restart[- ]?service|重启.{0,12}服务"),
+                ("windows.restart-service", r"(?<![a-z])restart[- ]?service(?![a-z])|重启.{0,12}服务"),
+                ("windows.start-service", r"(?<![a-z])start[- ]?service(?![a-z])|启动.{0,12}服务|开启.{0,12}服务"),
+                ("windows.stop-service", r"(?<![a-z])stop[- ]?service(?![a-z])|停止.{0,12}服务|关闭.{0,12}服务"),
                 ("windows.test-netconnection", r"test[- ]?netconnection|测试网络|测试连通性|测试.{0,16}(?:主机|地址|端口)|端口.{0,12}(?:连通|可达)"),
                 ("windows.compress-archive", r"compress[- ]?archive|压缩|创建 zip|打包 zip"),
                 ("windows.expand-archive", r"expand[- ]?archive|解压|展开 zip|解压缩"),
@@ -1205,7 +1256,7 @@ class CommandPlanner:
             if lexical_match:
                 lexical_topic = lexical_match[0]
             elif re.search(
-                r"(?i)\bdocker(?:\.exe)?\s+(?:(?:container)\s+)?run\b|docker.{0,20}(?:运行|启动).{0,20}(?:镜像|容器)|(?:运行|启动).{0,20}docker",
+                r"(?i)\bdocker(?:\.exe)?\s+(?:(?:container)\s+)?run\b|docker.{0,20}(?:运行|启动)(?!中|的|着).{0,20}(?:镜像|容器)|(?:运行|启动)(?!中|的|着).{0,20}docker",
                 lowered,
             ):
                 lexical_topic = "docker.docker-run"
@@ -1719,6 +1770,13 @@ class CommandPlanner:
         if existing and self.is_cancel_request(query):
             self.repository.cancel_command_plan(conversation_id)
             return None
+        if existing and self._is_new_topic_turn(query, existing):
+            # A pending plan belongs to the previous task.  A clearly named
+            # new technology/action (for example “npm 安装依赖” after a
+            # Python virtualenv clarification) must not be consumed as the
+            # old slot or rendered with the old topic's citation.
+            self.repository.cancel_command_plan(conversation_id)
+            existing = None
         recipe = self._recipe_for(query, hits, existing)
         if existing and recipe is None:
             self.repository.cancel_command_plan(conversation_id)

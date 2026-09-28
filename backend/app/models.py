@@ -147,6 +147,7 @@ FallbackReason = Literal[
     "authentication",
     "invalid_json",
     "ungrounded",
+    "safety_filter",
     "provider_error",
 ]
 

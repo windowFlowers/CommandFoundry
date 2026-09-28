@@ -19,7 +19,7 @@ from app.memory import (
     merge_contextual_hits,
     resolve_contextual_query,
 )
-from app.models import Answer, AnswerSegment, ChatMessage, CommandBlock, MemorySummary
+from app.models import Answer, AnswerSegment, ChatMessage, Citation, CommandBlock, MemorySummary
 from app.repository import ConversationRepository
 
 
@@ -107,6 +107,26 @@ def test_local_reference_resolution_handles_platform_pointer_and_new_topic() -> 
 
     explicit = "Docker 怎么查看容器日志？"
     assert resolve_contextual_query(explicit, linux) == explicit
+
+
+def test_ordinal_pointer_can_use_grounded_citations_when_command_is_not_rendered() -> None:
+    answer = Answer(
+        mode="model",
+        summary="Git 有多个回滚方案。",
+        commands=[CommandBlock(label="git revert 安全撤销", code="git revert <commit>")],
+        citations=[
+            Citation(source_id="git.git-revert", title="git revert", license="", revision="", excerpt="", score=0, domain="git"),
+            Citation(source_id="git.git-reset", title="git reset --hard", license="", revision="", excerpt="", score=0, domain="git"),
+        ],
+    )
+    turn = ConversationTurn(
+        user=ChatMessage(role="user", query="Git 怎么回滚一次提交？"),
+        assistant=ChatMessage(role="assistant", answer=answer),
+    )
+
+    contextual = resolve_contextual_query("第二种会丢代码吗？", turn)
+
+    assert "git.git-reset" in contextual
 
 
 @pytest.mark.parametrize(

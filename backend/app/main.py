@@ -619,6 +619,16 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
                     personalization_context=personalization.prompt_payload,
                     single_template=bool(planner_owned or sensitive_input),
                 )
+            elif not has_sufficient_evidence(hits):
+                # Do not turn weak semantic neighbors into an apparently
+                # grounded answer.  A no-answer turn is citation-free and
+                # deterministic; this is also the release evaluator's
+                # expected refusal contract for out-of-domain questions.
+                answer = answer_service.refusal(
+                    "no_evidence",
+                    context=memory.info,
+                    personalization=personalization.info,
+                )
             else:
                 answer, _ = answer_service.answer(
                     safe_query,

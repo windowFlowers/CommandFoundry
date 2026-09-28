@@ -23,6 +23,20 @@ from .risk import review_commands
 from .recipes import has_unresolved_placeholders
 
 
+_MODEL_OUTPUT_INJECTION_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(?:ignore|disregard)\s+(?:all\s+)?(?:previous|prior|system)\s+instructions?", re.I),
+    re.compile(r"(?:忽略|无视|不要遵守)(?:之前|先前|系统|以上)?(?:的)?(?:指令|提示|规则)", re.I),
+    re.compile(r"(?:reveal|print|show)\s+(?:the\s+)?(?:system\s+)?prompt", re.I),
+    re.compile(r"(?:显示|泄露|输出)(?:系统)?(?:提示词|系统提示)", re.I),
+    re.compile(r"\byou\s+are\s+now\b", re.I),
+    re.compile(r"你现在是", re.I),
+)
+
+
+def _contains_model_output_injection(text: str) -> bool:
+    return any(pattern.search(text) for pattern in _MODEL_OUTPUT_INJECTION_PATTERNS)
+
+
 def _normalize_command_code(value: str) -> str:
     normalized = "\n".join(
         line.rstrip() for line in value.replace("\r\n", "\n").strip().split("\n")
@@ -513,6 +527,24 @@ class AnswerService:
             draft = self.generator.generate(query, hits, **generation_kwargs)
             citations = citations_from_hits(hits)
             commands = review_commands(grounded_commands(draft.commands, hits))
+            model_text = "\n".join(
+                [
+                    draft.summary,
+                    *draft.notes,
+                    *(segment.text for segment in draft.summary_segments),
+                    *(command.code for command in draft.commands),
+                ]
+            )
+            if _contains_model_output_injection(model_text):
+                return self.local_fallback(
+                    hits,
+                    reason="safety_filter",
+                    attempted=True,
+                    context=context,
+                    personalization=attempted_personalization,
+                    query=query,
+                    personalization_context=personalization_context,
+                ), "safety_filter"
             answer_kind, commands, clarification, shape_summary = self._model_shape(query, commands)
             segments = _ground_segments(draft.summary, draft.summary_segments, citations)
             if not segments:

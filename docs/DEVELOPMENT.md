@@ -50,6 +50,8 @@ v2.12 将数据库 schema 更新为 7：上传文档增加独立的清洗状态�
 
 ## 自动化测试
 
+版本更新、真实模型评测和打包统一使用 [固定发布流程](RELEASE_WORKFLOW.md)。源码开发阶段可以只运行离线阶段；没有通过真实模型门禁和桌面验收，不生成正式安装包。
+
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe -m pytest -q

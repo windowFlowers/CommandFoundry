@@ -714,7 +714,38 @@ class HybridRetriever:
         if vector_scores is not None:
             rankings.append([index for index in np.argsort(-vector_scores).tolist() if index in allowed_set][: self.candidate_k])
         fused = self._rrf(rankings)
-        ordered = sorted(fused, key=lambda index: (fused[index], float(bm25_scores[index])), reverse=True)
+        # RRF is useful for ordinary natural-language questions, but an
+        # explicit command/topic identifier must not be pushed below generic
+        # semantic neighbors merely because the embedding model prefers them.
+        # Preserve lexical authority whenever the query contains ASCII
+        # identifiers (for example ``Get-ChildItem`` or ``CREATE VIEW``).
+        # Chinese-only queries retain the original RRF ordering because their
+        # character token overlap is too noisy to be a reliable tie-breaker.
+        ascii_query_tokens = {
+            token
+            for token in query_tokens
+            if re.fullmatch(r"[a-z0-9][a-z0-9._-]*", token, flags=re.IGNORECASE)
+        }
+        ascii_overlap = np.zeros(len(self.catalog.topics), dtype=np.float32)
+        if ascii_query_tokens:
+            for index in allowed:
+                corpus_ascii = {
+                    token
+                    for token in self._corpus[index]
+                    if re.fullmatch(r"[a-z0-9][a-z0-9._-]*", token, flags=re.IGNORECASE)
+                }
+                ascii_overlap[index] = len(ascii_query_tokens.intersection(corpus_ascii))
+        lexical_identifier_query = bool(ascii_query_tokens)
+
+        def ordering_key(index: int) -> tuple[int, float, float, float]:
+            return (
+                int(lexical_identifier_query and ascii_overlap[index] > 0),
+                float(ascii_overlap[index]),
+                fused[index],
+                float(bm25_scores[index]),
+            )
+
+        ordered = sorted(fused, key=ordering_key, reverse=True)
         best_bm25 = float(bm25_scores[bm25_order[0]]) if bm25_order else 0.0
         best_vector = float(np.max(vector_scores[allowed])) if vector_scores is not None and allowed else 0.0
         best_overlap = float(np.max(token_overlap)) if len(token_overlap) else 0.0
@@ -955,18 +986,30 @@ class KnowledgeIndexManager:
     def _collapse_parent_hits(raw_hits: list[RetrievalHit], *, top_k: int) -> list[RetrievalHit]:
         """Collapse child evidence to bounded parent hits after ranking."""
 
-        grouped: dict[str, list[RetrievalHit]] = {}
-        standalone: list[RetrievalHit] = []
-        for hit in raw_hits:
+        grouped: dict[str, list[tuple[int, RetrievalHit]]] = {}
+        standalone: list[tuple[int, RetrievalHit]] = []
+        for position, hit in enumerate(raw_hits):
             source = hit.topic.source
             if source.kind != "upload" or not source.parent_id:
-                standalone.append(hit)
+                standalone.append((position, hit))
                 continue
-            grouped.setdefault(source.parent_id, []).append(hit)
+            grouped.setdefault(source.parent_id, []).append((position, hit))
 
-        parents: list[RetrievalHit] = []
-        for parent_id, children in grouped.items():
-            children.sort(key=lambda item: (item.score, item.bm25_score, item.vector_score), reverse=True)
+        # ``raw_hits`` is already the authoritative hybrid/advanced ranking.
+        # Keep that order when collapsing upload children.  Sorting the mixed
+        # list again by the fused score loses lexical identifier priority: an
+        # exact topic such as ``Get-ChildItem`` can be pushed below generic
+        # vector neighbors because its RRF score was calculated before the
+        # deterministic lexical tie-breaker.  The previous implementation did
+        # exactly that and caused the API route to disagree with the retriever
+        # used by offline evaluation.
+        parents: list[tuple[int, RetrievalHit]] = []
+        for parent_id, children_with_positions in grouped.items():
+            children_with_positions.sort(
+                key=lambda item: (item[1].score, item[1].bm25_score, item[1].vector_score),
+                reverse=True,
+            )
+            children = [item[1] for item in children_with_positions]
             best = children[0]
             matched = [
                 MatchedChunk(
@@ -996,27 +1039,32 @@ class KnowledgeIndexManager:
             # Extra matches are only a deterministic tie-breaker, never a length reward.
             tie_bonus = min(len(children) - 1, 3) * 0.000001
             parents.append(
-                RetrievalHit(
-                    topic=best.topic.model_copy(
-                        update={
-                            "id": f"parent.{parent_id}",
-                            "summary": best.topic.parent_context or best.topic.summary,
-                            "commands": parent_commands,
-                        }
+                (
+                    min(position for position, _ in children_with_positions),
+                    RetrievalHit(
+                        topic=best.topic.model_copy(
+                            update={
+                                "id": f"parent.{parent_id}",
+                                "summary": best.topic.parent_context or best.topic.summary,
+                                "commands": parent_commands,
+                            }
+                        ),
+                        score=round(best.score + tie_bonus, 6),
+                        bm25_score=best.bm25_score,
+                        vector_score=best.vector_score,
+                        parent_text=best.topic.parent_context or best.topic.summary,
+                        matched_chunks=matched,
                     ),
-                    score=round(best.score + tie_bonus, 6),
-                    bm25_score=best.bm25_score,
-                    vector_score=best.vector_score,
-                    parent_text=best.topic.parent_context or best.topic.summary,
-                    matched_chunks=matched,
                 )
             )
 
-        ordered = sorted(
-            [*standalone, *parents],
-            key=lambda item: (item.score, item.bm25_score, item.vector_score),
-            reverse=True,
-        )
+        ordered = [
+            hit
+            for _, hit in sorted(
+                [*standalone, *parents],
+                key=lambda item: item[0],
+            )
+        ]
         selected: list[RetrievalHit] = []
         per_document: Counter[str] = Counter()
         for hit in ordered:

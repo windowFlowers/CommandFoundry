@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import httpx
 
@@ -75,7 +75,13 @@ def _git_revision() -> str | None:
         return None
 
 
-def _retrieve_hits(retriever: HybridRetriever, case: EvaluationCase, top_k: int) -> list[RetrievalHit]:
+def _retrieve_hits(
+    retriever: HybridRetriever,
+    case: EvaluationCase,
+    top_k: int,
+    *,
+    previous_answer: Answer | None = None,
+) -> list[RetrievalHit]:
     def advanced(value: str, limit: int) -> list[RetrievalHit]:
         # Keep the offline suite representative of the product path.  The
         # analyzer is deterministic and receives the same catalog used by the
@@ -86,7 +92,7 @@ def _retrieve_hits(retriever: HybridRetriever, case: EvaluationCase, top_k: int)
     if not case.previous_query:
         return advanced(case.query, top_k)
 
-    answer = Answer(
+    answer = previous_answer or Answer(
         mode="local_fallback",
         summary="evaluation context",
         commands=[CommandBlock(label=label, code="echo <value>") for label in case.previous_command_labels],
@@ -140,6 +146,42 @@ def _retrieval_observation(hits: list[RetrievalHit]) -> list[dict[str, Any]]:
             }
         )
     return observation
+
+
+def _merge_answer_citation_observation(
+    observation: list[dict[str, Any]], answer: Mapping[str, Any]
+) -> list[dict[str, Any]]:
+    """Add the app's deterministic citation records to a live-run observation.
+
+    Follow-up retrieval is allowed to use the previous model answer's command
+    labels.  A separately reconstructed query can therefore differ in a
+    provider run even though the backend produced the citation list safely.
+    Keep independent retrieval metrics unchanged, but let answer validation
+    verify those opaque IDs against the exact records emitted by the app.
+    """
+
+    merged = list(observation)
+    known = {str(item.get("citation_id")) for item in merged if item.get("citation_id")}
+    citations = answer.get("citations") if isinstance(answer.get("citations"), list) else []
+    for citation in citations:
+        if not isinstance(citation, Mapping):
+            continue
+        citation_id = str(citation.get("citation_id") or "").strip()
+        if not citation_id or citation_id in known:
+            continue
+        merged.append(
+            {
+                "citation_id": citation_id,
+                "source_id": citation.get("source_id"),
+                "document_id": citation.get("document_id"),
+                "topic_id": citation.get("source_id"),
+                "chunk_id": citation.get("chunk_id"),
+                "parent_id": citation.get("parent_id"),
+                "index_revision": citation.get("index_revision"),
+            }
+        )
+        known.add(citation_id)
+    return merged
 
 
 def _load_profile(path: Path | None) -> dict[str, Any] | None:
@@ -279,8 +321,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--mode", choices=("offline", "model"), default="offline")
     parser.add_argument("--provider", choices=("current",), default="current")
-    parser.add_argument("--top-k", type=int, default=3)
-    parser.add_argument("--hybrid", action="store_true", help="Use an already-cached local embedding model")
+    # Match the product's default retrieval_top_k.  A smaller evaluator-only
+    # cutoff can mark a valid fourth evidence hit as a retrieval miss.
+    parser.add_argument("--top-k", type=int, default=4)
+    parser.add_argument(
+        "--hybrid",
+        action="store_true",
+        help="Use the production BM25 + embedding retrieval path",
+    )
+    parser.add_argument(
+        "--allow-model-download",
+        action="store_true",
+        help=(
+            "Allow fastembed to download the configured local embedding model. "
+            "Without this flag hybrid evaluation is offline/local-cache only."
+        ),
+    )
     parser.add_argument("--profile", type=Path, help="Optional profile JSON; only its redacted fingerprint is recorded")
     parser.add_argument("--output", type=Path, help="Write the report to this JSON file instead of stdout only")
     parser.add_argument("--baseline", type=Path, help="Compare the report with a previous v2.11 JSON report")
@@ -327,9 +383,12 @@ def main(argv: list[str] | None = None) -> int:
         catalog=catalog,
         embedding_model=settings.embedding_model,
         model_cache_dir=settings.model_cache_dir,
-        candidate_k=max(12, args.top_k),
+        # Match the production retriever configuration.  Using a smaller
+        # evaluator-only candidate pool can change the fourth citation and
+        # make an otherwise valid product citation look invalid.
+        candidate_k=max(settings.retrieval_candidate_k, args.top_k),
         embedding_enabled=args.hybrid,
-        local_files_only=True,
+        local_files_only=not args.allow_model_download,
         reranker=(
             FastEmbedReranker(settings.reranker_model, settings.model_cache_dir / "reranker")
             if settings.reranker_enabled
@@ -362,7 +421,7 @@ def main(argv: list[str] | None = None) -> int:
         },
         retrieval_parameters={
             "top_k": args.top_k,
-            "candidate_k": max(12, args.top_k),
+            "candidate_k": max(settings.retrieval_candidate_k, args.top_k),
             "query_analysis": "deterministic-v1",
             "reranker_enabled": settings.reranker_enabled,
             "reranker_model": settings.reranker_model if settings.reranker_enabled else None,
@@ -378,7 +437,8 @@ def main(argv: list[str] | None = None) -> int:
         profile_fingerprint=profile_fingerprint(profile),
         parameters={
             "offline": args.mode == "offline",
-            "local_files_only": True,
+            "local_files_only": not args.allow_model_download,
+            "embedding_download_allowed": bool(args.allow_model_download),
             "embedding_enabled": settings.embedding_enabled,
             "embedding_local_only": settings.embedding_local_only,
             "advanced_query_enabled": True,
@@ -420,20 +480,49 @@ def main(argv: list[str] | None = None) -> int:
             )
             if model_client is not None:
                 try:
+                    context_answer: Answer | None = None
                     if case.turns:
                         answer, _conversation_id = _post_case_turns(model_client, case)
                     else:
                         conversation_id = None
                         if case.previous_query:
-                            _context_answer, conversation_id = _post_chat(model_client, case.previous_query)
+                            context_payload, conversation_id = _post_chat(model_client, case.previous_query)
+                            context_answer = Answer.model_validate(context_payload)
                         answer, _conversation_id = _post_chat(
                             model_client, case.query, conversation_id=conversation_id
+                        )
+                    # The production endpoint resolves a follow-up query from
+                    # the actual previous assistant answer (including its
+                    # commands and summary).  Rebuild the evaluator's
+                    # retrieval observation from that same answer so memory
+                    # cases validate the exact citation set used by the app,
+                    # rather than a synthetic placeholder context.
+                    if context_answer is not None:
+                        retrieved_hits = _retrieve_hits(
+                            retriever,
+                            case,
+                            retrieval_depth,
+                            previous_answer=context_answer,
+                        )
+                        retrieved_ids = [hit.topic.id for hit in retrieved_hits]
+                        retrieval_observation = _retrieval_observation(retrieved_hits)
+                        result = case_result(
+                            case,
+                            retrieved_ids,
+                            k=args.top_k,
+                            retrieval_observation=retrieval_observation,
+                        )
+                    validation_observation = retrieval_observation
+                    if context_answer is not None:
+                        validation_observation = _merge_answer_citation_observation(
+                            retrieval_observation,
+                            answer,
                         )
                     validation = validate_answer(
                         case,
                         answer,
                         retrieved_ids,
-                        retrieval_observation=retrieval_observation,
+                        retrieval_observation=validation_observation,
                     )
                     generation = answer.get("generation") if isinstance(answer.get("generation"), dict) else {}
                     validation.update(

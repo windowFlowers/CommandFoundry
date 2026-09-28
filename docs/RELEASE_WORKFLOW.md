@@ -27,6 +27,21 @@ AEGIS_LLM_API_KEY
 
 因此之前没有自动完成真实模型评测，不是离线测试失败，而是当前环境没有被授权把 API Key 注入模型评测步骤。Key 应配置为 GitHub Environment Secret，不能提交到仓库或写入评测报告。DeepSeek、OpenAI 兼容接口和其他已支持的 provider 都沿用应用当前配置；评测脚本不会另起一套生成逻辑，而是调用 `/chat/stream` 使用的后端链路。
 
+### OpenAI API 与 Codex 额度的边界
+
+应用可以通过 OpenAI Platform 的标准 API 接入模型，例如将 provider 设为 `openai`，并提供单独的 OpenAI Platform API Key。这个 Key 属于 API 项目计费凭证，不能用 ChatGPT/Codex 订阅额度替代。Codex 桌面会话、登录态或内部凭证不是面向第三方应用的 API 接口；本项目不会读取、抓取或复用这些内部凭证，也不会把它们写入配置或评测报告。需要使用 OpenAI 时，请按官方 [API Quickstart](https://developers.openai.com/api/docs/quickstart) 创建项目 Key；Codex 本身的扩展/插件能力见官方 [Codex plugin 文档](https://developers.openai.com/learn/developers-codex-plugin)。
+
+本地 OpenAI 评测示例（仍然只在当前 PowerShell 进程中设置 Key）：
+
+```powershell
+$env:AEGIS_LLM_PROVIDER = "openai"
+$env:AEGIS_LLM_MODEL = "gpt-4o-mini"
+$env:AEGIS_LLM_BASE_URL = "https://api.openai.com/v1"
+$env:AEGIS_LLM_API_KEY = "<OpenAI Platform API Key>"
+```
+
+如果只有 Codex/ChatGPT 订阅额度而没有 OpenAI Platform API Key，不能安全地把该额度接入 CommandFoundry 的后端评测；此时应继续使用已配置的 DeepSeek、其他 OpenAI-compatible provider，或本地 Ollama。
+
 本地需要做真实模型评测时，先在当前 PowerShell 会话中设置环境变量，再运行：
 
 ```powershell
@@ -66,6 +81,32 @@ backend\.venv\Scripts\python.exe scripts\run_evaluation.py `
 ```
 
 真实模型基线同样必须使用 `--redact`。报告中不得包含 API Key、Authorization Header、密码、Token、私钥、完整敏感路径、完整提示词或终端输出。若 provider、model、base URL、prompt、embedding、reranker、chunk 或 retrieval 参数变化，应建立新的 profile 基线，不能静默覆盖旧基线。
+
+## 本地固定入口
+
+为避免手工漏掉阶段，项目提供统一入口 `scripts/run_release_workflow.py`。它会按阶段执行静态检查、全量测试、评测、报告身份校验和 Windows 打包：
+
+```powershell
+# 离线阶段，不调用云端模型
+.\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py offline `
+  --retrieval-profile hybrid `
+  --offline-baseline evaluation\baselines\v2.13-offline.json `
+  --output-dir .runtime\release-workflow\offline
+
+# 真实模型阶段；API Key 只从当前 PowerShell 环境读取
+.\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py model `
+  --retrieval-profile hybrid `
+  --model-baseline evaluation\baselines\v2.13-model.json `
+  --output-dir .runtime\release-workflow\model
+
+# 只有 model 报告通过后才允许执行
+.\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py package `
+  --model-report .runtime\release-workflow\model\model\evaluation-report.json `
+  --model-baseline evaluation\baselines\v2.13-model.json `
+  --output-dir .runtime\release-workflow\package
+```
+
+首次建立基线必须显式使用 `--allow-new-baseline`；`--allow-dirty` 和 `--skip-package` 只用于开发调试，不能用于发布。
 
 ## GitHub Actions 使用方式
 

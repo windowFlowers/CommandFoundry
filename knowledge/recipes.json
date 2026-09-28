@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_for": "CommandFoundry 2.7.0",
-  "recipe_count": 21,
-  "recipe_revision": "711fca4d6118308bdee4fe1e4e522c32717c61766d857687594af8fa20ccb083",
+  "recipe_count": 22,
+  "recipe_revision": "aeb18cf8d88932af1d1f21b3fd68a194e89f34ac4f500be5f55f52804746d72d",
   "cleaning_revision": "v2.12.0",
   "quality_report_sha256": "7244d206e61aac0f1186039c94ae8a78247be55f80324d61886083e8024e0fde",
   "recipes": [
@@ -651,6 +651,79 @@
       ],
       "cleaning_revision": "v2.12.0",
       "source_revision": "25cbbc79e81748d0b416997465e14cb086a414b9bec010e63589e2c3bb2a78f5"
+    },
+    {
+      "recipe_id": "windows.get-childitem.path",
+      "topic_id": "windows.get-childitem",
+      "title": "列出 Windows 文件和目录",
+      "description": "在 PowerShell 或 CMD 中列出指定路径下的文件和目录。",
+      "required_slots": [
+        {
+          "name": "path",
+          "label": "路径",
+          "type": "path",
+          "question": "要查看哪个目录或路径？",
+          "validation": "windows_path"
+        }
+      ],
+      "optional_slots": [
+        {
+          "name": "shell",
+          "label": "Shell",
+          "type": "choice",
+          "question": "你准备在哪个 Shell 中运行？",
+          "prompt_if_absent": true,
+          "options": [
+            {
+              "label": "PowerShell",
+              "value": "powershell"
+            },
+            {
+              "label": "CMD",
+              "value": "cmd"
+            }
+          ]
+        }
+      ],
+      "derived_slots": [],
+      "platforms": [
+        "Windows 10/11",
+        "Windows Server"
+      ],
+      "shells": [
+        "powershell",
+        "cmd"
+      ],
+      "steps": [
+        {
+          "id": "list",
+          "label": "列出文件和目录",
+          "merge": "newline",
+          "templates": {
+            "powershell": "Get-ChildItem -LiteralPath '{{path}}' -Force",
+            "cmd": "dir /a \"{{path}}\""
+          },
+          "languages": {
+            "powershell": "powershell",
+            "cmd": "text"
+          }
+        }
+      ],
+      "provenance": [
+        {
+          "source_id": "windows.get-childitem",
+          "title": "CommandFoundry Windows 2.7 种子知识:列出 Windows 文件和目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-childitem",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-childitem",
+          "sha256": "018883889cd93f81a1c46921a33aca0b865bb8da8bf2bc7f2821907c5f3952a9",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ],
+      "cleaning_revision": "v2.12.0",
+      "source_revision": "c3f7a9984bafe5f3c1dee1e5ba62602218de4c14542539fb0f028b4b073d6a08"
     },
     {
       "recipe_id": "windows.get-filehash.path",

@@ -4,7 +4,7 @@
   "cleaning_revision": "v2.12.0",
   "quality_report_sha256": "7244d206e61aac0f1186039c94ae8a78247be55f80324d61886083e8024e0fde",
   "recipe_schema_version": 1,
-  "recipe_revision": "711fca4d6118308bdee4fe1e4e522c32717c61766d857687594af8fa20ccb083",
+  "recipe_revision": "aeb18cf8d88932af1d1f21b3fd68a194e89f34ac4f500be5f55f52804746d72d",
   "repositories": [
     {
       "repository": "https://github.com/tldr-pages/tldr.git",
@@ -3192,6 +3192,25 @@
           "revision": "v2.7.0",
           "path": "generated/windows/expand-archive",
           "sha256": "6b7623c6e78b373784db2ddcd14220bafed2c8f78fafad900b60c34b7b818846",
+          "kind": "generated_seed",
+          "role": "topic_basis"
+        }
+      ]
+    },
+    {
+      "recipe_id": "windows.get-childitem.path",
+      "topic_id": "windows.get-childitem",
+      "source_revision": "c3f7a9984bafe5f3c1dee1e5ba62602218de4c14542539fb0f028b4b073d6a08",
+      "cleaning_revision": "v2.12.0",
+      "provenance": [
+        {
+          "source_id": "windows.get-childitem",
+          "title": "CommandFoundry Windows 2.7 种子知识:列出 Windows 文件和目录",
+          "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-childitem",
+          "license": "MIT (project-authored)",
+          "revision": "v2.7.0",
+          "path": "generated/windows/get-childitem",
+          "sha256": "018883889cd93f81a1c46921a33aca0b865bb8da8bf2bc7f2821907c5f3952a9",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
