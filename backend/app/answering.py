@@ -54,20 +54,23 @@ def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) ->
     strict_upload: dict[str, list[str]] = {}
     records = evidence_records(hits)
     record_ids_by_hit: dict[str, list[str]] = {}
+    citation_rank: dict[str, int] = {}
     for record in records:
-        record_ids_by_hit.setdefault(record["hit"].topic.id, []).append(record["citation_id"])
+        citation_id = record["citation_id"]
+        record_ids_by_hit.setdefault(record["hit"].topic.id, []).append(citation_id)
+        citation_rank.setdefault(citation_id, len(citation_rank))
         if record["hit"].topic.source.kind == "upload":
             for code in record["command_evidence"]:
-                strict_upload.setdefault(_strict_command_code(code), []).append(record["citation_id"])
+                strict_upload.setdefault(_strict_command_code(code), []).append(citation_id)
     for hit in hits:
         if hit.topic.source.kind == "upload":
             continue
         ids = record_ids_by_hit.get(hit.topic.id, [])
         for canonical in hit.topic.commands:
             evidence[_normalize_command_code(canonical.code)] = (canonical, ids)
-    grounded = []
+    grounded: list[tuple[int, int, CommandBlock]] = []
     seen: set[str] = set()
-    for command in commands:
+    for original_index, command in enumerate(commands):
         normalized = _normalize_command_code(command.code)
         strict = _strict_command_code(command.code)
         upload_ids = list(dict.fromkeys(strict_upload.get(strict, [])))
@@ -79,11 +82,24 @@ def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) ->
             continue
         seen.add(seen_key)
         if upload_ids:
-            grounded.append(command.model_copy(update={"citation_ids": upload_ids}))
+            source_rank = min((citation_rank.get(item, len(citation_rank)) for item in upload_ids), default=len(citation_rank))
+            grounded.append((source_rank, original_index, command.model_copy(update={"citation_ids": upload_ids})))
         else:
             canonical, ids = canonical_entry  # type: ignore[misc]
-            grounded.append(canonical.model_copy(update={"citation_ids": list(dict.fromkeys(ids))}))
-    return grounded
+            unique_ids = list(dict.fromkeys(ids))
+            source_rank = min((citation_rank.get(item, len(citation_rank)) for item in unique_ids), default=len(citation_rank))
+            grounded.append(
+                (
+                    source_rank,
+                    original_index,
+                    canonical.model_copy(update={"citation_ids": unique_ids}),
+                )
+            )
+    # Model output is intentionally untrusted.  Keep the command sequence
+    # deterministic and aligned with the ranked evidence so ordinal follow-up
+    # questions (“第二种”) do not change meaning when the provider reorders
+    # equivalent alternatives in its JSON response.
+    return [command for _, _, command in sorted(grounded, key=lambda item: (item[0], item[1]))]
 
 
 def citations_from_hits(hits: list[RetrievalHit]) -> list[Citation]:

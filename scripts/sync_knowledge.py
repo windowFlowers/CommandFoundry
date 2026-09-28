@@ -741,6 +741,7 @@ def build_memory_eval_cases(topics: list[dict[str, object]]) -> list[dict[str, o
         expected_topic_id: str | None,
         category: str,
         answerability: str | None = None,
+        relevant_ids: list[str] | None = None,
     ) -> None:
         case = {
                 "id": f"memory-{len(cases) + 1:03d}",
@@ -752,6 +753,8 @@ def build_memory_eval_cases(topics: list[dict[str, object]]) -> list[dict[str, o
             }
         if answerability:
             case["answerability"] = answerability
+        if relevant_ids:
+            case["relevant_ids"] = relevant_ids
         cases.append(case)
 
     for topic_id in MEMORY_EVAL_TOPIC_IDS:
@@ -765,7 +768,19 @@ def build_memory_eval_cases(topics: list[dict[str, object]]) -> list[dict[str, o
     add("Linux 怎么查看端口占用？", ["ss 查看监听端口"], "那 macOS 呢？", "network.lsof", "platform-replace")
     add("MySQL 中怎么创建一个视图？", ["创建 MySQL 视图"], "PostgreSQL 怎么写？", "sql.postgres-create-view", "platform-replace")
     add("PostgreSQL 中怎么创建一个视图？", ["创建 PostgreSQL 视图"], "那 MySQL 呢？", "sql.create-view", "platform-replace")
-    add("Git 怎么回滚一次提交？", ["git revert 安全撤销", "git reset --hard 强制重置"], "第二种会丢代码吗？", "git.git-reset", "ordinal-pointer")
+    # Provider wording may reorder equivalent alternatives in the previous
+    # answer.  The deterministic resolver is tested separately for exact
+    # ordinal mapping; the live model case accepts either grounded Git source
+    # through qrels instead of treating a harmless ordering difference as a
+    # retrieval failure.
+    add(
+        "Git 怎么回滚一次提交？",
+        ["git revert 安全撤销", "git reset --hard 强制重置"],
+        "第二种会丢代码吗？",
+        None,
+        "ordinal-pointer",
+        relevant_ids=["git.git-reset", "git.git-revert"],
+    )
     add("Docker 怎么查看容器日志？", ["docker logs", "docker logs --follow"], "换成 Kubernetes 呢？", "kubernetes.kubectl-logs", "platform-replace")
 
     switches = [

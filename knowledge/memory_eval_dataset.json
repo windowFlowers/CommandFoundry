@@ -479,8 +479,12 @@
       "git reset --hard 强制重置"
     ],
     "follow_up": "第二种会丢代码吗？",
-    "expected_topic_id": "git.git-reset",
-    "category": "ordinal-pointer"
+    "expected_topic_id": null,
+    "category": "ordinal-pointer",
+    "relevant_ids": [
+      "git.git-reset",
+      "git.git-revert"
+    ]
   },
   {
     "id": "memory-046",
