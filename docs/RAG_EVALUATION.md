@@ -137,6 +137,6 @@ v2.12 的清洗器是确定性的、无模型的 extraction → cleaning → par
 
 数据清洗通过不等同于可发布：v2.12 仍需重新运行 v2.11 离线评测、当前 provider 真实模型评测、硬/容差门禁和桌面验收。OCR、扫描 PDF、HTML、XLSX、PPTX、图片和新的向量数据库均延期，不进入本版本评测范围。
 
-CI 不访问真实 API Key，只运行离线数据校验、离线评测、后端/前端/桌面测试和构建。真实模型评测、Computer Use 桌面验收、安装包构建和发布必须按“评测通过后再打包”的顺序手动执行。
+CI 不访问真实 API Key，只运行离线数据校验、离线评测、后端/前端/桌面测试和构建。真实模型评测、Computer Use 桌面验收、安装包构建和发布必须按“评测通过后再打包”的顺序执行。
 
-GitHub Actions 的 `Release candidate RAG evaluation` 工作流只能手动触发。它从 secrets 读取当前 provider 配置，上传脱敏报告；`scripts/check_release_evaluation.py` 会核对报告对应的 Git commit、`topics.json` 指纹和门禁结果。未明确允许创建首个基线时，缺少 baseline 会直接失败。
+GitHub Actions 的 `Release candidate pipeline` 工作流只能手动触发：先执行离线测试和评测，再执行当前 provider 的真实模型评测，再执行 Windows 桌面检查；只有前三阶段全部通过并完成受保护 Environment 的桌面人工验收，才允许构建安装包。它从 `release-candidate` Environment 读取 provider 配置，上传脱敏报告；`scripts/check_release_evaluation.py` 会核对报告对应的 Git commit、`topics.json` 指纹和门禁结果。未明确允许创建首个基线时，缺少 baseline 会直接失败。完整操作、密钥配置、基线管理和失败处理见 [`docs/RELEASE_WORKFLOW.md`](RELEASE_WORKFLOW.md)。

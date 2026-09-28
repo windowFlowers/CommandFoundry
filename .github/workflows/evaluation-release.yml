@@ -1,18 +1,31 @@
-name: Release candidate RAG evaluation
+name: Release candidate pipeline
 
+# This is deliberately separate from CI. CI never receives provider secrets;
+# this workflow is the only path that may run a real model evaluation. The job
+# dependencies encode the release order: offline gates -> model gates ->
+# Windows desktop checks -> (optional) package.
 on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "Evaluation suite name"
+        description: "Evaluation suite (use all for a release candidate)"
         required: false
-        default: core
-      baseline:
-        description: "Repository-relative baseline report path (leave empty only when creating the first baseline)"
+        default: all
+      offline_baseline:
+        description: "Tracked repository-relative offline baseline report"
+        required: false
+        default: ""
+      model_baseline:
+        description: "Tracked repository-relative model baseline report"
         required: false
         default: ""
       allow_new_baseline:
-        description: "Allow a first baseline without comparison"
+        description: "Allow an explicitly approved first baseline"
+        required: false
+        type: boolean
+        default: false
+      build_installer:
+        description: "After all gates and desktop approval, build the Windows installer"
         required: false
         type: boolean
         default: false
@@ -21,11 +34,111 @@ permissions:
   contents: read
 
 jobs:
-  evaluate:
+  offline:
+    name: Offline tests and evaluation
     runs-on: ubuntu-latest
+    env:
+      SUITE: ${{ inputs.suite }}
+      OFFLINE_BASELINE: ${{ inputs.offline_baseline }}
+      ALLOW_NEW_BASELINE: ${{ inputs.allow_new_baseline }}
     steps:
-      - name: Checkout repository
+      - name: Checkout release commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run repository and fixture guards
+        run: |
+          python scripts/check_placeholder_corruption.py
+          python scripts/validate_evaluation_data.py
+
+      - name: Run backend tests
+        working-directory: backend
+        run: pytest -q
+
+      - name: Run frontend tests and build
+        working-directory: frontend
+        run: |
+          npm test
+          npm run build
+
+      - name: Run offline evaluation
+        run: |
+          args=(--suite "$SUITE" --mode offline --output "$RUNNER_TEMP/offline-evaluation" --redact --fail-on-gate)
+          if [ -n "$OFFLINE_BASELINE" ]; then
+            args+=(--baseline "$OFFLINE_BASELINE")
+          elif [ "$ALLOW_NEW_BASELINE" != "true" ]; then
+            echo "An offline baseline is required unless allow_new_baseline is explicitly selected."
+            exit 1
+          fi
+          python scripts/run_evaluation.py "${args[@]}"
+
+      - name: Verify offline report identity and gate
+        run: |
+          args=("$RUNNER_TEMP/offline-evaluation/evaluation-report.json")
+          if [ -n "$OFFLINE_BASELINE" ]; then
+            args+=(--baseline "$OFFLINE_BASELINE" --require-baseline)
+          fi
+          python scripts/check_release_evaluation.py "${args[@]}"
+
+      - name: Upload offline evaluation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: commandfoundry-offline-evaluation-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/offline-evaluation/evaluation-report.json
+            ${{ runner.temp }}/offline-evaluation/evaluation-summary.md
+            ${{ runner.temp }}/offline-evaluation/bad-cases.jsonl
+            ${{ runner.temp }}/offline-evaluation/run-manifest.json
+          if-no-files-found: error
+
+  model:
+    name: Current provider model evaluation
+    needs: offline
+    runs-on: ubuntu-latest
+    # Configure this environment with required reviewers and the four
+    # AEGIS_LLM_* secrets. Secrets are never written to reports or artifacts.
+    environment: release-candidate
+    env:
+      SUITE: ${{ inputs.suite }}
+      MODEL_BASELINE: ${{ inputs.model_baseline }}
+      ALLOW_NEW_BASELINE: ${{ inputs.allow_new_baseline }}
+      AEGIS_LLM_PROVIDER: ${{ secrets.AEGIS_LLM_PROVIDER }}
+      AEGIS_LLM_MODEL: ${{ secrets.AEGIS_LLM_MODEL }}
+      AEGIS_LLM_BASE_URL: ${{ secrets.AEGIS_LLM_BASE_URL }}
+      AEGIS_LLM_API_KEY: ${{ secrets.AEGIS_LLM_API_KEY }}
+      AEGIS_STORAGE_DIR: ${{ runner.temp }}/commandfoundry-storage
+      # Release evaluation must exercise the production hybrid retrieval path.
+      AEGIS_EMBEDDING_ENABLED: "1"
+      AEGIS_EMBEDDING_LOCAL_ONLY: "0"
+      AEGIS_RERANKER_ENABLED: "0"
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -38,39 +151,148 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Run release-candidate model evaluation
-        env:
-          AEGIS_LLM_PROVIDER: ${{ secrets.AEGIS_LLM_PROVIDER }}
-          AEGIS_LLM_MODEL: ${{ secrets.AEGIS_LLM_MODEL }}
-          AEGIS_LLM_BASE_URL: ${{ secrets.AEGIS_LLM_BASE_URL }}
-          AEGIS_LLM_API_KEY: ${{ secrets.AEGIS_LLM_API_KEY }}
-          AEGIS_STORAGE_DIR: ${{ runner.temp }}/commandfoundry-storage
-          AEGIS_EMBEDDING_ENABLED: "0"
+      - name: Require provider credentials without printing them
+        shell: bash
         run: |
-          args=(--suite "${{ inputs.suite }}" --mode model --provider current --output "$RUNNER_TEMP/evaluation-report.json" --redact)
-          if [ -n "${{ inputs.baseline }}" ]; then
-            args+=(--baseline "${{ inputs.baseline }}" --fail-on-gate)
-          elif [ "${{ inputs.allow_new_baseline }}" != "true" ]; then
-            echo "A baseline is required unless allow_new_baseline is explicitly selected."
+          if [ "$AEGIS_LLM_PROVIDER" != "ollama" ] && [ -z "$AEGIS_LLM_API_KEY" ]; then
+            echo "AEGIS_LLM_API_KEY is missing in the release-candidate environment."
+            exit 1
+          fi
+          if [ -z "$AEGIS_LLM_MODEL" ] || [ -z "$AEGIS_LLM_BASE_URL" ]; then
+            echo "AEGIS_LLM_MODEL and AEGIS_LLM_BASE_URL must be configured."
+            exit 1
+          fi
+
+      - name: Run real model evaluation through the product path
+        run: |
+          args=(--suite "$SUITE" --mode model --provider current --hybrid --allow-model-download --output "$RUNNER_TEMP/model-evaluation" --redact --fail-on-gate)
+          if [ -n "$MODEL_BASELINE" ]; then
+            args+=(--baseline "$MODEL_BASELINE")
+          elif [ "$ALLOW_NEW_BASELINE" != "true" ]; then
+            echo "A model baseline is required unless allow_new_baseline is explicitly selected."
             exit 1
           fi
           python scripts/run_evaluation.py "${args[@]}"
 
-      - name: Verify release report identity and gate
+      - name: Verify model report identity and gate
         run: |
-          args=("$RUNNER_TEMP/evaluation-report.json")
-          if [ -n "${{ inputs.baseline }}" ]; then
-            args+=(--baseline "${{ inputs.baseline }}" --require-baseline)
+          args=("$RUNNER_TEMP/model-evaluation/evaluation-report.json")
+          if [ -n "$MODEL_BASELINE" ]; then
+            args+=(--baseline "$MODEL_BASELINE" --require-baseline)
           fi
           python scripts/check_release_evaluation.py "${args[@]}"
 
-      - name: Upload redacted evaluation artifacts
+      - name: Upload model evaluation artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: commandfoundry-rag-evaluation-${{ github.sha }}
+          name: commandfoundry-model-evaluation-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/evaluation-report.json
-            ${{ runner.temp }}/evaluation-summary.md
-            ${{ runner.temp }}/bad-cases.jsonl
-            ${{ runner.temp }}/run-manifest.json
+            ${{ runner.temp }}/model-evaluation/evaluation-report.json
+            ${{ runner.temp }}/model-evaluation/evaluation-summary.md
+            ${{ runner.temp }}/model-evaluation/bad-cases.jsonl
+            ${{ runner.temp }}/model-evaluation/run-manifest.json
+          if-no-files-found: error
+
+  desktop:
+    name: Windows desktop checks
+    needs: model
+    runs-on: windows-latest
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Create desktop backend environment
+        working-directory: backend
+        shell: powershell
+        run: |
+          python -m venv .venv
+          .venv/Scripts/python.exe -m pip install --upgrade pip
+          .venv/Scripts/python.exe -m pip install -e ".[dev,desktop]"
+
+      - name: Test and build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Test desktop shell
+        working-directory: desktop
+        run: |
+          npm ci
+          npm test
+
+      - name: Build the packaged backend (no installer yet)
+        working-directory: desktop
+        run: npm run build:backend
+
+  package:
+    name: Package Windows installer after approval
+    needs: desktop
+    if: ${{ inputs.build_installer == true }}
+    runs-on: windows-latest
+    # Configure this environment with a required reviewer for manual CUA
+    # acceptance. CI cannot operate the native desktop UI itself.
+    environment: desktop-release-approval
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Create packaging environment and install dependencies
+        working-directory: backend
+        shell: powershell
+        run: |
+          python -m venv .venv
+          .venv/Scripts/python.exe -m pip install --upgrade pip
+          .venv/Scripts/python.exe -m pip install -e ".[dev,desktop]"
+          Push-Location ../frontend
+          npm ci
+          Pop-Location
+          Push-Location ../desktop
+          npm ci
+          Pop-Location
+
+      - name: Build Windows installer
+        working-directory: desktop
+        run: npm run dist:win
+
+      - name: Generate installer SHA-256
+        shell: powershell
+        run: |
+          $installer = Get-ChildItem -LiteralPath desktop/dist -Filter *.exe -File | Select-Object -First 1
+          if (-not $installer) { throw "No installer was generated under desktop/dist." }
+          $hash = Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256
+          "$($hash.Hash)  $($installer.Name)" | Set-Content -LiteralPath desktop/dist/SHA256SUMS.txt -Encoding ASCII
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: commandfoundry-windows-x64-${{ github.sha }}
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/SHA256SUMS.txt
           if-no-files-found: error

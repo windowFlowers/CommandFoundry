@@ -42,8 +42,8 @@ jobs:
       - name: Validate offline evaluation fixtures
         run: python scripts/validate_evaluation_data.py
 
-      - name: Run v2.11 offline golden evaluation
-        run: python scripts/run_evaluation.py --suite core --mode offline --output "${{ runner.temp }}/commandfoundry-evaluation.json"
+      - name: Run offline golden evaluation
+        run: python scripts/run_evaluation.py --suite all --mode offline --output "${{ runner.temp }}/commandfoundry-evaluation.json"
 
       - name: Verify offline report identity and hard gates
         run: python scripts/check_release_evaluation.py "${{ runner.temp }}/commandfoundry-evaluation.json"
@@ -55,3 +55,15 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+
+      - name: Run desktop tests
+        working-directory: desktop
+        run: npm test
