@@ -4,8 +4,10 @@ import json
 import re
 import unicodedata
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from threading import RLock
+from typing import Iterable, Sequence
 
 import numpy as np
 from rank_bm25 import BM25Okapi
@@ -26,6 +28,243 @@ from .repository import ConversationRepository
 
 LATIN_TOKEN = re.compile(r"[a-zA-Z0-9_+.#:/-]+")
 CJK_SEQUENCE = re.compile(r"[\u3400-\u9fff]+")
+
+
+# These are deliberately conservative.  A metadata filter is only applied
+# when the user has named a platform/shell or a technology with a stable
+# domain.  Generic words such as "文件" or "日志" must not route a query to
+# one domain merely because that domain happens to contain the word.
+_DOMAIN_HINTS: dict[str, tuple[str, ...]] = {
+    "cicd": ("cicd", "ci/cd", "github actions", "jenkins", "gitlab ci", "pipeline"),
+    "docker": ("docker", "容器", "container"),
+    "git": ("git", "github", "gitlab", "提交", "commit", "分支", "branch"),
+    "http": ("http", "https", "curl", "wget", "接口", "api", "json 请求"),
+    "java": ("java", "maven", "gradle", "jar"),
+    "kubernetes": ("kubernetes", "k8s", "kubectl", "helm"),
+    "linux": ("linux", "ubuntu", "debian", "bash", "shell", "systemd"),
+    "network": ("网络", "network", "dns", "端口", "ping", "tcp", "ipconfig"),
+    "node": ("node", "node.js", "npm", "npx", "yarn", "pnpm"),
+    "python": ("python", "pip", "venv", "virtualenv", "conda"),
+    "redis": ("redis", "redis-cli"),
+    "sql": ("sql", "mysql", "postgres", "postgresql", "数据库", "查询", "select"),
+    "testing": ("测试", "testing", "pytest", "jest", "playwright", "单元测试"),
+    "windows": (
+        "windows",
+        "powershell",
+        "cmd.exe",
+        "命令提示符",
+        "winget",
+        "chocolatey",
+        "scoop",
+        "robocopy",
+    ),
+}
+
+_QUERY_FILLERS = re.compile(
+    r"(?i)(?:请问|请|告诉我|帮我|帮忙|我想|我需要|能否|可以|如何|怎么|怎样|有什么办法|一下|的|是什么|指令|命令|操作|(?<![a-z])how\s+to(?![a-z])|(?<![a-z])how(?![a-z])|(?<![a-z])can\s+you(?![a-z])|(?<![a-z])please(?![a-z]))"
+)
+_MULTI_QUERY_SPLIT = re.compile(r"\s*(?:以及|并且|同时|另外|然后|和|还有|及|,|，|;|；)\s*")
+
+
+@dataclass(frozen=True)
+class QueryAnalysis:
+    """Deterministic query plan used before retrieval.
+
+    This intentionally contains no model-generated text.  ``variants`` are
+    bounded, normalized lexical views of the same user query; they are later
+    fused with RRF.  The optional metadata fields are strict only when the
+    query contains an explicit high-signal hint.
+    """
+
+    original: str
+    variants: tuple[str, ...]
+    intent: str = "knowledge"
+    domain: str | None = None
+    platform: str | None = None
+    shell: str | None = None
+    decomposed: bool = False
+
+    @property
+    def has_metadata_filter(self) -> bool:
+        return bool(self.domain or self.platform or self.shell)
+
+
+def _normalized_query(value: str) -> str:
+    return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", str(value or ""))).strip()
+
+
+def _contains_hint(query: str, hint: str) -> bool:
+    value = hint.casefold()
+    if re.search(r"[a-z0-9]", value):
+        return bool(re.search(rf"(?<![a-z0-9]){re.escape(value)}(?![a-z0-9])", query.casefold()))
+    return value in query.casefold()
+
+
+def _infer_domain(query: str, topics: Sequence[KnowledgeTopic]) -> str | None:
+    lowered = query.casefold()
+    candidates: dict[str, int] = {}
+    known_domains = {topic.domain for topic in topics}
+    for domain, hints in _DOMAIN_HINTS.items():
+        if domain not in known_domains:
+            continue
+        score = sum(1 for hint in hints if _contains_hint(lowered, hint))
+        if score:
+            candidates[domain] = score
+
+    # Catalog titles/aliases provide a small, data-driven extension without
+    # turning every stop word into a router.  Only names of at least three
+    # meaningful characters participate, and a tie remains unfiltered.
+    for topic in topics:
+        names = [topic.id.rsplit(".", 1)[-1], topic.title, *topic.aliases]
+        for name in names:
+            candidate = _normalized_query(name).casefold()
+            if len(candidate) < 3 or "<" in candidate:
+                continue
+            if _contains_hint(lowered, candidate):
+                candidates[topic.domain] = candidates.get(topic.domain, 0) + min(len(candidate), 32) / 32
+
+    if not candidates:
+        return None
+    ordered = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+    if len(ordered) > 1 and abs(ordered[0][1] - ordered[1][1]) < 0.75:
+        return None
+    return ordered[0][0]
+
+
+def _infer_shell_and_platform(query: str) -> tuple[str | None, str | None]:
+    lowered = query.casefold()
+    if any(_contains_hint(lowered, hint) for hint in ("powershell", "pwsh")):
+        return "powershell", "windows"
+    if any(_contains_hint(lowered, hint) for hint in ("cmd.exe", "cmd", "命令提示符", "批处理")):
+        return "cmd", "windows"
+    if any(_contains_hint(lowered, hint) for hint in ("windows", "win10", "win11", "windows server")):
+        return None, "windows"
+    if any(_contains_hint(lowered, hint) for hint in ("bash", "posix", "unix", "linux", "ubuntu", "macos", "mac os")):
+        return "posix", "posix"
+    if any(_contains_hint(lowered, hint) for hint in ("sql", "mysql", "postgres", "postgresql")):
+        return "sql", None
+    return None, None
+
+
+def _focused_variant(query: str) -> str:
+    focused = _QUERY_FILLERS.sub(" ", query)
+    return _normalized_query(focused).strip(" ，,。.!！？?：:;")
+
+
+def _classify_intent(query: str) -> str:
+    lowered = query.casefold()
+    if any(token in lowered for token in ("模板", "范例", "示例", "template", "example")):
+        return "template"
+    if any(token in lowered for token in ("比较", "区别", "差异", "对比", "compare", "difference")):
+        return "compare"
+    if any(token in lowered for token in ("文档", "哪一段", "原文", "来源", "引用", "出处")):
+        return "document_lookup"
+    if any(token in lowered for token in ("命令", "指令", "执行", "运行", "怎么", "如何", "command")) or re.search(
+        r"(?<![a-z])how(?![a-z])", lowered
+    ):
+        return "command"
+    return "knowledge"
+
+
+def analyze_query(query: str, topics: Iterable[KnowledgeTopic]) -> QueryAnalysis:
+    """Create a bounded deterministic query plan.
+
+    The original query is always retained.  A focused variant is added only
+    when it differs materially, and conjunctions are decomposed only when at
+    least two parts contain a known domain signal.  This prevents a generic
+    Chinese sentence from unexpectedly becoming a multi-query request.
+    """
+
+    original = _normalized_query(query)
+    topic_list = list(topics)
+    focused = _focused_variant(original)
+    variants: list[str] = [original] if original else []
+    if focused and focused.casefold() != original.casefold() and len(tokenize(focused)) >= 1:
+        variants.append(focused)
+
+    parts = [part for part in _MULTI_QUERY_SPLIT.split(original) if part.strip()]
+    part_domains = [_infer_domain(part, topic_list) for part in parts]
+    recognized_parts = [part for part, domain in zip(parts, part_domains) if domain]
+    decomposed = len(recognized_parts) >= 2 and len(set(domain for domain in part_domains if domain)) >= 2
+    if decomposed:
+        variants.extend(recognized_parts)
+
+    # De-duplicate while preserving the original-first order and cap work for
+    # pathological long input.  The cap also bounds embedding API calls.
+    unique_variants = tuple(dict.fromkeys(item for item in variants if item) )[:4]
+    shell, platform = _infer_shell_and_platform(original)
+    domains = {domain for domain in part_domains if domain}
+    domain = _infer_domain(original, topic_list) if len(domains) <= 1 else None
+    return QueryAnalysis(
+        original=original,
+        variants=unique_variants,
+        intent=_classify_intent(original),
+        domain=domain,
+        platform=platform,
+        shell=shell,
+        decomposed=decomposed,
+    )
+
+
+def _platform_matches(command_platforms: Iterable[str], platform: str) -> bool:
+    values = " ".join(str(item).casefold() for item in command_platforms)
+    if platform == "windows":
+        return any(token in values for token in ("windows", "win32", "win10", "win11"))
+    if platform == "posix":
+        return any(token in values for token in ("linux", "macos", "mac os", "unix", "posix", "wsl"))
+    if platform == "linux":
+        return "linux" in values or "wsl" in values
+    if platform == "macos":
+        return "macos" in values or "mac os" in values
+    return platform.casefold() in values
+
+
+def topic_matches_query_filters(
+    topic: KnowledgeTopic,
+    *,
+    domain: str | None = None,
+    platform: str | None = None,
+    shell: str | None = None,
+) -> bool:
+    """Return whether a topic satisfies explicit query metadata filters."""
+
+    if domain and topic.domain.casefold() != domain.casefold():
+        return False
+    commands = topic.commands
+    if shell:
+        command_shells = {
+            (command.shell or ("posix" if command.language == "bash" else command.language)).casefold()
+            for command in commands
+        }
+        if shell.casefold() not in command_shells:
+            return False
+    if platform and commands and not any(_platform_matches(command.platforms, platform) for command in commands):
+        return False
+    return True
+
+
+def retrieval_confidence(hits: Sequence[RetrievalHit]) -> float:
+    """Return a bounded evidence confidence for no-answer routing.
+
+    This is intentionally a retrieval signal, not a claim about answer
+    correctness.  It combines the existing BM25 and vector thresholds and is
+    useful to keep an empty/weak retrieval result from being handed to a model
+    as if it were grounded evidence.
+    """
+
+    if not hits:
+        return 0.0
+    best_lexical = max(0.0, float(max(hit.bm25_score for hit in hits)))
+    lexical_confidence = 1.0 - np.exp(-best_lexical / 4.0)
+    best_vector = max(0.0, float(max(hit.vector_score for hit in hits)))
+    vector_confidence = min(1.0, max(0.0, (best_vector - 0.42) / 0.58))
+    return round(float(max(lexical_confidence, vector_confidence)), 6)
+
+
+def has_sufficient_evidence(hits: Sequence[RetrievalHit], *, minimum_confidence: float = 0.05) -> bool:
+    """Conservatively gate model answering on retrieval evidence."""
+
+    return bool(hits) and retrieval_confidence(hits) >= minimum_confidence
 
 
 def _command_language(code: str) -> str:
@@ -203,10 +442,26 @@ class HybridRetriever:
         query_vector /= max(float(np.linalg.norm(query_vector)), 1e-12)
         return self._topic_vectors @ query_vector
 
-    def retrieve(self, query: str, *, top_k: int = 4) -> list[RetrievalHit]:
+    def _retrieve_once(
+        self,
+        query: str,
+        *,
+        top_k: int,
+        domain: str | None = None,
+        platform: str | None = None,
+        shell: str | None = None,
+    ) -> list[RetrievalHit]:
         query_tokens = tokenize(query)
         if not query_tokens or not self.catalog.topics or self._bm25 is None:
             return []
+        allowed = [
+            index
+            for index, topic in enumerate(self.catalog.topics)
+            if topic_matches_query_filters(topic, domain=domain, platform=platform, shell=shell)
+        ]
+        if not allowed:
+            return []
+        allowed_set = set(allowed)
         raw_bm25 = np.asarray(self._bm25.get_scores(query_tokens), dtype=np.float32)
         normalized_query = re.sub(
             r"\s+", "", unicodedata.normalize("NFKC", query).casefold()
@@ -216,6 +471,11 @@ class HybridRetriever:
         query_token_set = set(query_tokens)
         small_corpus = len(self.catalog.topics) <= 4
         for index, topic in enumerate(self.catalog.topics):
+            if index not in allowed_set:
+                # Do not let filtered-out topics participate in either the
+                # candidate list or the confidence threshold.
+                raw_bm25[index] = -np.inf
+                continue
             overlap = len(query_token_set.intersection(self._corpus[index]))
             token_overlap[index] = overlap
             # rank-bm25 can produce negative IDF in a one-chunk corpus. Explicit
@@ -233,15 +493,15 @@ class HybridRetriever:
             elif any(normalized_query and normalized_query in name for name in normalized_names):
                 lexical_bonus[index] = 8.0
         bm25_scores = raw_bm25 + lexical_bonus
-        bm25_order = np.argsort(-bm25_scores)[: self.candidate_k].tolist()
+        bm25_order = [index for index in np.argsort(-bm25_scores).tolist() if index in allowed_set][: self.candidate_k]
         rankings = [bm25_order]
         vector_scores = self._vector_scores(query) if self.embedding_enabled else None
         if vector_scores is not None:
-            rankings.append(np.argsort(-vector_scores)[: self.candidate_k].tolist())
+            rankings.append([index for index in np.argsort(-vector_scores).tolist() if index in allowed_set][: self.candidate_k])
         fused = self._rrf(rankings)
         ordered = sorted(fused, key=lambda index: (fused[index], float(bm25_scores[index])), reverse=True)
         best_bm25 = float(bm25_scores[bm25_order[0]]) if bm25_order else 0.0
-        best_vector = float(np.max(vector_scores)) if vector_scores is not None else 0.0
+        best_vector = float(np.max(vector_scores[allowed])) if vector_scores is not None and allowed else 0.0
         best_overlap = float(np.max(token_overlap)) if len(token_overlap) else 0.0
         if best_bm25 <= 0 and best_vector < 0.42 and not (small_corpus and best_overlap > 0):
             return []
@@ -254,6 +514,86 @@ class HybridRetriever:
             )
             for index in ordered[:top_k]
         ]
+
+    def retrieve(self, query: str, *, top_k: int = 4) -> list[RetrievalHit]:
+        """Backward-compatible single-query hybrid retrieval."""
+
+        return self._retrieve_once(query, top_k=top_k)
+
+    @staticmethod
+    def rerank_hits(query: str, hits: Sequence[RetrievalHit], *, top_k: int | None = None) -> list[RetrievalHit]:
+        """Apply a lightweight deterministic rerank after RRF.
+
+        The project intentionally does not add a cross-encoder dependency for
+        this stage.  Exact title/alias matches and token overlap are stable,
+        inspectable tie-breakers; the original RRF/BM25/vector scores remain
+        the primary ordering signals.
+        """
+
+        query_tokens = set(tokenize(query))
+
+        def key(hit: RetrievalHit) -> tuple[float, float, float, int, float, str]:
+            topic = hit.topic
+            names = [topic.title, *topic.aliases]
+            normalized_query = re.sub(r"\s+", "", unicodedata.normalize("NFKC", query).casefold())
+            exact_name = int(
+                any(
+                    normalized_query == re.sub(r"\s+", "", unicodedata.normalize("NFKC", name).casefold())
+                    for name in names
+                )
+            )
+            name_tokens = set(tokenize(" ".join(names)))
+            overlap = len(query_tokens.intersection(name_tokens)) / max(1, len(query_tokens))
+            return (hit.score, hit.bm25_score, hit.vector_score, exact_name, overlap, topic.id)
+
+        ordered = sorted(hits, key=key, reverse=True)
+        return ordered if top_k is None else ordered[:top_k]
+
+    def retrieve_advanced(
+        self,
+        query: str,
+        *,
+        top_k: int = 4,
+        analysis: QueryAnalysis | None = None,
+    ) -> list[RetrievalHit]:
+        """Retrieve with bounded query variants, metadata filters and rerank.
+
+        Each lexical view is independently ranked and fused with the same RRF
+        primitive already used by the baseline retriever.  This keeps the
+        change reversible and prevents a single rewritten query from replacing
+        evidence found by the user's original wording.
+        """
+
+        plan = analysis or analyze_query(query, self.catalog.topics)
+        variants = plan.variants or (query,)
+        scores: dict[str, float] = {}
+        representatives: dict[str, RetrievalHit] = {}
+        for variant_index, variant in enumerate(variants):
+            # Original wording is authoritative; derived views are weaker.
+            weight = 1.0 if variant_index == 0 else 0.7
+            hits = self._retrieve_once(
+                variant,
+                top_k=max(top_k * 2, self.candidate_k),
+                domain=plan.domain,
+                platform=plan.platform,
+                shell=plan.shell,
+            )
+            for rank, hit in enumerate(hits, start=1):
+                topic_id = hit.topic.id
+                scores[topic_id] = scores.get(topic_id, 0.0) + weight / (60 + rank)
+                existing = representatives.get(topic_id)
+                if existing is None:
+                    representatives[topic_id] = hit
+                elif hit.matched_chunks:
+                    matched = {item.chunk_id: item for item in existing.matched_chunks}
+                    matched.update({item.chunk_id: item for item in hit.matched_chunks})
+                    representatives[topic_id] = existing.model_copy(update={"matched_chunks": list(matched.values())})
+
+        fused = [
+            representatives[topic_id].model_copy(update={"score": round(score, 6)})
+            for topic_id, score in scores.items()
+        ]
+        return self.rerank_hits(plan.original, fused, top_k=top_k)
 
     def status(self) -> KnowledgeStatus:
         return KnowledgeStatus(
@@ -360,9 +700,10 @@ class KnowledgeIndexManager:
         with self._lock:
             self._cache.pop(knowledge_base_id, None)
 
-    def retrieve(self, knowledge_base_id: str, query: str, *, top_k: int) -> list[RetrievalHit]:
-        # Child chunks are ranked first, then collapsed to bounded parent evidence.
-        raw_hits = self.get(knowledge_base_id).retrieve(query, top_k=max(20, top_k))
+    @staticmethod
+    def _collapse_parent_hits(raw_hits: list[RetrievalHit], *, top_k: int) -> list[RetrievalHit]:
+        """Collapse child evidence to bounded parent hits after ranking."""
+
         grouped: dict[str, list[RetrievalHit]] = {}
         standalone: list[RetrievalHit] = []
         for hit in raw_hits:
@@ -437,6 +778,28 @@ class KnowledgeIndexManager:
             if len(selected) >= top_k:
                 break
         return selected
+
+    def retrieve(self, knowledge_base_id: str, query: str, *, top_k: int) -> list[RetrievalHit]:
+        # Child chunks are ranked first, then collapsed to bounded parent evidence.
+        raw_hits = self.get(knowledge_base_id).retrieve(query, top_k=max(20, top_k))
+        return self._collapse_parent_hits(raw_hits, top_k=top_k)
+
+    def retrieve_advanced(
+        self,
+        knowledge_base_id: str,
+        query: str,
+        *,
+        top_k: int,
+        analysis: QueryAnalysis | None = None,
+    ) -> list[RetrievalHit]:
+        """Advanced query path preserving the existing parent/child contract."""
+
+        raw_hits = self.get(knowledge_base_id).retrieve_advanced(
+            query,
+            top_k=max(20, top_k),
+            analysis=analysis,
+        )
+        return self._collapse_parent_hits(raw_hits, top_k=top_k)
 
     def status(self, knowledge_base_id: str) -> KnowledgeStatus:
         knowledge_base = self.repository.get_knowledge_base(knowledge_base_id)
