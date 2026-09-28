@@ -52,7 +52,7 @@ $env:AEGIS_LLM_API_KEY = "<只在本地会话中设置，不要写入文件或�
 backend\.venv\Scripts\python.exe scripts\run_evaluation.py `
   --suite all --mode model --provider current `
   --hybrid --allow-model-download `
-  --baseline evaluation\baselines\v2.13-model.json `
+  --baseline evaluation\baselines\v2.12-model.json `
   --output .runtime\model-release-evaluation `
   --redact --fail-on-gate
 ```
@@ -68,8 +68,8 @@ Remove-Item Env:AEGIS_LLM_API_KEY -ErrorAction SilentlyContinue
 评测报告必须和代码、知识库 revision 以及 provider/model profile 对齐。`.runtime/` 是本地临时目录，已被 `.gitignore` 忽略，不能作为 GitHub Actions 的基线路径。批准一个版本后，应把脱敏的基线报告保存到仓库中的明确路径，例如：
 
 ```text
-evaluation/baselines/v2.13-offline.json
-evaluation/baselines/v2.13-model.json
+evaluation/baselines/v2.12-offline.json
+evaluation/baselines/v2.12-model.json
 ```
 
 基线报告必须由以下命令生成并经过人工检查：
@@ -90,19 +90,19 @@ backend\.venv\Scripts\python.exe scripts\run_evaluation.py `
 # 离线阶段，不调用云端模型
 .\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py offline `
   --retrieval-profile hybrid `
-  --offline-baseline evaluation\baselines\v2.13-offline.json `
+  --offline-baseline evaluation\baselines\v2.12-offline.json `
   --output-dir .runtime\release-workflow\offline
 
 # 真实模型阶段；API Key 只从当前 PowerShell 环境读取
 .\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py model `
   --retrieval-profile hybrid `
-  --model-baseline evaluation\baselines\v2.13-model.json `
+  --model-baseline evaluation\baselines\v2.12-model.json `
   --output-dir .runtime\release-workflow\model
 
 # 只有 model 报告通过后才允许执行
 .\backend\.venv\Scripts\python.exe scripts\run_release_workflow.py package `
   --model-report .runtime\release-workflow\model\model\evaluation-report.json `
-  --model-baseline evaluation\baselines\v2.13-model.json `
+  --model-baseline evaluation\baselines\v2.12-model.json `
   --output-dir .runtime\release-workflow\package
 ```
 
