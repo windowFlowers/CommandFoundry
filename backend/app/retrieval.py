@@ -5,9 +5,10 @@ import re
 import unicodedata
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from threading import RLock
-from typing import Iterable, Sequence
+from typing import Iterable, Protocol, Sequence
 
 import numpy as np
 from rank_bm25 import BM25Okapi
@@ -40,14 +41,21 @@ _DOMAIN_HINTS: dict[str, tuple[str, ...]] = {
     "git": ("git", "github", "gitlab", "提交", "commit", "分支", "branch"),
     "http": ("http", "https", "curl", "wget", "接口", "api", "json 请求"),
     "java": ("java", "maven", "gradle", "jar"),
-    "kubernetes": ("kubernetes", "k8s", "kubectl", "helm"),
+    "kubernetes": ("kubernetes", "k8s", "kubectl"),
     "linux": ("linux", "ubuntu", "debian", "bash", "shell", "systemd"),
-    "network": ("网络", "network", "dns", "端口", "ping", "tcp", "ipconfig"),
+    # Avoid generic action words (for example "端口" or "ping") here: the
+    # catalogue intentionally contains both network and HTTP topics for those
+    # terms.  Let lexical ranking disambiguate unless the user names a stable
+    # technology such as DNS, TCP or ipconfig.
+    "network": ("网络", "network", "dns", "tcp", "ipconfig"),
     "node": ("node", "node.js", "npm", "npx", "yarn", "pnpm"),
     "python": ("python", "pip", "venv", "virtualenv", "conda"),
     "redis": ("redis", "redis-cli"),
-    "sql": ("sql", "mysql", "postgres", "postgresql", "数据库", "查询", "select"),
-    "testing": ("测试", "testing", "pytest", "jest", "playwright", "单元测试"),
+    # Keep routing hints high-signal.  Generic words such as "查询" and
+    # "数据库" occur in unrelated documentation and must not silently turn
+    # an ordinary question into an SQL-only filter.
+    "sql": ("sql", "mysql", "postgres", "postgresql"),
+    "testing": ("testing", "pytest", "jest", "playwright"),
     "windows": (
         "windows",
         "powershell",
@@ -64,6 +72,55 @@ _QUERY_FILLERS = re.compile(
     r"(?i)(?:请问|请|告诉我|帮我|帮忙|我想|我需要|能否|可以|如何|怎么|怎样|有什么办法|一下|的|是什么|指令|命令|操作|(?<![a-z])how\s+to(?![a-z])|(?<![a-z])how(?![a-z])|(?<![a-z])can\s+you(?![a-z])|(?<![a-z])please(?![a-z]))"
 )
 _MULTI_QUERY_SPLIT = re.compile(r"\s*(?:以及|并且|同时|另外|然后|和|还有|及|,|，|;|；)\s*")
+_DOMAIN_ROUTING_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "command",
+    "create",
+    "delete",
+    "for",
+    "get",
+    "how",
+    "insert",
+    "latest",
+    "new",
+    "run",
+    "select",
+    "set",
+    "the",
+    "to",
+    "update",
+    "use",
+    "view",
+    # Chinese request scaffolding is useful for BM25 but not for domain
+    # routing.  Keeping it out prevents a generic phrase such as "如何使用"
+    # from overpowering a technology token like ``helm``.
+    "如何",
+    "如何使用",
+    "请问",
+    "怎么",
+    "怎样",
+    "查看",
+    "运行",
+    "命令",
+    "指令",
+    "安全",
+    "前置条件",
+}
+
+# ``analyze_query`` is called for every evaluation case and chat turn.  The
+# catalogue is immutable for the lifetime of an index, so cache its
+# normalized title/alias index by the list identity instead of normalizing
+# hundreds of strings on every query.
+_DOMAIN_INDEX_CACHE: dict[
+    int,
+    tuple[
+        frozenset[str],
+        tuple[tuple[str, str, re.Pattern[str] | None, float], ...],
+        dict[str, tuple[tuple[str, float], ...]],
+    ],
+] = {}
 
 
 @dataclass(frozen=True)
@@ -93,17 +150,70 @@ def _normalized_query(value: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", str(value or ""))).strip()
 
 
-def _contains_hint(query: str, hint: str) -> bool:
+@lru_cache(maxsize=128)
+def _hint_pattern(hint: str) -> re.Pattern[str] | None:
     value = hint.casefold()
     if re.search(r"[a-z0-9]", value):
-        return bool(re.search(rf"(?<![a-z0-9]){re.escape(value)}(?![a-z0-9])", query.casefold()))
+        return re.compile(rf"(?<![a-z0-9]){re.escape(value)}(?![a-z0-9])")
+    return None
+
+
+def _contains_hint(query: str, hint: str) -> bool:
+    value = hint.casefold()
+    pattern = _hint_pattern(value)
+    if pattern is not None:
+        return bool(pattern.search(query.casefold()))
     return value in query.casefold()
+
+
+def _domain_index(
+    topics: Sequence[KnowledgeTopic],
+) -> tuple[
+    frozenset[str],
+    tuple[tuple[str, str, re.Pattern[str] | None, float], ...],
+    dict[str, tuple[tuple[str, float], ...]],
+]:
+    key = id(topics)
+    cached = _DOMAIN_INDEX_CACHE.get(key)
+    if cached is not None:
+        return cached
+    known_domains = frozenset(topic.domain for topic in topics)
+    entries: list[tuple[str, str, re.Pattern[str] | None, float]] = []
+    token_domains: dict[str, dict[str, float]] = {}
+    for topic in topics:
+        names = (topic.id.rsplit(".", 1)[-1], topic.title, *topic.aliases)
+        for name in names:
+            candidate = _normalized_query(name).casefold()
+            if len(candidate) < 3 or "<" in candidate:
+                continue
+            weight = min(len(candidate), 32) / 32
+            # Compile catalog patterns once while building the immutable index;
+            # using the small LRU here would evict entries as soon as a large
+            # knowledge base is loaded and rebuild them on every query.
+            pattern = (
+                re.compile(rf"(?<![a-z0-9]){re.escape(candidate)}(?![a-z0-9])")
+                if re.search(r"[a-z0-9]", candidate)
+                else None
+            )
+            entries.append((topic.domain, candidate, pattern, weight))
+            for token in _routing_tokens(candidate):
+                if len(token) >= 3 and token not in _DOMAIN_ROUTING_STOPWORDS:
+                    token_domains.setdefault(token, {})[topic.domain] = max(
+                        weight, token_domains.setdefault(token, {}).get(topic.domain, 0.0)
+                    )
+    cached = (
+        known_domains,
+        tuple(entries),
+        {token: tuple(values.items()) for token, values in token_domains.items()},
+    )
+    _DOMAIN_INDEX_CACHE[key] = cached
+    return cached
 
 
 def _infer_domain(query: str, topics: Sequence[KnowledgeTopic]) -> str | None:
     lowered = query.casefold()
     candidates: dict[str, int] = {}
-    known_domains = {topic.domain for topic in topics}
+    known_domains, entries, token_domains = _domain_index(topics)
     for domain, hints in _DOMAIN_HINTS.items():
         if domain not in known_domains:
             continue
@@ -112,16 +222,16 @@ def _infer_domain(query: str, topics: Sequence[KnowledgeTopic]) -> str | None:
             candidates[domain] = score
 
     # Catalog titles/aliases provide a small, data-driven extension without
-    # turning every stop word into a router.  Only names of at least three
-    # meaningful characters participate, and a tie remains unfiltered.
-    for topic in topics:
-        names = [topic.id.rsplit(".", 1)[-1], topic.title, *topic.aliases]
-        for name in names:
-            candidate = _normalized_query(name).casefold()
-            if len(candidate) < 3 or "<" in candidate:
-                continue
-            if _contains_hint(lowered, candidate):
-                candidates[topic.domain] = candidates.get(topic.domain, 0) + min(len(candidate), 32) / 32
+    # turning every stop word into a router.  Keep this path cheap because it
+    # runs for every evaluation/query: normalized substring checks are enough
+    # for Chinese aliases, while Latin aliases still use the boundary-aware
+    # helper to avoid matching ``sql`` inside ``mysql``.
+    # Only inspect the small set of lexical tokens present in this query.
+    # This avoids an O(number-of-aliases) regex scan for every chat turn while
+    # retaining exact topic aliases such as ``firewall-cmd`` and ``pytest``.
+    for token in _routing_tokens(lowered):
+        for domain, weight in token_domains.get(token, ()):
+            candidates[domain] = candidates.get(domain, 0) + weight
 
     if not candidates:
         return None
@@ -135,14 +245,24 @@ def _infer_shell_and_platform(query: str) -> tuple[str | None, str | None]:
     lowered = query.casefold()
     if any(_contains_hint(lowered, hint) for hint in ("powershell", "pwsh")):
         return "powershell", "windows"
-    if any(_contains_hint(lowered, hint) for hint in ("cmd.exe", "cmd", "命令提示符", "批处理")):
+    # ``firewall-cmd`` is a Linux executable, not the Windows cmd shell.  A
+    # hyphen is therefore excluded from the standalone ``cmd`` token match.
+    if (
+        _contains_hint(lowered, "cmd.exe")
+        or bool(re.search(r"(?<![a-z0-9-])cmd(?![a-z0-9-])", lowered))
+        or any(_contains_hint(lowered, hint) for hint in ("命令提示符", "批处理"))
+    ):
         return "cmd", "windows"
     if any(_contains_hint(lowered, hint) for hint in ("windows", "win10", "win11", "windows server")):
         return None, "windows"
     if any(_contains_hint(lowered, hint) for hint in ("bash", "posix", "unix", "linux", "ubuntu", "macos", "mac os")):
         return "posix", "posix"
+    # SQL is a technology/domain, not a shell.  SQL recipes in the catalogue
+    # may be rendered through bash, PowerShell, or a database client; applying
+    # a shell filter here would incorrectly discard valid MySQL/PostgreSQL
+    # topics.
     if any(_contains_hint(lowered, hint) for hint in ("sql", "mysql", "postgres", "postgresql")):
-        return "sql", None
+        return None, None
     return None, None
 
 
@@ -176,7 +296,7 @@ def analyze_query(query: str, topics: Iterable[KnowledgeTopic]) -> QueryAnalysis
     """
 
     original = _normalized_query(query)
-    topic_list = list(topics)
+    topic_list = topics if isinstance(topics, list) else list(topics)
     focused = _focused_variant(original)
     variants: list[str] = [original] if original else []
     if focused and focused.casefold() != original.casefold() and len(tokenize(focused)) >= 1:
@@ -191,14 +311,21 @@ def analyze_query(query: str, topics: Iterable[KnowledgeTopic]) -> QueryAnalysis
 
     # De-duplicate while preserving the original-first order and cap work for
     # pathological long input.  The cap also bounds embedding API calls.
-    unique_variants = tuple(dict.fromkeys(item for item in variants if item) )[:4]
+    unique_variants = tuple(dict.fromkeys(item for item in variants if item))[:4]
     shell, platform = _infer_shell_and_platform(original)
     domains = {domain for domain in part_domains if domain}
     domain = _infer_domain(original, topic_list) if len(domains) <= 1 else None
+    intent = _classify_intent(original)
+    if intent in {"command", "template", "document_lookup"} and not decomposed:
+        # Keep the public plan itself safe, not only the downstream retriever:
+        # callers that inspect ``variants`` must not accidentally execute a
+        # derived command/document lookup query.
+        unique_variants = (original,) if original else ()
+        decomposed = False
     return QueryAnalysis(
         original=original,
         variants=unique_variants,
-        intent=_classify_intent(original),
+        intent=intent,
         domain=domain,
         platform=platform,
         shell=shell,
@@ -238,7 +365,11 @@ def topic_matches_query_filters(
         }
         if shell.casefold() not in command_shells:
             return False
-    if platform and commands and not any(_platform_matches(command.platforms, platform) for command in commands):
+    # An explicit platform request must never admit a topic whose commands do
+    # not declare a compatible platform.  Treat missing metadata as unknown,
+    # not as a wildcard, otherwise a PowerShell/CMD query could surface a
+    # POSIX-only or unclassified command.
+    if platform and (not commands or not any(_platform_matches(command.platforms, platform) for command in commands)):
         return False
     return True
 
@@ -285,6 +416,22 @@ def tokenize(text: str) -> list[str]:
         if len(sequence) <= 6:
             tokens.extend(sequence)
     return [token for token in tokens if token.strip()]
+
+
+def _routing_tokens(text: str) -> set[str]:
+    """Return high-signal tokens suitable for domain routing.
+
+    ``tokenize`` intentionally emits CJK bigrams for BM25 recall.  Those
+    two-character fragments are too common for metadata routing (for example
+    ``使用`` appears in almost every topic), so retain Latin/number tokens and
+    complete CJK sequences of at least three characters only.
+    """
+
+    return {
+        token
+        for token in tokenize(text)
+        if re.search(r"[a-z0-9]", token) or len(token) >= 3
+    }
 
 
 class EmbeddingEngine:
@@ -343,6 +490,72 @@ class EmbeddingEngine:
             return None
 
 
+class Reranker(Protocol):
+    """Small local contract for optional candidate rerankers.
+
+    Implementations return one score per document and never create or mutate
+    citation metadata.  A failed/short result is treated as unavailable and
+    the deterministic RRF ordering remains authoritative.
+    """
+
+    name: str
+
+    def score(self, query: str, documents: Sequence[str]) -> list[float] | None:
+        ...
+
+
+class FastEmbedReranker:
+    """Lazy adapter for FastEmbed's optional ``TextCrossEncoder`` wheel.
+
+    It is deliberately opt-in.  Constructing the adapter does not download a
+    model; the first score call loads the configured model.  Any import,
+    download, or inference failure is recorded and safely falls back to the
+    deterministic reranker.
+    """
+
+    def __init__(self, model_name: str, cache_dir: Path) -> None:
+        self.name = model_name
+        self.cache_dir = cache_dir
+        self._model = None
+        self._lock = RLock()
+        self.error = ""
+
+    def _initialize(self) -> bool:
+        if self._model is not None:
+            return True
+        with self._lock:
+            if self._model is not None:
+                return True
+            try:
+                from fastembed.rerank.cross_encoder import TextCrossEncoder
+
+                self.cache_dir.mkdir(parents=True, exist_ok=True)
+                self._model = TextCrossEncoder(
+                    model_name=self.name,
+                    cache_dir=str(self.cache_dir),
+                    lazy_load=True,
+                )
+                self.error = ""
+                return True
+            except Exception as exc:
+                self._model = None
+                self.error = f"{type(exc).__name__}: {exc}"
+                return False
+
+    def score(self, query: str, documents: Sequence[str]) -> list[float] | None:
+        if not documents or not self._initialize():
+            return None
+        assert self._model is not None
+        try:
+            values = [float(value) for value in self._model.rerank(query, documents)]
+            if len(values) != len(documents) or any(not np.isfinite(value) for value in values):
+                raise ValueError("reranker 返回的分数数量或数值无效")
+            return values
+        except Exception as exc:
+            self.error = f"{type(exc).__name__}: {exc}"
+            return None
+
+
 class _CatalogView:
     def __init__(self, topics: list[KnowledgeTopic]) -> None:
         self.topics = topics
@@ -364,6 +577,7 @@ class HybridRetriever:
         candidate_k: int = 12,
         embedding_engine: EmbeddingEngine | None = None,
         precomputed_vectors: dict[str, np.ndarray] | None = None,
+        reranker: Reranker | None = None,
     ) -> None:
         self.catalog = catalog
         self.embedding_model_name = embedding_model
@@ -371,6 +585,7 @@ class HybridRetriever:
         self.embedding_enabled = embedding_enabled
         self.local_files_only = local_files_only
         self.candidate_k = candidate_k
+        self.reranker = reranker
         self.engine = embedding_engine or EmbeddingEngine(
             embedding_model, model_cache_dir, enabled=embedding_enabled, local_files_only=local_files_only
         )
@@ -524,10 +739,11 @@ class HybridRetriever:
     def rerank_hits(query: str, hits: Sequence[RetrievalHit], *, top_k: int | None = None) -> list[RetrievalHit]:
         """Apply a lightweight deterministic rerank after RRF.
 
-        The project intentionally does not add a cross-encoder dependency for
-        this stage.  Exact title/alias matches and token overlap are stable,
-        inspectable tie-breakers; the original RRF/BM25/vector scores remain
-        the primary ordering signals.
+        Exact title/alias matches and token overlap are stable, inspectable
+        tie-breakers.  An optional local cross-encoder is applied by
+        ``_rerank_hits`` only when explicitly configured; this method remains
+        the deterministic fallback and keeps the original RRF/BM25/vector
+        scores authoritative.
         """
 
         query_tokens = set(tokenize(query))
@@ -549,6 +765,20 @@ class HybridRetriever:
         ordered = sorted(hits, key=key, reverse=True)
         return ordered if top_k is None else ordered[:top_k]
 
+    def _rerank_hits(self, query: str, hits: Sequence[RetrievalHit], *, top_k: int) -> list[RetrievalHit]:
+        """Use the opt-in cross-encoder when available, with safe fallback."""
+
+        if self.reranker and hits:
+            scores = self.reranker.score(query, [hit.topic.retrieval_text for hit in hits])
+            if scores is not None and len(scores) == len(hits):
+                ordered = sorted(
+                    zip(scores, hits),
+                    key=lambda item: (item[0], item[1].score, item[1].bm25_score, item[1].topic.id),
+                    reverse=True,
+                )
+                return [hit for _, hit in ordered[:top_k]]
+        return self.rerank_hits(query, hits, top_k=top_k)
+
     def retrieve_advanced(
         self,
         query: str,
@@ -565,7 +795,25 @@ class HybridRetriever:
         """
 
         plan = analysis or analyze_query(query, self.catalog.topics)
+        # Command planning, template requests, and document lookups are
+        # evidence-sensitive.  A derived query must never alter an explicit
+        # path, port, shell, credential, or citation lookup, so those intents
+        # use the original wording only.  Multi-query fusion is reserved for
+        # ordinary knowledge/compare questions.
         variants = plan.variants or (query,)
+        if plan.intent in {"command", "template", "document_lookup"} and not plan.decomposed:
+            variants = (plan.original or query,)
+        # The common single-query case does not need an extra fusion pass.
+        # Preserve the same candidate ordering as the baseline while still
+        # honoring any explicit/inferred metadata filters.
+        if len(variants) == 1:
+            return self._retrieve_once(
+                variants[0],
+                top_k=top_k,
+                domain=plan.domain,
+                platform=plan.platform,
+                shell=plan.shell,
+            )
         scores: dict[str, float] = {}
         representatives: dict[str, RetrievalHit] = {}
         for variant_index, variant in enumerate(variants):
@@ -593,7 +841,7 @@ class HybridRetriever:
             representatives[topic_id].model_copy(update={"score": round(score, 6)})
             for topic_id, score in scores.items()
         ]
-        return self.rerank_hits(plan.original, fused, top_k=top_k)
+        return self._rerank_hits(plan.original, fused, top_k=top_k)
 
     def status(self) -> KnowledgeStatus:
         return KnowledgeStatus(
@@ -614,11 +862,13 @@ class KnowledgeIndexManager:
         repository: ConversationRepository,
         embedding_engine: EmbeddingEngine,
         candidate_k: int,
+        reranker: Reranker | None = None,
     ) -> None:
         self.catalog = catalog
         self.repository = repository
         self.engine = embedding_engine
         self.candidate_k = candidate_k
+        self.reranker = reranker
         self._cache: dict[str, HybridRetriever] = {}
         self._lock = RLock()
 
@@ -692,6 +942,7 @@ class KnowledgeIndexManager:
                 candidate_k=self.candidate_k,
                 embedding_engine=self.engine,
                 precomputed_vectors=vectors,
+                reranker=self.reranker,
             )
             self._cache[knowledge_base_id] = retriever
             return retriever

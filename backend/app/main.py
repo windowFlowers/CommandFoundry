@@ -51,7 +51,13 @@ from .models import (
 )
 from .personalization import PersonalizationService, memory_update_for_response
 from .repository import ConversationRepository
-from .retrieval import EmbeddingEngine, KnowledgeIndexManager
+from .retrieval import (
+    EmbeddingEngine,
+    FastEmbedReranker,
+    KnowledgeIndexManager,
+    analyze_query,
+    has_sufficient_evidence,
+)
 
 
 catalog = KnowledgeCatalog(settings.knowledge_dir)
@@ -63,11 +69,17 @@ embedding_engine = EmbeddingEngine(
     enabled=settings.embedding_enabled,
     local_files_only=settings.embedding_local_only,
 )
+reranker = (
+    FastEmbedReranker(settings.reranker_model, settings.model_cache_dir / "reranker")
+    if settings.reranker_enabled
+    else None
+)
 index_manager = KnowledgeIndexManager(
     catalog=catalog,
     repository=repository,
     embedding_engine=embedding_engine,
     candidate_k=settings.retrieval_candidate_k,
+    reranker=reranker,
 )
 # Compatibility handle used by the retrieval evaluation tests and local scripts.
 retriever = index_manager.get(DEFAULT_KNOWLEDGE_BASE_ID)
@@ -508,25 +520,51 @@ def chat_stream(request: ChatRequest) -> StreamingResponse:
         try:
             yield sse("status", {"stage": "retrieving", "message": "正在检索本地知识库"})
             retrieval_query = personalization.retrieval_query
+            # Query analysis is deterministic and local.  It keeps the user
+            # wording first, adds only bounded lexical variants for ordinary
+            # knowledge questions, and applies only high-signal metadata
+            # filters.  Sensitive/refusal turns deliberately stay on the
+            # legacy single-query path so no redacted credential or injection
+            # text can be expanded or sent anywhere else.
+            catalog_topics = index_manager.get(requested_base_id).catalog.topics
+
+            def retrieve_for_query(value: str, *, top_k: int):
+                if sensitive_input:
+                    return index_manager.retrieve(requested_base_id, value, top_k=top_k)
+                analysis = analyze_query(value, catalog_topics)
+                return index_manager.retrieve_advanced(
+                    requested_base_id,
+                    value,
+                    top_k=top_k,
+                    analysis=analysis,
+                )
+
             if retrieval_query != safe_query.strip():
                 candidate_k = max(settings.retrieval_top_k * 2, 8)
-                raw_hits = index_manager.retrieve(requested_base_id, safe_query, top_k=candidate_k)
-                contextual_hits = index_manager.retrieve(requested_base_id, retrieval_query, top_k=candidate_k)
+                raw_hits = retrieve_for_query(safe_query, top_k=candidate_k)
+                contextual_hits = retrieve_for_query(retrieval_query, top_k=candidate_k)
                 hits = merge_contextual_hits(
                     raw_hits,
                     contextual_hits,
                     top_k=settings.retrieval_top_k,
                 )
             else:
-                hits = index_manager.retrieve(
-                    requested_base_id, safe_query, top_k=settings.retrieval_top_k
-                )
+                hits = retrieve_for_query(safe_query, top_k=settings.retrieval_top_k)
             # Curated command plans are local-first.  Do not advertise or call
             # The configured OpenAI-compatible model is used for a pending/recognised recipe, and keep explicit
             # template requests deterministic as well.
             planner_recipe = command_planner._recipe_for(request.query, hits, pending_plan)
             planner_owned = planner_recipe is not None or command_planner.is_template_request(request.query)
-            use_model = generator.available and bool(hits) and not planner_owned and not sensitive_input
+            # A model call requires more than a non-empty candidate list.  The
+            # calibrated local signal prevents weak lexical noise from being
+            # presented as grounded context; planner/refusal paths remain
+            # deterministic regardless of this gate.
+            use_model = (
+                generator.available
+                and has_sufficient_evidence(hits)
+                and not planner_owned
+                and not sensitive_input
+            )
             yield sse(
                 "status",
                 {

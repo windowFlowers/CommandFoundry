@@ -41,7 +41,7 @@ from app.config import settings  # noqa: E402
 from app.knowledge import KnowledgeCatalog  # noqa: E402
 from app.memory import ConversationTurn, merge_contextual_hits, resolve_contextual_query  # noqa: E402
 from app.models import Answer, ChatMessage, CommandBlock, RetrievalHit  # noqa: E402
-from app.retrieval import HybridRetriever  # noqa: E402
+from app.retrieval import FastEmbedReranker, HybridRetriever, analyze_query  # noqa: E402
 
 
 DEFAULT_SUITES = (
@@ -76,8 +76,15 @@ def _git_revision() -> str | None:
 
 
 def _retrieve_hits(retriever: HybridRetriever, case: EvaluationCase, top_k: int) -> list[RetrievalHit]:
+    def advanced(value: str, limit: int) -> list[RetrievalHit]:
+        # Keep the offline suite representative of the product path.  The
+        # analyzer is deterministic and receives the same catalog used by the
+        # retriever; no model-generated query or hidden state is introduced.
+        analysis = analyze_query(value, retriever.catalog.topics)
+        return retriever.retrieve_advanced(value, top_k=limit, analysis=analysis)
+
     if not case.previous_query:
-        return retriever.retrieve(case.query, top_k=top_k)
+        return advanced(case.query, top_k)
 
     answer = Answer(
         mode="local_fallback",
@@ -92,12 +99,12 @@ def _retrieve_hits(retriever: HybridRetriever, case: EvaluationCase, top_k: int)
     )
     contextual = resolve_contextual_query(case.query, turn)
     if contextual == case.query.strip():
-        hits = retriever.retrieve(case.query, top_k=top_k)
+        hits = advanced(case.query, top_k)
     else:
         candidate_k = max(8, top_k)
         hits = merge_contextual_hits(
-            retriever.retrieve(case.query, top_k=candidate_k),
-            retriever.retrieve(contextual, top_k=candidate_k),
+            advanced(case.query, candidate_k),
+            advanced(contextual, candidate_k),
             top_k=top_k,
         )
     return hits
@@ -323,8 +330,15 @@ def main(argv: list[str] | None = None) -> int:
         candidate_k=max(12, args.top_k),
         embedding_enabled=args.hybrid,
         local_files_only=True,
+        reranker=(
+            FastEmbedReranker(settings.reranker_model, settings.model_cache_dir / "reranker")
+            if settings.reranker_enabled
+            else None
+        ),
     )
-    engine = "hybrid" if args.hybrid else "bm25"
+    engine = ("hybrid" if args.hybrid else "bm25") + "+advanced"
+    if settings.reranker_enabled:
+        engine += "+cross-encoder"
     if args.hybrid and not retriever.initialize_embeddings():
         raise SystemExit(f"local hybrid model unavailable: {retriever.embedding_error}")
 
@@ -346,7 +360,13 @@ def main(argv: list[str] | None = None) -> int:
             "child_max_chars": CHILD_MAX_CHARS,
             "child_overlap_chars": CHILD_OVERLAP_CHARS,
         },
-        retrieval_parameters={"top_k": args.top_k, "candidate_k": max(12, args.top_k)},
+        retrieval_parameters={
+            "top_k": args.top_k,
+            "candidate_k": max(12, args.top_k),
+            "query_analysis": "deterministic-v1",
+            "reranker_enabled": settings.reranker_enabled,
+            "reranker_model": settings.reranker_model if settings.reranker_enabled else None,
+        },
         top_k=args.top_k,
         suite_paths=[
             str(path.relative_to(PROJECT_ROOT))
@@ -361,6 +381,9 @@ def main(argv: list[str] | None = None) -> int:
             "local_files_only": True,
             "embedding_enabled": settings.embedding_enabled,
             "embedding_local_only": settings.embedding_local_only,
+            "advanced_query_enabled": True,
+            "reranker_enabled": settings.reranker_enabled,
+            "reranker_model": settings.reranker_model if settings.reranker_enabled else None,
             "provider_selection": args.provider,
             "input_cost_per_1k": args.input_cost_per_1k,
             "output_cost_per_1k": args.output_cost_per_1k,

@@ -12,14 +12,19 @@ sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 from app.knowledge import KnowledgeCatalog  # noqa: E402
 from app.memory import ConversationTurn, merge_contextual_hits, resolve_contextual_query  # noqa: E402
 from app.models import Answer, ChatMessage, CommandBlock  # noqa: E402
-from app.retrieval import HybridRetriever  # noqa: E402
+from app.retrieval import HybridRetriever, analyze_query  # noqa: E402
+
+
+def _retrieve(retriever: HybridRetriever, query: str, top_k: int) -> list:
+    analysis = analyze_query(query, retriever.catalog.topics)
+    return retriever.retrieve_advanced(query, top_k=top_k, analysis=analysis)
 
 
 def evaluate(retriever: HybridRetriever, cases: list[dict]) -> dict[str, float | int]:
     top1 = 0
     top3 = 0
     for case in cases:
-        result_ids = [item.topic.id for item in retriever.retrieve(case["query"], top_k=3)]
+        result_ids = [item.topic.id for item in _retrieve(retriever, case["query"], 3)]
         top1 += bool(result_ids and result_ids[0] == case["expected_topic_id"])
         top3 += case["expected_topic_id"] in result_ids
     total = len(cases)
@@ -54,11 +59,11 @@ def evaluate_memory(retriever: HybridRetriever, cases: list[dict]) -> dict[str, 
         follow_up = case["follow_up"]
         contextual = resolve_contextual_query(follow_up, turn)
         if contextual == follow_up.strip():
-            results = retriever.retrieve(follow_up, top_k=3)
+            results = _retrieve(retriever, follow_up, 3)
         else:
             results = merge_contextual_hits(
-                retriever.retrieve(follow_up, top_k=8),
-                retriever.retrieve(contextual, top_k=8),
+                _retrieve(retriever, follow_up, 8),
+                _retrieve(retriever, contextual, 8),
                 top_k=3,
             )
         result_ids = [item.topic.id for item in results]

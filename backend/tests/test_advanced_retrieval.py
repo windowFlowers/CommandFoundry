@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from app import main as main_module
 from app.main import catalog, retriever
 from app.models import RetrievalHit
 from app.retrieval import (
+    FastEmbedReranker,
+    HybridRetriever,
     QueryAnalysis,
     analyze_query,
     has_sufficient_evidence,
@@ -67,3 +70,62 @@ def test_retrieval_confidence_is_a_conservative_no_answer_signal() -> None:
     grounded = hit.model_copy(update={"bm25_score": 2.0})
     assert retrieval_confidence([grounded]) > 0.05
     assert has_sufficient_evidence([grounded]) is True
+
+
+def test_optional_cross_encoder_reranker_only_reorders_existing_hits() -> None:
+    class FakeReranker:
+        name = "fake-cross-encoder"
+
+        def score(self, query: str, documents: list[str]) -> list[float]:
+            assert query == "rerank"
+            return [float(index) for index in range(len(documents))]
+
+    base = HybridRetriever(
+        catalog,
+        embedding_model="disabled",
+        model_cache_dir=main_module.settings.model_cache_dir,
+        embedding_enabled=False,
+        reranker=FakeReranker(),
+    )
+    hits = [
+        RetrievalHit(topic=catalog.topics[0], score=0.9),
+        RetrievalHit(topic=catalog.topics[1], score=0.8),
+    ]
+    ordered = base._rerank_hits("rerank", hits, top_k=2)
+
+    assert [item.topic.id for item in ordered] == [catalog.topics[1].id, catalog.topics[0].id]
+    assert [item.topic.source.source_id for item in ordered] == [
+        hits[1].topic.source.source_id,
+        hits[0].topic.source.source_id,
+    ]
+
+
+def test_cross_encoder_failure_falls_back_to_deterministic_order() -> None:
+    class FailedReranker:
+        name = "failed"
+
+        def score(self, query: str, documents: list[str]) -> None:
+            return None
+
+    base = HybridRetriever(
+        catalog,
+        embedding_model="disabled",
+        model_cache_dir=main_module.settings.model_cache_dir,
+        embedding_enabled=False,
+        reranker=FailedReranker(),
+    )
+    hits = [
+        RetrievalHit(topic=catalog.topics[0], score=0.1),
+        RetrievalHit(topic=catalog.topics[1], score=0.9),
+    ]
+
+    assert base._rerank_hits("fallback", hits, top_k=2) == HybridRetriever.rerank_hits(
+        "fallback", hits, top_k=2
+    )
+
+
+def test_fastembed_reranker_is_lazy_and_does_not_load_on_construction(tmp_path) -> None:
+    reranker = FastEmbedReranker("Xenova/ms-marco-MiniLM-L-6-v2", tmp_path)
+
+    assert reranker._model is None
+    assert reranker.error == ""

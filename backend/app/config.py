@@ -35,6 +35,11 @@ class Settings(BaseModel):
     embedding_model: str = os.getenv("AEGIS_EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     embedding_enabled: bool = os.getenv("AEGIS_EMBEDDING_ENABLED", "1").strip().lower() not in {"0", "false", "no"}
     embedding_local_only: bool = os.getenv("AEGIS_EMBEDDING_LOCAL_ONLY", "0").strip().lower() in {"1", "true", "yes"}
+    # Cross-encoder reranking is an explicit opt-in because it may download a
+    # separate local model and adds latency.  The deterministic reranker is
+    # always available when this remains disabled.
+    reranker_enabled: bool = os.getenv("AEGIS_RERANKER_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    reranker_model: str = os.getenv("AEGIS_RERANKER_MODEL", "Xenova/ms-marco-MiniLM-L-6-v2")
     llm_provider: str = os.getenv("AEGIS_LLM_PROVIDER", "deepseek" if os.getenv("AEGIS_LLM_API_KEY") else "mock")
     llm_model: str = os.getenv("AEGIS_LLM_MODEL", "deepseek-chat")
     llm_base_url: str = os.getenv("AEGIS_LLM_BASE_URL", "https://api.deepseek.com/v1")
