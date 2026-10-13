@@ -153,6 +153,21 @@ class RunManifest(BaseModel):
     git_revision: str | None = None
 
 
+class ModelCallObservation(BaseModel):
+    """Minimal provider evidence for every turn, without prompts or responses."""
+
+    attempted: bool
+    fallback_reason: str | None = None
+    prompt_tokens: int = Field(default=0, ge=0)
+    completion_tokens: int = Field(default=0, ge=0)
+    total_tokens: int = Field(default=0, ge=0)
+
+
+PROVIDER_FAILURE_REASONS = frozenset({
+    "timeout", "rate_limit", "authentication", "provider_error", "invalid_json",
+})
+
+
 class CaseResult(BaseModel):
     case_id: str
     query: str = ""
@@ -191,6 +206,7 @@ class CaseResult(BaseModel):
     completion_tokens: int | None = Field(default=None, ge=0)
     total_tokens: int | None = Field(default=None, ge=0)
     fallback_reason: str | None = None
+    model_calls: list[ModelCallObservation] = Field(default_factory=list)
     no_answer_correct: bool | None = None
     retrieval_no_answer_correct: bool | None = None
     latency_ms: float = Field(default=0.0, ge=0.0)
@@ -1073,6 +1089,12 @@ def build_report(
         )
     ]
     no_answer_results = [item for item in evaluated if item not in answerable_results]
+    calls = [call for item in evaluated for call in item.model_calls]
+    provider_failure_cases = sum(
+        item.fallback_reason in PROVIDER_FAILURE_REASONS
+        or any(call.fallback_reason in PROVIDER_FAILURE_REASONS for call in item.model_calls)
+        for item in evaluated
+    )
 
     def group_mean(group: Sequence[CaseResult], field: str) -> float:
         return sum(float(getattr(item, field)) for item in group) / len(group) if group else 0.0
@@ -1096,6 +1118,11 @@ def build_report(
         ),
         "fallback_cases": sum(bool(item.fallback_reason) for item in evaluated),
         "fallback_rate": (sum(bool(item.fallback_reason) for item in evaluated) / count if count else 0.0),
+        "model_attempts": sum(call.attempted for call in calls),
+        "model_successes": sum(call.attempted and not call.fallback_reason for call in calls),
+        "local_turns": sum(not call.attempted for call in calls),
+        "provider_failure_cases": provider_failure_cases,
+        "timeout_turns": sum(call.fallback_reason == "timeout" for call in calls),
         "prompt_tokens": sum(item.prompt_tokens or 0 for item in evaluated),
         "completion_tokens": sum(item.completion_tokens or 0 for item in evaluated),
         "total_tokens": sum(item.total_tokens or 0 for item in evaluated),

@@ -14,9 +14,12 @@ import httpx
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from app.evaluation import (  # noqa: E402
     CaseResult,
+    ModelCallObservation,
+    PROVIDER_FAILURE_REASONS,
     EvaluationCase,
     RunManifest,
     build_report,
@@ -42,15 +45,10 @@ from app.knowledge import KnowledgeCatalog  # noqa: E402
 from app.memory import ConversationTurn, merge_contextual_hits, resolve_contextual_query  # noqa: E402
 from app.models import Answer, ChatMessage, CommandBlock, RetrievalHit  # noqa: E402
 from app.retrieval import FastEmbedReranker, HybridRetriever, analyze_query  # noqa: E402
+from check_release_evaluation import RELEASE_SUITE_PATHS, dataset_fingerprints_for_suites  # noqa: E402
 
 
-DEFAULT_SUITES = (
-    PROJECT_ROOT / "evaluation" / "fixtures" / "v2.11" / "manifest.json",
-    PROJECT_ROOT / "knowledge" / "eval_dataset.json",
-    PROJECT_ROOT / "knowledge" / "memory_eval_dataset.json",
-    PROJECT_ROOT / "knowledge" / "personalization_eval_dataset.json",
-    PROJECT_ROOT / "knowledge" / "windows_eval_dataset.json",
-)
+DEFAULT_SUITES = RELEASE_SUITE_PATHS
 NAMED_SUITES = {
     "core": PROJECT_ROOT / "evaluation" / "fixtures" / "v2.11" / "manifest.json",
     "retrieval": PROJECT_ROOT / "knowledge" / "eval_dataset.json",
@@ -60,6 +58,31 @@ NAMED_SUITES = {
     "command": PROJECT_ROOT / "evaluation" / "fixtures" / "v2.11" / "manifest.json",
     "golden": PROJECT_ROOT / "evaluation" / "fixtures" / "v2.11" / "manifest.json",
 }
+
+
+def _dataset_fingerprints(paths: list[Path]) -> dict[str, str]:
+    """External smoke suites remain usable, but cannot impersonate release data."""
+    result: dict[str, str] = {}
+    for index, path in enumerate(paths):
+        resolved = path.resolve()
+        if resolved.is_relative_to(PROJECT_ROOT):
+            result.update(dataset_fingerprints_for_suites([resolved]))
+        else:
+            hashes = dataset_fingerprints_for_suites([resolved], root=resolved.parent)
+            result.update({f"<external-{index}>/{name}": value for name, value in hashes.items()})
+    return result
+
+
+def _with_model_observations(result: CaseResult, observations: list[ModelCallObservation]) -> CaseResult:
+    updates: dict[str, Any] = {
+        "model_calls": observations,
+        "prompt_tokens": sum(call.prompt_tokens for call in observations),
+        "completion_tokens": sum(call.completion_tokens for call in observations),
+        "total_tokens": sum(call.total_tokens for call in observations),
+    }
+    if any(call.fallback_reason in PROVIDER_FAILURE_REASONS for call in observations):
+        updates.update(passed=False, failure_reasons=[*result.failure_reasons, "provider failure caused local fallback"])
+    return result.model_copy(update=updates)
 
 
 def _git_revision() -> str | None:
@@ -223,19 +246,31 @@ def _parse_sse_answer(raw: str) -> tuple[dict[str, Any], str | None]:
 
 
 def _post_chat(
-    client: Any, query: str, *, conversation_id: str | None = None
+    client: Any, query: str, *, conversation_id: str | None = None,
+    observations: list[ModelCallObservation] | None = None,
 ) -> tuple[dict[str, Any], str | None]:
     payload = {"query": query}
     if conversation_id:
         payload["conversation_id"] = conversation_id
     response = client.post("/chat/stream", json=payload)
     response.raise_for_status()
-    return _parse_sse_answer(response.text)
+    answer, conversation = _parse_sse_answer(response.text)
+    if observations is not None:
+        generation = answer.get("generation") or {}
+        observations.append(ModelCallObservation(
+            attempted=generation.get("attempted", False),
+            fallback_reason=generation.get("fallback_reason"),
+            prompt_tokens=generation.get("prompt_tokens") or 0,
+            completion_tokens=generation.get("completion_tokens") or 0,
+            total_tokens=generation.get("total_tokens") or 0,
+        ))
+    return answer, conversation
 
 
 def _post_case_turns(
     client: Any,
     case: EvaluationCase,
+    observations: list[ModelCallObservation] | None = None,
 ) -> tuple[dict[str, Any], str | None]:
     """Replay an optional multi-turn case through the real chat endpoint."""
 
@@ -248,9 +283,9 @@ def _post_case_turns(
         content = str(turn.get("content") or turn.get("query") or "").strip()
         if not content:
             continue
-        answer, conversation_id = _post_chat(client, content, conversation_id=conversation_id)
+        answer, conversation_id = _post_chat(client, content, conversation_id=conversation_id, observations=observations)
     if answer is None:
-        answer, conversation_id = _post_chat(client, case.query, conversation_id=conversation_id)
+        answer, conversation_id = _post_chat(client, case.query, conversation_id=conversation_id, observations=observations)
     return answer, conversation_id
 
 
@@ -303,6 +338,9 @@ def _write_artifacts(output: Path, payload: dict[str, Any]) -> Path:
         f"- profile: {payload.get('profile', 'unknown')}",
         f"- cases: {metrics.get('cases', 0)} (failed: {len(failed)}, skipped: {len(skipped)})",
         f"- pass rate: {metrics.get('pass_rate', 0):.4f}",
+        f"- model attempts / successes: {metrics.get('model_attempts', 0)} / {metrics.get('model_successes', 0)}",
+        f"- local turns: {metrics.get('local_turns', 0)}",
+        f"- provider failure cases / timeout turns: {metrics.get('provider_failure_cases', 0)} / {metrics.get('timeout_turns', 0)}",
         f"- MRR: {metrics.get('mrr', 0):.4f}",
         f"- NDCG: {metrics.get('ndcg', 0):.4f}",
         f"- p95 latency (ms): {payload.get('p95_ms', 0):.3f}",
@@ -433,9 +471,10 @@ def main(argv: list[str] | None = None) -> int:
             else f"<external>/{path.name}"
             for path in suite_paths
         ],
-        dataset_fingerprints={path.name: file_fingerprint(path) for path in suite_paths},
+        dataset_fingerprints=_dataset_fingerprints(suite_paths),
         profile_fingerprint=profile_fingerprint(profile),
         parameters={
+            "model_observability": "per-turn-v1",
             "offline": args.mode == "offline",
             "local_files_only": not args.allow_model_download,
             "embedding_download_allowed": bool(args.allow_model_download),
@@ -479,17 +518,18 @@ def main(argv: list[str] | None = None) -> int:
                 retrieval_observation=retrieval_observation,
             )
             if model_client is not None:
+                observations: list[ModelCallObservation] = []
                 try:
                     context_answer: Answer | None = None
                     if case.turns:
-                        answer, _conversation_id = _post_case_turns(model_client, case)
+                        answer, _conversation_id = _post_case_turns(model_client, case, observations)
                     else:
                         conversation_id = None
                         if case.previous_query:
-                            context_payload, conversation_id = _post_chat(model_client, case.previous_query)
+                            context_payload, conversation_id = _post_chat(model_client, case.previous_query, observations=observations)
                             context_answer = Answer.model_validate(context_payload)
                         answer, _conversation_id = _post_chat(
-                            model_client, case.query, conversation_id=conversation_id
+                            model_client, case.query, conversation_id=conversation_id, observations=observations
                         )
                     # The production endpoint resolves a follow-up query from
                     # the actual previous assistant answer (including its
@@ -526,9 +566,6 @@ def main(argv: list[str] | None = None) -> int:
                     )
                     generation = answer.get("generation") if isinstance(answer.get("generation"), dict) else {}
                     validation.update(
-                        prompt_tokens=generation.get("prompt_tokens"),
-                        completion_tokens=generation.get("completion_tokens"),
-                        total_tokens=generation.get("total_tokens"),
                         fallback_reason=generation.get("fallback_reason"),
                     )
                     result = result.model_copy(update=validation)
@@ -566,6 +603,7 @@ def main(argv: list[str] | None = None) -> int:
                             "trace": redact_sensitive({**result.trace, "model_error": type(exc).__name__}),
                         }
                     )
+                result = _with_model_observations(result, observations)
             result = result.model_copy(update={"latency_ms": (time.perf_counter() - started) * 1000.0})
             results.append(result)
 

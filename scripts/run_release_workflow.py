@@ -82,8 +82,9 @@ def _report_path(output_dir: Path, name: str) -> Path:
     return report_dir / "evaluation-report.json"
 
 
-def _verify_report(report: Path, baseline: Path | None) -> None:
+def _verify_report(report: Path, baseline: Path | None, *, mode: str) -> None:
     command = [str(PYTHON), str(ROOT / "scripts" / "check_release_evaluation.py"), str(report)]
+    command.extend(["--require-mode", mode])
     if baseline is not None:
         command.extend(["--baseline", str(baseline), "--require-baseline"])
     _run("verify report identity and release gates", command)
@@ -123,7 +124,7 @@ def _offline(args: argparse.Namespace, output_dir: Path) -> Path:
     if args.offline_baseline is not None:
         command.extend(["--baseline", str(args.offline_baseline)])
     _run("offline RAG evaluation", command)
-    _verify_report(report, args.offline_baseline)
+    _verify_report(report, args.offline_baseline, mode="offline")
     return report
 
 
@@ -180,7 +181,7 @@ def _model(args: argparse.Namespace, output_dir: Path) -> Path:
     if args.model_baseline is not None:
         command.extend(["--baseline", str(args.model_baseline)])
     _run("real provider RAG evaluation (API cost may apply)", command, env=env)
-    _verify_report(report, args.model_baseline)
+    _verify_report(report, args.model_baseline, mode="model")
     return report
 
 
@@ -191,7 +192,7 @@ def _package(args: argparse.Namespace, output_dir: Path) -> Path:
         raise SystemExit("--model-report must point to a passing model evaluation report")
     if args.model_baseline is None:
         raise SystemExit("--model-baseline is required before packaging")
-    _verify_report(args.model_report, args.model_baseline)
+    _verify_report(args.model_report, args.model_baseline, mode="model")
     _run(
         "build signed-off Windows installer",
         ["npm.cmd", "run", "dist:win"],

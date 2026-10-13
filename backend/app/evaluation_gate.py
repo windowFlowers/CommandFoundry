@@ -291,6 +291,19 @@ def _execution_failures(report: Mapping[str, Any]) -> list[GateIssue]:
     evaluated = metrics.get("evaluated_cases")
     if isinstance(evaluated, (int, float)) and not isinstance(evaluated, bool) and evaluated <= 0:
         failures.append(GateIssue("empty_evaluation", "evaluation did not execute any cases", "hard"))
+    # Derive failures from evidence as well as aggregates: a correct fallback
+    # answer cannot conceal an unavailable or malformed provider response.
+    provider_errors = {"timeout", "rate_limit", "authentication", "provider_error", "invalid_json"}
+    for case in report.get("cases", []):
+        if not isinstance(case, Mapping):
+            continue
+        calls = case.get("model_calls", [])
+        reasons = [case.get("fallback_reason")]
+        if isinstance(calls, list):
+            reasons.extend(call.get("fallback_reason") for call in calls if isinstance(call, Mapping))
+        if any(reason in provider_errors for reason in reasons if isinstance(reason, str)):
+            failures.append(GateIssue("provider_failures", "provider failure was hidden by a local answer", "hard"))
+            break
     return failures
 
 

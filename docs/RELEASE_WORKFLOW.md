@@ -133,6 +133,10 @@ backend\.venv\Scripts\python.exe scripts\run_evaluation.py `
 
 ## 门禁失败时的处理
 
+Agent 开发前的评测加固（M0）：发布 checker 要求完整 `suite all` 的确切用例 ID 和所有数据集输入指纹（含嵌套 JSONL/qrels/schema）。小样本 smoke 报告即使答案测试通过，也不可作为发布报告。模型报告必须记录每个用户轮次的 `model_calls`，区分实际模型尝试、成功和本地路径；任意轮次的 timeout、rate_limit、authentication、provider_error 或 invalid_json 会阻断发布，即使末轮本地答案正确。正常的规划器/拒答路径不计为云端成功。多轮 token 汇总包含前面已完成的调用。
+
+历史报告缺少上述完整证据时需重跑；不能通过编辑报告计数迁移成新基线。打包入口显式要求 `mode=model`。
+
 - 离线评测失败：先查看 `bad-cases.jsonl`，修复代码/知识/评测数据后重新提交，不生成安装包。
 - 真实模型评测失败：确认 provider 配置、模型可用性、超时/限流和 baseline profile；不要把失败报告强行设为新基线。
 - profile 不一致：建立带新 profile 的基线并记录变更原因，不能与旧 profile 直接比较。
