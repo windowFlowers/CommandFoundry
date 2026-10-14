@@ -28,8 +28,8 @@ LangGraph 不要求迁移到 LangChain 模型适配器，可继续使用现有 O
 | 模块 | 范围 | 必须提供的证据 | 当前状态 |
 | --- | --- | --- | --- |
 | M0 评测可信性 | 每轮云端调用观测、超时/限流硬门禁、完整 suite 和指纹校验 | 正确本地回退仍阻断；多轮早期失败不丢失；6条/重复/删减/变更数据拒绝；后端回归 | 已完成模块验收 |
-| M1 Agent 运行时 | 复用 LangGraph+SQLite，类型化状态、有限决策循环、恢复/取消、错误终态 | 可重复本地 fake model/tool 测试；跨实例恢复；预算耗尽；线程隔离；无隐式执行 | 开发中 |
-| M2 Tools 与模型适配 | SDK 原生 tool calling；复用检索、证据读取、命令规划；参数契约和权限 | 真实选择→调用→观察→继续；未知工具/坏参数/循环拦截；保持引用与知识库隔离 | 待 M1 通过 |
+| M1 Agent 运行时 | 复用 LangGraph+SQLite，类型化状态、有限决策循环、恢复/取消、错误终态 | 可重复本地 fake model/tool 测试；跨实例恢复；预算耗尽；线程隔离；无隐式执行 | 已完成模块验收 |
+| M2 Tools 与模型适配 | SDK 原生 tool calling；复用检索、证据读取、命令规划；参数契约和权限 | 真实选择→调用→观察→继续；未知工具/坏参数/循环拦截；保持引用与知识库隔离 | 待开发 |
 | M3 Skills | Agent Skills 格式、目录发现、元数据索引、按需加载、版本/禁用、内置开发者 skills | 标准格式验证；路径越界/符号链接/过大文件拒绝；技能不能改变工具权限 | 待 M2 通过 |
 | M4 Memory | graph 短期状态 + 现有长期偏好/项目记忆服务接入为工具 | 多轮与重启；作用域、更新/删除；凭证不持久化；用户当前指令优先 | 待 M3 通过 |
 | M5 桌面 Agent 工作流 | Agent 模式、SSE 运行步骤、工具结果、取消/重试/恢复、确认交互 | API→桌面端到端；状态一致；现有聊天/文档回归；CUA 检查 | 待 M4 通过 |
@@ -43,7 +43,8 @@ LangGraph 不要求迁移到 LangChain 模型适配器，可继续使用现有 O
 - 2026-10-13：已核查现有架构为固定单轮 RAG，不存在真实模型 tool loop；检索、planner、memory、SSE、终端确认可复用。
 - M0：2026-10-14 最终后端回归 264 passed；评测专项 64 passed；本地离线报告 `.runtime/agent-m0/offline/evaluation-report.json` 为 662 条记录、602 执行通过、60 合法跳过，release checker 完整性校验通过。独立审查修正外部 smoke suite 兼容与多轮失败 token 漏计；外部 smoke 报告仍不可用于发布。
 - M0 指纹现覆盖 manifest 子 JSONL、qrels 和 schema。旧报告保留为历史，缺新证据的旧候选无法通过新发布检查；正式发布前仍需在最终 commit 重新评测。
-- M1：已解析并安装 LangGraph 1.2.15 + SQLite checkpointer 3.1.2，Windows/Python 3.12 wheel 可用；运行时实现与测试由子 agent 负责，主 agent 负责依赖与独立审查，尚未接入聊天界面。
+- M1：复用 LangGraph 1.2.15 + SQLite checkpointer 3.1.2 + filelock 3.32.5，Windows/Python 3.12 依赖校验通过。2026-10-14 后端全量 308 passed（23.21s），其中运行时专项 44 项；重启审批、跨 run 隔离、跨进程锁、预算、未知工具、非 JSON 结果、凭证和遥测关闭均已测试。独立审查实际复现并修复对象实例绕过校验、审批后参数变更及 alias 契约问题。
+- M1 使用同步 checkpoint 与效果 ledger：已开始但缺结果的调用失败关闭；不承诺外部效果 exactly-once。当前同步取消仅作用于空闲/审批暂停状态，运行中取消在 M5 接入。现阶段未接真实 provider 或桌面 UI，专项测试不代替最终真实模型与桌面验收。工具参数 schema 必须 extra=forbid；alias 使用一致 JSON 序列化。
 - 本聊天 heartbeat：`commandfoundry-agent`，每两小时继续。额度不可用时仍受平台限额约束；只通知有意义进展、失败、需用户输入或目标完成。
 - 恢复时先核对 git diff、测试报告与真实进程，不凭旧记录宣称评测仍运行。不要重新启动已经运行的测试，不覆盖用户改动。
 - 全部模块完成前保持目标 active；不能以当前模块通过替代全目标完成。
