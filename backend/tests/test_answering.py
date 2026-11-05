@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import json
+import re
 
 import httpx
 import pytest
 from openai import APITimeoutError, RateLimitError
 
-from app.answering import AnswerService
+from app.answering import AnswerService, grounded_commands
 from app.evidence import evidence_records
-from app.generation import DeepSeekGenerator, ModelAnswerDraft
+from app.generation import (
+    ANSWER_JSON_SCHEMA,
+    SCHEMA_ANSWER_MAX_TOKENS,
+    SYSTEM_PROMPT,
+    DeepSeekGenerator,
+    ModelAnswerDraft,
+)
 from app.main import retriever
 from app.models import AnswerSegment, CommandBlock, PersonalizationInfo
 
@@ -218,6 +225,7 @@ def test_generator_retries_without_optional_controls_for_older_compatible_endpoi
     assert len(requests) == 2
     assert "response_format" not in requests[1]
     assert "temperature" not in requests[1]
+    assert "chat_template_kwargs" not in requests[0]
 
 
 def test_ollama_is_available_without_an_api_key() -> None:
@@ -230,6 +238,110 @@ def test_ollama_is_available_without_an_api_key() -> None:
         transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"choices": []})),
     )
     assert generator.available is True
+
+
+@pytest.mark.parametrize("provider", ["llamacpp", "vllm"])
+def test_self_hosted_provider_is_keyless_and_disables_hybrid_thinking(provider: str) -> None:
+    requests: list[dict] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "choices": [
+                    {"message": {"content": '{"summary":"本地模型回答","commands":[],"notes":[],"summary_segments":[]}'}}
+                ]
+            },
+        )
+
+    generator = DeepSeekGenerator(
+        api_key="",
+        base_url="http://127.0.0.1:18080/v1",
+        model="qwen3.5-4b",
+        provider=provider,
+        timeout_seconds=2,
+        transport=httpx.MockTransport(respond),
+    )
+    assert generator.available is True
+    draft = generator.generate("测试本地模型", _git_hits())
+    assert draft.summary == "本地模型回答"
+    assert draft.generation.provider == provider
+    assert requests[0]["chat_template_kwargs"] == {"enable_thinking": False}
+    response_format = requests[0]["response_format"]
+    assert response_format["type"] == "json_schema"
+    schema = response_format["json_schema"]["schema"]
+    assert schema["properties"]["commands"]["maxItems"] == 6
+    assert list(schema["properties"]) == schema["required"] == ["summary", "summary_segments", "commands", "notes"]
+    assert "generation" not in schema["properties"]
+    assert requests[0]["max_tokens"] == SCHEMA_ANSWER_MAX_TOKENS
+
+
+def test_system_prompt_states_the_command_limit() -> None:
+    # Only the command cap is stated: spelling out the length limits made the
+    # model write longer answers, which raised the invalid-JSON rate.
+    max_commands = ANSWER_JSON_SCHEMA["properties"]["commands"]["maxItems"]
+    assert f"commands 最多 {max_commands} 条" in SYSTEM_PROMPT
+
+
+def test_answer_schema_field_order_matches_system_prompt() -> None:
+    # Grammar decoding follows schema order; it must be the order the prompt asks for.
+    stated = "字段仅允许 " + "、".join(ANSWER_JSON_SCHEMA["properties"]) + "。"
+    assert stated in SYSTEM_PROMPT
+
+
+def test_answer_schema_only_closes_prose_after_sentence_punctuation() -> None:
+    summary = ANSWER_JSON_SCHEMA["properties"]["summary"]
+    prose_patterns = [
+        summary["pattern"],
+        ANSWER_JSON_SCHEMA["$defs"]["AnswerSegment"]["properties"]["text"]["pattern"],
+        ANSWER_JSON_SCHEMA["properties"]["notes"]["items"]["pattern"],
+    ]
+    for pattern in prose_patterns:
+        assert re.fullmatch(pattern, "可用 tasklist 查看进程。")
+        assert re.fullmatch(pattern, "Use tasklist.")
+        assert not re.fullmatch(pattern, "可用 tasklist /FI ")
+        assert not re.fullmatch(pattern, '可用 tasklist /FI "PID eq 1"。')
+        assert not re.fullmatch(pattern, "")
+    assert re.fullmatch(summary["pattern"], "字" * 599 + "。")
+    assert not re.fullmatch(summary["pattern"], "字" * 600 + "。")
+
+
+def test_answer_schema_has_no_string_length_bounds() -> None:
+    # xgrammar rejects JSON escapes in length-bounded strings, which blocks quoted commands.
+    def walk(node: object) -> list[str]:
+        if isinstance(node, list):
+            return [key for item in node for key in walk(item)]
+        if not isinstance(node, dict):
+            return []
+        found = [key for key in ("minLength", "maxLength") if key in node]
+        return found + [key for value in node.values() for key in walk(value)]
+
+    assert walk(ANSWER_JSON_SCHEMA) == []
+
+
+def test_cloud_provider_keeps_json_object_response_format() -> None:
+    requests: list[dict] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            request=request,
+            json={"choices": [{"message": {"content": '{"summary":"云端回答","commands":[],"notes":[],"summary_segments":[]}'}}]},
+        )
+
+    generator = DeepSeekGenerator(
+        api_key="test-key",
+        base_url="https://api.deepseek.com",
+        model="deepseek-chat",
+        timeout_seconds=2,
+        transport=httpx.MockTransport(respond),
+    )
+    generator.generate("测试云端模型", _git_hits())
+    assert requests[0]["response_format"] == {"type": "json_object"}
+    assert "max_tokens" not in requests[0]
 
 
 def test_deepseek_timeout_is_exposed_for_fallback() -> None:
@@ -336,3 +448,30 @@ def test_local_fallback_honors_saved_and_current_presentation_preferences() -> N
     assert current_request.summary.startswith("可以使用下面的命令")
     assert "相关本地证据：" not in current_request.summary
     assert any(note.startswith("新手提示：") for note in current_request.notes)
+
+
+def _command_hit(*codes: str):
+    hit = retriever.retrieve("Git 安全回滚提交", top_k=1)[0].model_copy(deep=True)
+    hit.topic.commands = [CommandBlock(label=code, code=code) for code in codes]
+    return hit
+
+
+@pytest.mark.parametrize(
+    "model_code",
+    ['tasklist /FI "PID eq <pid>"', "tasklist /FI 'PID eq <pid>'", "tasklist /FI PID eq <pid>", "tasklist /FI  “PID eq <id>”"],
+)
+def test_grounding_restores_the_canonical_quotes(model_code: str) -> None:
+    canonical = 'tasklist /FI "PID eq <pid>"'
+    commands = grounded_commands([CommandBlock(label="x", code=model_code)], [_command_hit("tasklist", canonical)])
+    assert [item.code for item in commands] == [canonical]
+
+
+def test_grounding_keeps_commands_that_differ_only_in_a_placeholder() -> None:
+    hit = _command_hit("git checkout <branch_name>", "git checkout <path/to/file>")
+    commands = grounded_commands([CommandBlock(label="x", code="git checkout <branch_name>")], [hit])
+    assert [item.code for item in commands] == ["git checkout <branch_name>"]
+
+
+def test_grounding_still_drops_commands_outside_the_evidence() -> None:
+    commands = grounded_commands([CommandBlock(label="x", code="tasklist /V")], [_command_hit("tasklist")])
+    assert commands == []

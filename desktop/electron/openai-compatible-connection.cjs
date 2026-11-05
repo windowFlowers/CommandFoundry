@@ -97,6 +97,11 @@ async function testOpenAICompatibleConnection({
         { role: "system", content: "Return strict JSON only." },
         { role: "user", content: 'Return exactly {"status":"ok"}.' },
       ],
+      // Hybrid-thinking models served by llama.cpp or vLLM (e.g. Qwen3.5) would
+      // spend the small token budget on reasoning before emitting the JSON.
+      ...(["llamacpp", "vllm"].includes(normalizedProvider)
+        ? { chat_template_kwargs: { enable_thinking: false } }
+        : {}),
     };
     let response;
     try {

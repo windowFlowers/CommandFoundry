@@ -2,9 +2,9 @@
   "schema_version": 1,
   "generated_for": "CommandFoundry 2.7.0",
   "recipe_count": 22,
-  "recipe_revision": "aeb18cf8d88932af1d1f21b3fd68a194e89f34ac4f500be5f55f52804746d72d",
+  "recipe_revision": "512068bee2bb073159225c4790f8ea8f6f93f3a5edc00f3df766f35da5500f50",
   "cleaning_revision": "v2.12.0",
-  "quality_report_sha256": "7244d206e61aac0f1186039c94ae8a78247be55f80324d61886083e8024e0fde",
+  "quality_report_sha256": "73c1e631c82962fd73a48c729f329651038c873e3c6d7547194c319549d79ac1",
   "recipes": [
     {
       "recipe_id": "docker.docker-run.image",
@@ -62,17 +62,17 @@
         {
           "source_id": "docker.docker-run",
           "title": "tldr: docker-run",
-          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-run.md",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-run.md",
           "license": "CC BY 4.0",
           "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-          "path": "pages/common/docker-run.md",
-          "sha256": "9c16e341a6e79389d9258e3814751929fc6e9bca4177c46beb6b859201f4b793",
+          "path": "pages/common/docker-container-run.md",
+          "sha256": "293a52595f7fc8d531e7095e82ac4631671e6d2bd7a30d4472ddcf02bf9da7ee",
           "kind": "vendored",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "135ad73dc16bf48d50d7a95638e72b3a63d219ee958c184f03f796ba5f2021ae"
+      "source_revision": "6303f1a4a15899ae061819d3385909b3f62960f938381eb6eab7a5875e46b34b"
     },
     {
       "recipe_id": "git.git-revert.latest",
@@ -568,7 +568,7 @@
           "label": "复制文件或目录",
           "merge": "newline",
           "templates": {
-            "powershell": "Copy-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}'",
+            "powershell": "Copy-Item -LiteralPath '{{source_path}}' -Destination '{{destination_path}}' -Recurse",
             "cmd": "copy /Y \"{{source_path}}\" \"{{destination_path}}\""
           },
           "languages": {
@@ -585,13 +585,13 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/copy-item",
-          "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+          "sha256": "9d6f0264fb70bdae81b9a7a89e108196d9b03d79bcbce590c6d49bbcf78a6a92",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "af3e6793e7e07160d998643eb0f08032f586a83bd5f952826f829c62a4773218"
+      "source_revision": "c47ff22ef3419a0840b51c08afe00e1641946b7a6531b50b97150e57f5602545"
     },
     {
       "recipe_id": "windows.expand-archive.paths",
@@ -901,13 +901,13 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/move-item",
-          "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+          "sha256": "c7b5adc3f9cf1d739a04695a9d55ec30b9be47ffd83d92ba4d4fb62b949e7675",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "0ef8fba36ab1e660c8688fef7d367467d4bc090f07e06542e338f77656f08869"
+      "source_revision": "c0e9743377a92e13a0506e7cd53bbef9de7abb23c175b906093916a50ee139ad"
     },
     {
       "recipe_id": "windows.netstat.port",
@@ -1077,13 +1077,13 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/remove-item",
-          "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+          "sha256": "aeb37a38edb748d0724746a5ad1bde7ef5aa0a39ec18a1895d1986ea3365446c",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "f77f574e22e8a16b15be0038fdbcc73e44a7e3d7ab1dc547c0d4c7f7ffa24b66"
+      "source_revision": "0fa3c0c6e0923e9777c4791f7bd78198cc6542d3763a65f8f3eb1cb87aed5511"
     },
     {
       "recipe_id": "windows.restart-service.name",
@@ -1129,13 +1129,13 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/restart-service",
-          "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+          "sha256": "6d90f3933260b0f4a9f9a75b5cd8e8136d882eeee3ed35c3bb0794712e1395d3",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "4d1a280556b758086f561749f33abef7f87617ed79cf10346f2be056b352b2a4"
+      "source_revision": "eee9a88b6c54c44e2c81774ea33b40f95bf3299666513beab307b95caa02ddb9"
     },
     {
       "recipe_id": "windows.start-service.name",
@@ -1254,13 +1254,13 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/stop-process",
-          "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+          "sha256": "3fc71911858b167e126ecb5a7694ad4023342e3d4cda0eeaae99562a3d74e498",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
       ],
       "cleaning_revision": "v2.12.0",
-      "source_revision": "25b8dd4ce1a6b7c0a3e02cc39ccc79a1def3b2d372d269a8fb8d7c254e504907"
+      "source_revision": "4a3da7455e3006b7368d26ff07473c9530066a6a8624f81cbad08cc78db20836"
     },
     {
       "recipe_id": "windows.stop-service.name",

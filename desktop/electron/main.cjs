@@ -20,7 +20,7 @@ const {
   saveModelConfig,
 } = require("./model-config.cjs");
 const { testOpenAICompatibleConnection } = require("./openai-compatible-connection.cjs");
-const { normalizeProvider, providerLabel } = require("./model-providers.cjs");
+const { normalizeProvider, providerLabel, providerRequiresApiKey } = require("./model-providers.cjs");
 const {
   buildBackendLaunchSpec,
   buildRuntimeEnvironment,
@@ -102,7 +102,7 @@ async function startBackend() {
   });
   const modelConfig = secureModelConfig();
   const useEnvironmentModel = !modelConfig.apiKey
-    && modelConfig.provider !== "ollama"
+    && providerRequiresApiKey(modelConfig.provider)
     && Boolean(process.env.AEGIS_LLM_API_KEY);
   const baseEnv = {
     ...process.env,
@@ -274,7 +274,7 @@ function registerModelConfigIpc() {
   ipcMain.handle("model-config:status", () => {
     const config = secureModelConfig();
     return {
-      configured: Boolean(config.apiKey) || config.provider === "ollama",
+      configured: Boolean(config.apiKey) || !providerRequiresApiKey(config.provider),
       encryptionAvailable: safeStorage.isEncryptionAvailable(),
       provider: config.provider,
       providerLabel: providerLabel(config.provider),

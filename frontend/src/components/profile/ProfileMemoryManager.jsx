@@ -36,6 +36,8 @@ const providerLabels = {
   moonshot: "模型提取",
   siliconflow: "模型提取",
   ollama: "模型提取",
+  llamacpp: "模型提取",
+  vllm: "模型提取",
   custom: "模型提取",
   model: "模型提取",
   manual: "手动添加",

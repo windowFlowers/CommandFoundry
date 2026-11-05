@@ -50,6 +50,8 @@ const providerLabels = {
   moonshot: "Moonshot / Kimi",
   siliconflow: "SiliconFlow",
   ollama: "Ollama",
+  llamacpp: "llama.cpp",
+  vllm: "vLLM",
   custom: "自定义模型",
 };
 const domainText = {

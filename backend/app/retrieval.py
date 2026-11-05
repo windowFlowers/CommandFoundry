@@ -37,12 +37,17 @@ CJK_SEQUENCE = re.compile(r"[\u3400-\u9fff]+")
 # one domain merely because that domain happens to contain the word.
 _DOMAIN_HINTS: dict[str, tuple[str, ...]] = {
     "cicd": ("cicd", "ci/cd", "github actions", "jenkins", "gitlab ci", "pipeline"),
+    "cloud": ("aws", "gcloud", "azure"),
+    "cpp": ("gcc", "g++", "clang", "cmake", "makefile"),
+    "database": ("sqlite", "sqlite3", "mongodb", "mongosh"),
     "docker": ("docker", "容器", "container"),
     "git": ("git", "github", "gitlab", "提交", "commit", "分支", "branch"),
+    "go": ("golang", "go mod", "go build", "go test", "go run"),
     "http": ("http", "https", "curl", "wget", "接口", "api", "json 请求"),
     "java": ("java", "maven", "gradle", "jar"),
     "kubernetes": ("kubernetes", "k8s", "kubectl"),
     "linux": ("linux", "ubuntu", "debian", "bash", "shell", "systemd"),
+    "media": ("ffmpeg", "imagemagick", "pandoc"),
     # Avoid generic action words (for example "端口" or "ping") here: the
     # catalogue intentionally contains both network and HTTP topics for those
     # terms.  Let lexical ranking disambiguate unless the user names a stable
@@ -51,6 +56,7 @@ _DOMAIN_HINTS: dict[str, tuple[str, ...]] = {
     "node": ("node", "node.js", "npm", "npx", "yarn", "pnpm"),
     "python": ("python", "pip", "venv", "virtualenv", "conda"),
     "redis": ("redis", "redis-cli"),
+    "rust": ("rust", "rustup", "cargo"),
     # Keep routing hints high-signal.  Generic words such as "查询" and
     # "数据库" occur in unrelated documentation and must not silently turn
     # an ordinary question into an SQL-only filter.

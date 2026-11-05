@@ -4,7 +4,7 @@
 
 ## 数据集
 
-`knowledge/eval_dataset.json` 共 300 条独立自然语言查询，每个知识主题一条。`knowledge/memory_eval_dataset.json` 另含 60 组多轮查询，覆盖平台替换、代词、序号指针、风险与约束继承、新主题切换、无命中和提示注入。v2.4 新增的 `knowledge/personalization_eval_dataset.json` 含 60 条面向跨对话长期个性化的离线信号门用例，其中 30 条应提取、15 条应忽略、15 条应因敏感内容被拒绝。
+`knowledge/eval_dataset.json` 共 515 条独立自然语言查询，每个知识主题一条。`knowledge/memory_eval_dataset.json` 另含 60 组多轮查询，覆盖平台替换、代词、序号指针、风险与约束继承、新主题切换、无命中和提示注入。v2.4 新增的 `knowledge/personalization_eval_dataset.json` 含 60 条面向跨对话长期个性化的离线信号门用例，其中 30 条应提取、15 条应忽略、15 条应因敏感内容被拒绝。
 
 每条记录只包含查询、预期主题 ID 和领域，不使用大模型结果判定检索命中。构建脚本同时校验主题 ID、HTTPS 来源、固定 revision、许可证、SHA-256、占位符和命令代码。
 

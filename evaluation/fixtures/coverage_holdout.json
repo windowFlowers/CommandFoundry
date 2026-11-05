@@ -1,0 +1,752 @@
+[
+  {
+    "id": "coverage-001",
+    "query": "磁盘快满了，想知道哪个目录最占地方",
+    "expected_topic_ids": [
+      "linux.du"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-002",
+    "query": "把当前文件夹打包成 tar.gz",
+    "expected_topic_ids": [
+      "linux.tar"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-003",
+    "query": "在一堆代码里找包含某个字符串的文件",
+    "expected_topic_ids": [
+      "linux.grep",
+      "linux.rg"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-004",
+    "query": "给脚本加上可执行权限",
+    "expected_topic_ids": [
+      "linux.chmod"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-005",
+    "query": "从服务器拷一个文件到本地",
+    "expected_topic_ids": [
+      "linux.scp",
+      "network.sftp",
+      "network.rsync"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-006",
+    "query": "撤销上一次提交但保留改动",
+    "expected_topic_ids": [
+      "git.git-reset"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-007",
+    "query": "代码改了一半要切分支，先存起来",
+    "expected_topic_ids": [
+      "git.git-stash"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-008",
+    "query": "把别的分支的某个提交拿过来",
+    "expected_topic_ids": [
+      "git.git-cherry-pick"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-009",
+    "query": "进入正在运行的容器里面敲命令",
+    "expected_topic_ids": [
+      "docker.docker-exec"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-010",
+    "query": "跟踪容器最新的日志输出",
+    "expected_topic_ids": [
+      "docker.docker-logs"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-011",
+    "query": "写好 Dockerfile 了怎么生成镜像",
+    "expected_topic_ids": [
+      "docker.docker-build"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-012",
+    "query": "Pod 一直 CrashLoopBackOff，先看日志",
+    "expected_topic_ids": [
+      "kubernetes.kubectl-logs",
+      "kubernetes.kubectl-describe"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-013",
+    "query": "用 curl 发一个带 JSON 的 POST 请求",
+    "expected_topic_ids": [
+      "http.curl"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-014",
+    "query": "建一个 Python 虚拟环境",
+    "expected_topic_ids": [
+      "python.virtualenv"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-015",
+    "query": "MySQL 全库备份成 sql 文件",
+    "expected_topic_ids": [
+      "sql.backup"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-016",
+    "query": "Redis 里给 key 设置过期时间",
+    "expected_topic_ids": [
+      "redis.expire"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-017",
+    "query": "Windows 上看 8080 端口被哪个进程占了",
+    "expected_topic_ids": [
+      "windows.netstat",
+      "windows.get-nettcpconnection"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-018",
+    "query": "PowerShell 怎么结束某个进程",
+    "expected_topic_ids": [
+      "windows.stop-process",
+      "windows.taskkill"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-019",
+    "query": "Linux 上 3000 端口被谁占用",
+    "expected_topic_ids": [
+      "network.ss",
+      "network.lsof",
+      "http.ss"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-020",
+    "query": "测一下能不能 ping 通网关",
+    "expected_topic_ids": [
+      "network.ping",
+      "http.ping",
+      "windows.ping"
+    ],
+    "group": "existing"
+  },
+  {
+    "id": "coverage-021",
+    "query": "服务器内存还剩多少",
+    "expected_topic_ids": [
+      "linux.free"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-022",
+    "query": "把 nginx 设成开机启动",
+    "expected_topic_ids": [
+      "linux.systemctl"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-023",
+    "query": "看一下某个 systemd 服务最近的报错日志",
+    "expected_topic_ids": [
+      "linux.journalctl"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-024",
+    "query": "每天凌晨三点自动跑一个备份脚本",
+    "expected_topic_ids": [
+      "linux.crontab"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-025",
+    "query": "SSH 断开之后程序还要继续跑",
+    "expected_topic_ids": [
+      "linux.nohup",
+      "linux.tmux",
+      "linux.screen"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-026",
+    "query": "把日志第三列提取出来",
+    "expected_topic_ids": [
+      "linux.awk",
+      "linux.cut"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-027",
+    "query": "Ubuntu 上装个 nginx",
+    "expected_topic_ids": [
+      "linux.apt",
+      "linux.apt-get"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-028",
+    "query": "CentOS 上安装 git",
+    "expected_topic_ids": [
+      "linux.yum",
+      "linux.dnf"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-029",
+    "query": "Mac 上怎么装 wget",
+    "expected_topic_ids": [
+      "linux.brew"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-030",
+    "query": "解压一个 zip 包到指定文件夹",
+    "expected_topic_ids": [
+      "linux.unzip"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-031",
+    "query": "显卡现在被哪些进程占着",
+    "expected_topic_ids": [
+      "linux.nvidia-smi"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-032",
+    "query": "比较两个配置文件哪里不一样",
+    "expected_topic_ids": [
+      "linux.diff"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-033",
+    "query": "查看当前机器的内核版本",
+    "expected_topic_ids": [
+      "linux.uname"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-034",
+    "query": "新建一个 Linux 账号",
+    "expected_topic_ids": [
+      "linux.useradd"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-035",
+    "query": "把用户加到 sudo 组",
+    "expected_topic_ids": [
+      "linux.usermod"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-036",
+    "query": "改一下我的登录密码",
+    "expected_topic_ids": [
+      "linux.passwd"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-037",
+    "query": "挂载一块新硬盘",
+    "expected_topic_ids": [
+      "linux.mount"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-038",
+    "query": "批量杀掉所有 python 进程",
+    "expected_topic_ids": [
+      "linux.pkill",
+      "linux.killall"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-039",
+    "query": "创建一个指向配置文件的软链",
+    "expected_topic_ids": [
+      "linux.ln"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-040",
+    "query": "校验一下下载的 ISO 文件的哈希",
+    "expected_topic_ids": [
+      "linux.sha256sum",
+      "linux.md5sum"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-041",
+    "query": "切到另一个分支，用老的 checkout 写法",
+    "expected_topic_ids": [
+      "git.git-checkout"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-042",
+    "query": "仓库里有大模型文件，怎么用 LFS",
+    "expected_topic_ids": [
+      "git.git-lfs"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-043",
+    "query": "不小心把 .env 提交了，取消跟踪但别删本地",
+    "expected_topic_ids": [
+      "git.git-rm"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-044",
+    "query": "获取当前 commit 的短 hash",
+    "expected_topic_ids": [
+      "git.git-rev-parse"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-045",
+    "query": "把镜像传到公司的 Harbor 仓库",
+    "expected_topic_ids": [
+      "docker.docker-push"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-046",
+    "query": "容器挂了，重启一下",
+    "expected_topic_ids": [
+      "docker.docker-restart"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-047",
+    "query": "删除本地没用的旧镜像",
+    "expected_topic_ids": [
+      "docker.docker-rmi",
+      "docker.docker-image"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-048",
+    "query": "docker compose 后台拉起所有服务",
+    "expected_topic_ids": [
+      "docker.docker-compose-up",
+      "docker.docker-compose"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-049",
+    "query": "节点要下线维护，把上面的 Pod 迁走",
+    "expected_topic_ids": [
+      "kubernetes.kubectl-drain"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-050",
+    "query": "本地搭一个 k8s 练手",
+    "expected_topic_ids": [
+      "kubernetes.minikube",
+      "kubernetes.kind"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-051",
+    "query": "把项目依赖导出成 requirements.txt",
+    "expected_topic_ids": [
+      "python.pip-freeze"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-052",
+    "query": "FastAPI 服务开热重载启动",
+    "expected_topic_ids": [
+      "python.uvicorn"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-053",
+    "query": "Python 脚本打包成 Windows 的 exe",
+    "expected_topic_ids": [
+      "python.pyinstaller"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-054",
+    "query": "把 Node 版本切到 18",
+    "expected_topic_ids": [
+      "node.nvm"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-055",
+    "query": "Node 服务用进程管理器常驻后台",
+    "expected_topic_ids": [
+      "node.pm2"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-056",
+    "query": "流水线里用锁文件装 npm 依赖",
+    "expected_topic_ids": [
+      "node.npm-ci"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-057",
+    "query": "Gradle 项目打包",
+    "expected_topic_ids": [
+      "java.gradle"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-058",
+    "query": "线上 Java 进程 CPU 飙高，导出线程栈",
+    "expected_topic_ids": [
+      "java.jstack"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-059",
+    "query": "Go 项目清理没用的依赖",
+    "expected_topic_ids": [
+      "go.go-mod"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-060",
+    "query": "交叉编译 Go 程序",
+    "expected_topic_ids": [
+      "go.go-build"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-061",
+    "query": "跑 Go 的单元测试并看覆盖率",
+    "expected_topic_ids": [
+      "go.go-test"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-062",
+    "query": "新建一个 Rust 项目",
+    "expected_topic_ids": [
+      "rust.cargo"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-063",
+    "query": "给 Rust 项目加 serde 依赖",
+    "expected_topic_ids": [
+      "rust.cargo-add"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-064",
+    "query": "把 Rust 工具链升级到最新",
+    "expected_topic_ids": [
+      "rust.rustup"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-065",
+    "query": "编译一个 C++ 文件并开优化",
+    "expected_topic_ids": [
+      "cpp.g++"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-066",
+    "query": "CMake 项目怎么生成构建目录",
+    "expected_topic_ids": [
+      "cpp.cmake"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-067",
+    "query": "执行 Makefile 里的某个目标",
+    "expected_topic_ids": [
+      "cpp.make"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-068",
+    "query": "把本地文件传到 S3 桶",
+    "expected_topic_ids": [
+      "cloud.aws-s3-cp"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-069",
+    "query": "配置 aws 的 access key",
+    "expected_topic_ids": [
+      "cloud.aws-configure"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-070",
+    "query": "打开一个 sqlite 数据库文件",
+    "expected_topic_ids": [
+      "database.sqlite3"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-071",
+    "query": "备份 MongoDB 数据库",
+    "expected_topic_ids": [
+      "database.mongodump"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-072",
+    "query": "MySQL 给用户表新增一列",
+    "expected_topic_ids": [
+      "sql.alter-table"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-073",
+    "query": "清空 MySQL 的日志表",
+    "expected_topic_ids": [
+      "sql.truncate-table"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-074",
+    "query": "PostgreSQL 看现在有哪些慢 SQL 在跑",
+    "expected_topic_ids": [
+      "sql.postgres-activity"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-075",
+    "query": "Redis 里做一个访问计数",
+    "expected_topic_ids": [
+      "redis.incr"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-076",
+    "query": "用 redis-cli 连到另一台机器",
+    "expected_topic_ids": [
+      "redis.redis-cli"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-077",
+    "query": "把 mp4 转成 gif",
+    "expected_topic_ids": [
+      "media.ffmpeg"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-078",
+    "query": "Markdown 导出成 docx",
+    "expected_topic_ids": [
+      "media.pandoc"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-079",
+    "query": "批量压缩图片尺寸",
+    "expected_topic_ids": [
+      "media.magick"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-080",
+    "query": "两台服务器之间测带宽",
+    "expected_topic_ids": [
+      "network.iperf3"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-081",
+    "query": "网络时断时续，看是哪一跳丢包",
+    "expected_topic_ids": [
+      "network.mtr",
+      "windows.tracert"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-082",
+    "query": "Windows 上查本机 IP",
+    "expected_topic_ids": [
+      "windows.ipconfig",
+      "windows.get-netadapter"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-083",
+    "query": "清一下 Windows 的 DNS 缓存",
+    "expected_topic_ids": [
+      "windows.ipconfig"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-084",
+    "query": "Windows 定时每天跑一个脚本",
+    "expected_topic_ids": [
+      "windows.schtasks"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-085",
+    "query": "Windows 永久加一个环境变量",
+    "expected_topic_ids": [
+      "windows.set-environment-variable"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-086",
+    "query": "PowerShell 提示禁止运行脚本",
+    "expected_topic_ids": [
+      "windows.set-executionpolicy"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-087",
+    "query": "查看 WSL 里装了哪些发行版",
+    "expected_topic_ids": [
+      "windows.wsl"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-088",
+    "query": "Windows 系统文件坏了修复一下",
+    "expected_topic_ids": [
+      "windows.sfc"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-089",
+    "query": "Windows 防火墙放行 8080 端口",
+    "expected_topic_ids": [
+      "windows.firewall"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-090",
+    "query": "Windows 看一下 C 盘还剩多少空间",
+    "expected_topic_ids": [
+      "windows.get-volume"
+    ],
+    "group": "new"
+  },
+  {
+    "id": "coverage-091",
+    "query": "看 Windows 系统日志里的错误",
+    "expected_topic_ids": [
+      "windows.get-winevent"
+    ],
+    "group": "new"
+  }
+]

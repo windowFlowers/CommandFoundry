@@ -76,7 +76,7 @@ npm test
 .\backend\.venv\Scripts\python.exe scripts\evaluate_rag.py
 ```
 
-输出同时包含 300 条单轮集合与 60 组多轮集合的 BM25、混合检索 Top-1/Top-3 指标。
+输出同时包含 515 条单轮集合与 60 组多轮集合的 BM25、混合检索 Top-1/Top-3 指标。
 
 上传文档的 80 条父子检索专项评测可独立复现：
 

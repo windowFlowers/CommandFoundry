@@ -132,7 +132,7 @@ def _provider_requires_key() -> bool:
     provider = os.getenv("AEGIS_LLM_PROVIDER", "").strip().lower()
     if not provider:
         provider = "deepseek" if os.getenv("AEGIS_LLM_API_KEY", "").strip() else "mock"
-    if provider == "ollama":
+    if provider in {"ollama", "llamacpp", "vllm"}:  # keep in sync with app.generation.KEYLESS_PROVIDERS
         return False
     if provider == "mock":
         raise SystemExit(

@@ -58,14 +58,14 @@ backend/app/
   main.py         多知识库 API 与 SSE 事件契约
 frontend/src/     问答工作台与知识库管理页
 desktop/electron/ 进程、协议、窗口和 safeStorage 边界
-knowledge/        300 个结构化主题、来源锁、评测集和声明
+knowledge/        515 个结构化主题、来源锁、评测集和声明
 ```
 
 ## 为什么这样设计
 
 ### 小数据直接内存检索
 
-内置知识库只有 300 个主题，自定义库也定位于个人文档规模。引入 Milvus、FAISS、Chroma 或 PostgreSQL 会增加部署和打包成本。每个知识库按需加载 BM25 与归一化向量矩阵，文档变更后原子替换缓存。
+内置知识库只有 515 个主题，自定义库也定位于个人文档规模。引入 Milvus、FAISS、Chroma 或 PostgreSQL 会增加部署和打包成本。每个知识库按需加载 BM25 与归一化向量矩阵，文档变更后原子替换缓存。
 
 ### BM25 与向量互补
 

@@ -3,8 +3,8 @@
     "id": "memory-001",
     "previous_query": "切换目录",
     "previous_command_labels": [
-      "Go to the specified directory",
-      "Go up to the parent of the current directory"
+      "转到指定目录",
+      "转到当前目录的父目录"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "linux.cd",
@@ -14,8 +14,8 @@
     "id": "memory-002",
     "previous_query": "切换目录",
     "previous_command_labels": [
-      "Go to the specified directory",
-      "Go up to the parent of the current directory"
+      "转到指定目录",
+      "转到当前目录的父目录"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "linux.cd",
@@ -67,7 +67,8 @@
     "id": "memory-007",
     "previous_query": "持续查看 Docker 日志",
     "previous_command_labels": [
-      "View documentation for the original command"
+      "显示一个容器的日志",
+      "显示历史日志,然后跟踪容器日志"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "docker.docker-logs",
@@ -77,7 +78,8 @@
     "id": "memory-008",
     "previous_query": "持续查看 Docker 日志",
     "previous_command_labels": [
-      "View documentation for the original command"
+      "显示一个容器的日志",
+      "显示历史日志,然后跟踪容器日志"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "docker.docker-logs",
@@ -87,8 +89,8 @@
     "id": "memory-009",
     "previous_query": "curl GET",
     "previous_command_labels": [
-      "Make an HTTP GET request and dump the contents in `stdout`",
-      "Make an HTTP GET request, follow any `3xx` redirects, and dump the reply headers and contents to `stdout`"
+      "发起 HTTP GET 请求,将响应内容输出到 `stdout`",
+      "发起 HTTP GET 请求,自动跟随所有 `3xx` 重定向,将响应头和内容输出到 `stdout`"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "http.curl",
@@ -98,8 +100,8 @@
     "id": "memory-010",
     "previous_query": "curl GET",
     "previous_command_labels": [
-      "Make an HTTP GET request and dump the contents in `stdout`",
-      "Make an HTTP GET request, follow any `3xx` redirects, and dump the reply headers and contents to `stdout`"
+      "发起 HTTP GET 请求,将响应内容输出到 `stdout`",
+      "发起 HTTP GET 请求,自动跟随所有 `3xx` 重定向,将响应头和内容输出到 `stdout`"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "http.curl",
@@ -109,8 +111,8 @@
     "id": "memory-011",
     "previous_query": "Python 虚拟环境",
     "previous_command_labels": [
-      "Create a new environment",
-      "Customize the prompt prefix"
+      "使用内置 venv 创建虚拟环境",
+      "在 Linux 或 macOS 上激活 venv"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "python.virtualenv",
@@ -120,8 +122,8 @@
     "id": "memory-012",
     "previous_query": "Python 虚拟环境",
     "previous_command_labels": [
-      "Create a new environment",
-      "Customize the prompt prefix"
+      "使用内置 venv 创建虚拟环境",
+      "在 Linux 或 macOS 上激活 venv"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "python.virtualenv",
@@ -131,8 +133,8 @@
     "id": "memory-013",
     "previous_query": "npm 安装依赖",
     "previous_command_labels": [
-      "Create a `package.json` file with default values (omit `--yes` to do it interactively)",
-      "Download all the packages listed as dependencies in `package.json`"
+      "使用默认值创建一个 `package.json` 文件(省略 `--yes` 来以交互方式执行)",
+      "下载 `package.json` 中列出的所有依赖项软件包"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "node.npm",
@@ -142,8 +144,8 @@
     "id": "memory-014",
     "previous_query": "npm 安装依赖",
     "previous_command_labels": [
-      "Create a `package.json` file with default values (omit `--yes` to do it interactively)",
-      "Download all the packages listed as dependencies in `package.json`"
+      "使用默认值创建一个 `package.json` 文件(省略 `--yes` 来以交互方式执行)",
+      "下载 `package.json` 中列出的所有依赖项软件包"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "node.npm",
@@ -197,7 +199,7 @@
     "id": "memory-019",
     "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
-      "Connect to a remote server",
+      "连接到远程服务器",
       "Connect to a remote server with a specific [i]dentity (private key)"
     ],
     "follow_up": "这个命令安全吗？",
@@ -208,7 +210,7 @@
     "id": "memory-020",
     "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
-      "Connect to a remote server",
+      "连接到远程服务器",
       "Connect to a remote server with a specific [i]dentity (private key)"
     ],
     "follow_up": "它需要哪些前置条件？",
@@ -239,8 +241,8 @@
     "id": "memory-023",
     "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
-      "Compile a project",
-      "Compile and package the compiled code in its distributable format, such as a `jar`"
+      "编译项目",
+      "将编译后的代码打包成可分发格式,比如 `jar`"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "java.mvn",
@@ -250,8 +252,8 @@
     "id": "memory-024",
     "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
-      "Compile a project",
-      "Compile and package the compiled code in its distributable format, such as a `jar`"
+      "编译项目",
+      "将编译后的代码打包成可分发格式,比如 `jar`"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "java.mvn",
@@ -261,8 +263,8 @@
     "id": "memory-025",
     "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
-      "Interactively select a workflow to view the latest jobs for",
-      "View a specific workflow in the default browser"
+      "以交互式方式选择一个工作流以查看其最近的任务",
+      "在默认浏览器中查看指定的工作流"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "cicd.gh-workflow",
@@ -272,8 +274,8 @@
     "id": "memory-026",
     "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
-      "Interactively select a workflow to view the latest jobs for",
-      "View a specific workflow in the default browser"
+      "以交互式方式选择一个工作流以查看其最近的任务",
+      "在默认浏览器中查看指定的工作流"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "cicd.gh-workflow",
@@ -305,8 +307,8 @@
     "id": "memory-029",
     "previous_query": "删除文件",
     "previous_command_labels": [
-      "Remove specific files",
-      "Remove specific files ignoring nonexistent ones"
+      "删除指定文件",
+      "删除指定文件,忽略不存在的文件"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "linux.rm",
@@ -316,8 +318,8 @@
     "id": "memory-030",
     "previous_query": "删除文件",
     "previous_command_labels": [
-      "Remove specific files",
-      "Remove specific files ignoring nonexistent ones"
+      "删除指定文件",
+      "删除指定文件,忽略不存在的文件"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "linux.rm",
@@ -327,8 +329,8 @@
     "id": "memory-031",
     "previous_query": "Git 回滚并改写历史",
     "previous_command_labels": [
-      "Unstage everything",
-      "Unstage specific file(s)"
+      "取消暂存所有文件",
+      "取消暂存指定文件"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "git.git-reset",
@@ -338,8 +340,8 @@
     "id": "memory-032",
     "previous_query": "Git 回滚并改写历史",
     "previous_command_labels": [
-      "Unstage everything",
-      "Unstage specific file(s)"
+      "取消暂存所有文件",
+      "取消暂存指定文件"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "git.git-reset",
@@ -414,7 +416,7 @@
     "previous_query": "Linux 怎么查看端口占用?",
     "previous_command_labels": [
       "查看 TCP 监听端口和进程",
-      "Show all TCP/UDP/RAW/UNIX sockets"
+      "显示所有 TCP/UDP/RAW/UNIX 套接字"
     ],
     "follow_up": "这个命令安全吗？",
     "expected_topic_id": "network.ss",
@@ -425,7 +427,7 @@
     "previous_query": "Linux 怎么查看端口占用?",
     "previous_command_labels": [
       "查看 TCP 监听端口和进程",
-      "Show all TCP/UDP/RAW/UNIX sockets"
+      "显示所有 TCP/UDP/RAW/UNIX 套接字"
     ],
     "follow_up": "它需要哪些前置条件？",
     "expected_topic_id": "network.ss",
@@ -501,8 +503,8 @@
     "id": "memory-047",
     "previous_query": "查看修改文件",
     "previous_command_labels": [
-      "Show untracked and changed files which are not yet added for commit",
-      "Give output in short format"
+      "显示修改过但尚未暂存(以备提交)的文件",
+      "以简短形式输出"
     ],
     "follow_up": "持续查看 Docker 日志",
     "expected_topic_id": "docker.docker-logs",
@@ -512,7 +514,8 @@
     "id": "memory-048",
     "previous_query": "持续查看 Docker 日志",
     "previous_command_labels": [
-      "View documentation for the original command"
+      "显示一个容器的日志",
+      "显示历史日志,然后跟踪容器日志"
     ],
     "follow_up": "MySQL 添加索引",
     "expected_topic_id": "sql.create-index",
@@ -532,8 +535,8 @@
     "id": "memory-050",
     "previous_query": "Python 虚拟环境",
     "previous_command_labels": [
-      "Create a new environment",
-      "Customize the prompt prefix"
+      "使用内置 venv 创建虚拟环境",
+      "在 Linux 或 macOS 上激活 venv"
     ],
     "follow_up": "npm 安装依赖",
     "expected_topic_id": "node.npm",
@@ -543,8 +546,8 @@
     "id": "memory-051",
     "previous_query": "npm 安装依赖",
     "previous_command_labels": [
-      "Create a `package.json` file with default values (omit `--yes` to do it interactively)",
-      "Download all the packages listed as dependencies in `package.json`"
+      "使用默认值创建一个 `package.json` 文件(省略 `--yes` 来以交互方式执行)",
+      "下载 `package.json` 中列出的所有依赖项软件包"
     ],
     "follow_up": "如何使用 kubectl-get?",
     "expected_topic_id": "kubernetes.kubectl-get",
@@ -575,8 +578,8 @@
     "id": "memory-054",
     "previous_query": "如何使用 mvn?",
     "previous_command_labels": [
-      "Compile a project",
-      "Compile and package the compiled code in its distributable format, such as a `jar`"
+      "编译项目",
+      "将编译后的代码打包成可分发格式,比如 `jar`"
     ],
     "follow_up": "如何使用 gh-workflow?",
     "expected_topic_id": "cicd.gh-workflow",
@@ -586,8 +589,8 @@
     "id": "memory-055",
     "previous_query": "如何使用 gh-workflow?",
     "previous_command_labels": [
-      "Interactively select a workflow to view the latest jobs for",
-      "View a specific workflow in the default browser"
+      "以交互式方式选择一个工作流以查看其最近的任务",
+      "在默认浏览器中查看指定的工作流"
     ],
     "follow_up": "如何使用 pytest?",
     "expected_topic_id": "testing.pytest",
@@ -619,7 +622,7 @@
     "id": "memory-058",
     "previous_query": "如何使用 ssh?",
     "previous_command_labels": [
-      "Connect to a remote server",
+      "连接到远程服务器",
       "Connect to a remote server with a specific [i]dentity (private key)"
     ],
     "follow_up": "如何使用 pwd?",

@@ -41,6 +41,20 @@ const PROVIDER_PRESETS = Object.freeze({
     model: "llama3.2",
     requiresApiKey: false,
   }),
+  llamacpp: Object.freeze({
+    id: "llamacpp",
+    label: "llama.cpp（私有部署）",
+    baseUrl: "http://127.0.0.1:18080/v1",
+    model: "qwen3.5-4b",
+    requiresApiKey: false,
+  }),
+  vllm: Object.freeze({
+    id: "vllm",
+    label: "vLLM（私有部署）",
+    baseUrl: "http://127.0.0.1:18000/v1",
+    model: "qwen3.5-4b",
+    requiresApiKey: false,
+  }),
   custom: Object.freeze({
     id: "custom",
     label: "自定义 OpenAI 兼容 API",

@@ -11,6 +11,8 @@ const modelProviders = [
   { value: "moonshot", label: "Moonshot / Kimi", model: "moonshot-v1-8k", baseUrl: "https://api.moonshot.cn/v1", requiresKey: true },
   { value: "siliconflow", label: "SiliconFlow", model: "deepseek-ai/DeepSeek-V3", baseUrl: "https://api.siliconflow.cn/v1", requiresKey: true },
   { value: "ollama", label: "Ollama（本机）", model: "llama3.2", baseUrl: "http://127.0.0.1:11434/v1", requiresKey: false },
+  { value: "llamacpp", label: "llama.cpp（私有部署）", model: "qwen3.5-4b", baseUrl: "http://127.0.0.1:18080/v1", requiresKey: false },
+  { value: "vllm", label: "vLLM（私有部署）", model: "qwen3.5-4b", baseUrl: "http://127.0.0.1:18000/v1", requiresKey: false },
   { value: "custom", label: "自定义 OpenAI 兼容 API", model: "", baseUrl: "", requiresKey: true },
 ];
 

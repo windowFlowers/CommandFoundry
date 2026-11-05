@@ -264,6 +264,12 @@ def resolve_contextual_query(query: str, turn: ConversationTurn | None) -> str:
     if selected_label:
         technology_context = previous_technology or previous
         return f"{technology_context}；上一回答指向方案：{selected_label}；追问：{current}"
+    # Cited sources name the topic exactly. Labels are generic ("发起 HTTP 请求"),
+    # so with them sibling topics can outrank the one the user is asking about.
+    citations = turn.assistant.answer.citations[:2] if turn.assistant.answer else []
+    if citations:
+        sources = "、".join(f"{item.source_id} {item.title}" for item in citations)
+        return f"{previous}；上一回答来源：{sources}；追问：{current}"
     labels = "、".join(command.label[:80] for command in commands)
     label_context = f"；上一回答方案：{labels}" if labels else ""
     return f"{previous}{label_context}；追问：{current}"

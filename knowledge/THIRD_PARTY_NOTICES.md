@@ -7,7 +7,7 @@
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 - Copyright: tldr-pages team and contributors
 
-Selected command examples are adapted into CommandFoundry's structured knowledge format.
+Selected command examples are adapted into CommandFoundry's structured knowledge format. Chinese summaries and labels come from the same repository's `pages.zh` translations where available.
 
 ## Architecture references
 
@@ -20,4 +20,4 @@ Selected command examples are adapted into CommandFoundry's structured knowledge
 
 Project-authored MySQL, PostgreSQL and Redis seed topics link to their official manuals. The manuals themselves are not redistributed.
 The Python virtual-environment recipes link to the Python `venv` documentation for the platform-specific activation variants. The documentation itself is not redistributed.
-Project-authored Windows command seeds link to Microsoft Learn, Chocolatey and Scoop documentation. The documentation itself is not redistributed.
+Project-authored Windows command seeds link to Microsoft Learn, Chocolatey and Scoop documentation; Docker seeds link to the Docker documentation. The documentation itself is not redistributed.

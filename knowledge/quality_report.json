@@ -2,13 +2,13 @@
   "schema_version": 1,
   "cleaning_revision": "v2.12.0",
   "status": "clean",
-  "topic_count": 300,
-  "source_count": 300,
-  "alias_count": 842,
-  "command_count": 1436,
+  "topic_count": 515,
+  "source_count": 515,
+  "alias_count": 1501,
+  "command_count": 2615,
   "removed_aliases": 0,
   "removed_notes": 0,
-  "removed_commands": 0,
+  "removed_commands": 1,
   "warnings": [],
   "rules": {
     "unicode": "NFKC for prose, NFC for commands",
@@ -16,5 +16,5 @@
     "placeholder_policy": "normalize existing placeholders only",
     "cross_topic_deduplication": false
   },
-  "report_sha256": "7244d206e61aac0f1186039c94ae8a78247be55f80324d61886083e8024e0fde"
+  "report_sha256": "73c1e631c82962fd73a48c729f329651038c873e3c6d7547194c319549d79ac1"
 }

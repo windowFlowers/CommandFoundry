@@ -56,7 +56,7 @@ def test_windows_copy_renders_direct_command_from_two_first_turn_paths() -> None
     assert len(answer["commands"]) == 1
     command = answer["commands"][0]
     assert command["shell"] == "powershell"
-    assert command["code"] == "Copy-Item -LiteralPath 'C:\\work\\a.txt' -Destination 'C:\\backup\\a.txt'"
+    assert command["code"] == "Copy-Item -LiteralPath 'C:\\work\\a.txt' -Destination 'C:\\backup\\a.txt' -Recurse"
     assert "<" not in command["code"] and ">" not in command["code"]
 
 

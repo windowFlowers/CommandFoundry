@@ -48,8 +48,21 @@ def _strict_command_code(value: str) -> str:
     return "\n".join(line.rstrip() for line in value.replace("\r\n", "\n").strip().split("\n"))
 
 
+def _command_match_key(value: str) -> str:
+    """Compare commands ignoring quote style and spacing.
+
+    Small models rarely write an escaped quote inside a JSON string, so they
+    swap or drop the quotes of a command they otherwise copied. Only the
+    canonical evidence command is ever returned, so this widens selection, not
+    what users see.
+    """
+    unquoted = re.sub(r"[\"'`“”‘’]", "", _normalize_command_code(value))
+    return re.sub(r"[ \t]+", " ", unquoted)
+
+
 def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) -> list[CommandBlock]:
     """Return only canonical commands that occur in the current retrieval evidence."""
+    exact_evidence: dict[str, tuple[CommandBlock, list[str]]] = {}
     evidence: dict[str, tuple[CommandBlock, list[str]]] = {}
     strict_upload: dict[str, list[str]] = {}
     records = evidence_records(hits)
@@ -67,17 +80,20 @@ def grounded_commands(commands: list[CommandBlock], hits: list[RetrievalHit]) ->
             continue
         ids = record_ids_by_hit.get(hit.topic.id, [])
         for canonical in hit.topic.commands:
-            evidence[_normalize_command_code(canonical.code)] = (canonical, ids)
+            exact_evidence.setdefault(_strict_command_code(canonical.code), (canonical, ids))
+            evidence.setdefault(_command_match_key(canonical.code), (canonical, ids))
     grounded: list[tuple[int, int, CommandBlock]] = []
     seen: set[str] = set()
     for original_index, command in enumerate(commands):
-        normalized = _normalize_command_code(command.code)
         strict = _strict_command_code(command.code)
         upload_ids = list(dict.fromkeys(strict_upload.get(strict, [])))
-        canonical_entry = evidence.get(normalized)
+        # Commands differing only in a placeholder share a match key, so an
+        # exact copy must win or ``git checkout <branch_name>`` could come back
+        # as ``git checkout <path/to/file>``.
+        canonical_entry = exact_evidence.get(strict) or evidence.get(_command_match_key(command.code))
         if not upload_ids and canonical_entry is None:
             continue
-        seen_key = f"upload:{strict}" if upload_ids else f"builtin:{normalized}"
+        seen_key = f"upload:{strict}" if upload_ids else f"builtin:{canonical_entry[0].code}"  # type: ignore[index]
         if seen_key in seen:
             continue
         seen.add(seen_key)

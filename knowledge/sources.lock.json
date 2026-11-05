@@ -2,9 +2,9 @@
   "schema_version": 1,
   "generated_for": "CommandFoundry 2.7.0",
   "cleaning_revision": "v2.12.0",
-  "quality_report_sha256": "7244d206e61aac0f1186039c94ae8a78247be55f80324d61886083e8024e0fde",
+  "quality_report_sha256": "73c1e631c82962fd73a48c729f329651038c873e3c6d7547194c319549d79ac1",
   "recipe_schema_version": 1,
-  "recipe_revision": "aeb18cf8d88932af1d1f21b3fd68a194e89f34ac4f500be5f55f52804746d72d",
+  "recipe_revision": "512068bee2bb073159225c4790f8ea8f6f93f3a5edc00f3df766f35da5500f50",
   "repositories": [
     {
       "repository": "https://github.com/tldr-pages/tldr.git",
@@ -21,6 +21,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/act.md",
       "license": "CC BY 4.0",
       "sha256": "b0290486950d3a74206b2f52f71a74aff4b92e549314208b71df505757add807",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cicd.ansible",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ansible.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ansible.md",
+      "license": "CC BY 4.0",
+      "sha256": "f785cf80722b2248cd1d9f932a24e9bd49ceb9eb6986280027cc418aaa05e940",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -134,6 +144,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "cicd.helm-install",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/helm-install.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/helm-install.md",
+      "license": "CC BY 4.0",
+      "sha256": "0eb4e502b4d771ab37fac595adcdc59a941c9cb4119ba936c880880b13b8695c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "cicd.jenkins",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -164,6 +184,186 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "cicd.terraform-apply",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/terraform-apply.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/terraform-apply.md",
+      "license": "CC BY 4.0",
+      "sha256": "3f75b6cd43493f3076adc721c1e60ef3c7540417816ad26840aa2075e4dff70b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cicd.terraform-plan",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/terraform-plan.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/terraform-plan.md",
+      "license": "CC BY 4.0",
+      "sha256": "661bc93790b2c91474306041525656d7d2c430b8206918b2f67bdd81acb7eca6",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.aws",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/aws.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/aws.md",
+      "license": "CC BY 4.0",
+      "sha256": "479539a5346768ed38003c85d4aac6ac08202dccbaa38a883c211e1ede604cb7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.aws-configure",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/aws-configure.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/aws-configure.md",
+      "license": "CC BY 4.0",
+      "sha256": "a2774ff457de822c87016751d5dee94c848a2d14326c398b917d1f91ab32fd59",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.aws-s3",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/aws-s3.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/aws-s3.md",
+      "license": "CC BY 4.0",
+      "sha256": "c7feb640e7ceeb67ee3a80a8b6739eba2f49f3b660e943d76c5772b2dbff86cf",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.aws-s3-cp",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/aws-s3-cp.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/aws-s3-cp.md",
+      "license": "CC BY 4.0",
+      "sha256": "8d89970e494b5bb077a4cf1e41dbf69a64424dfeed07530ba256e01f276416e9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.az",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/az.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/az.md",
+      "license": "CC BY 4.0",
+      "sha256": "591386f9abf90f7b4decf41871b388ef1344915b7544fe295e1756394eaf34e9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cloud.gcloud",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gcloud.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gcloud.md",
+      "license": "CC BY 4.0",
+      "sha256": "0e503fde10dd7995192530484137bdb6b9129fbc22f8bd75fe30401edca9d70a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.clang",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/clang.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/clang.md",
+      "license": "CC BY 4.0",
+      "sha256": "49dcf447f0cdc35e5a66616afa462ca587115d4ad8c12e2a55b79c0f4b8f0256",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.cmake",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cmake.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cmake.md",
+      "license": "CC BY 4.0",
+      "sha256": "6a6a30fbacf05db4a32efc53bad2e730e0edc23fe6e5918c0e5de5f6042f3ab1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.g++",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/g++.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/g++.md",
+      "license": "CC BY 4.0",
+      "sha256": "255188ccb69d0671e2d8d1ff2acb15cba9074de502627efe1c0f93f76585158e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.gcc",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gcc.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gcc.md",
+      "license": "CC BY 4.0",
+      "sha256": "870f6e943e46173355411d3160e7a76a7e365eafc74e3ab2080b703571b2f929",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.ldd",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/ldd.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ldd.md",
+      "license": "CC BY 4.0",
+      "sha256": "0d6fa81205832c17a302b164342e64111d6cd9f0651d40d6f60553960af9b399",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "cpp.make",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/make.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/make.md",
+      "license": "CC BY 4.0",
+      "sha256": "2c49f448fd33394353dd059fd6fb986888c839e075a5ce2c1107f361b6fc44dc",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "database.mongodump",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mongodump.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mongodump.md",
+      "license": "CC BY 4.0",
+      "sha256": "8140a45cb283af15a7709d93fdb49fab6bce0c777de120a75bbaaf838fae8f60",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "database.mongorestore",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mongorestore.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mongorestore.md",
+      "license": "CC BY 4.0",
+      "sha256": "bdc5b5cb5c391821ede09e689a062158c0eb20af2497bd343869c120bb639ab5",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "database.mongosh",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mongosh.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mongosh.md",
+      "license": "CC BY 4.0",
+      "sha256": "345041dff8d18214f0762a82f8b3d95ecd8b831704e61837e268f5d045e7a420",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "database.sqlite3",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sqlite3.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sqlite3.md",
+      "license": "CC BY 4.0",
+      "sha256": "dfe63864e703f178a108d4cbd6636ccbd6f2d0170280676ab4fd4a0afd45a02f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "docker.docker",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -187,10 +387,10 @@
       "source_id": "docker.docker-commit",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-commit.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-commit.md",
+      "path": "pages/common/docker-container-commit.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-commit.md",
       "license": "CC BY 4.0",
-      "sha256": "abbb532d52dae1ba6cf69cecb7a0252d38d886fa01aade0ca927198605ad62a7",
+      "sha256": "415fbc278cfd0d59a76bb729be4defcc71e65380f21fb1caae02221c7e5d1c5b",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -204,33 +404,83 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "docker.docker-compose-down",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-compose-down.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-compose-down.md",
+      "license": "CC BY 4.0",
+      "sha256": "30192e223311db2b9da88956d3f8290d052bdee7c870a4a76fd9f24e7e7aad5a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-compose-logs",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-compose-logs.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-compose-logs.md",
+      "license": "CC BY 4.0",
+      "sha256": "6e1afa14e3c1279e4df7168a708950dd2311bfd9c10f407f95eb841b986a27ae",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-compose-up",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-compose-up.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-compose-up.md",
+      "license": "CC BY 4.0",
+      "sha256": "5118b98dbe9c9ebc2cf746f0a8e1f4e63aa634e2c4717de9c9a00228671780ff",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-container",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-container.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container.md",
+      "license": "CC BY 4.0",
+      "sha256": "3271764ef58c9365439e6e56abccc863e0e617799631d8d60e94ec79e1babc86",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "docker.docker-cp",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-cp.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-cp.md",
+      "path": "pages/common/docker-container-cp.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-cp.md",
       "license": "CC BY 4.0",
-      "sha256": "4b35b8c26e1194d605056ac70f7c22654b77cd5e4a88ff3bb943e1c47f19fb55",
+      "sha256": "0f4a8d685835518fb9a18b482daf6dbb7a70bd6d28b8611f5ec34f36c812683a",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-exec",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-exec.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-exec.md",
+      "path": "pages/common/docker-container-exec.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-exec.md",
       "license": "CC BY 4.0",
-      "sha256": "b728e83ccb7eff57bbb0e637052840581d63f961dffa731d77d24b99c3b673b1",
+      "sha256": "013596828d950de074f27cfe7cf1586d089c3886d8cf8d36ebe3a8a3ad357c7a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-image",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-image.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image.md",
+      "license": "CC BY 4.0",
+      "sha256": "39eaa43df1912d1c202a26a6d98ea9150300048d1e85b8b4d71dd95d78e0f594",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-images",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-images.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-images.md",
+      "path": "pages/common/docker-image-ls.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-ls.md",
       "license": "CC BY 4.0",
-      "sha256": "b398a6755d5012cac7e021f1864cd662c79001e0692c1cb956d763baff8b498a",
+      "sha256": "3c778633ef52b7b90f5a0de86c057496244f54a729f4297ed60df03c775e2618",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -247,10 +497,10 @@
       "source_id": "docker.docker-load",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-load.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-load.md",
+      "path": "pages/common/docker-image-load.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-load.md",
       "license": "CC BY 4.0",
-      "sha256": "d3551d8d917c86635eba6abf781735645f610f807146e9e21d04a9cc5c527f17",
+      "sha256": "2daeda119af19fc7907f19bbb8d3f4b45808de035acd605539a7668d76792009",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -267,10 +517,10 @@
       "source_id": "docker.docker-logs",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-logs.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-logs.md",
+      "path": "pages/common/docker-container-logs.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-logs.md",
       "license": "CC BY 4.0",
-      "sha256": "2c733b893bc5ef0a51f4e55cd44dbae513a6354d8081c8d9f253b07910e9b84b",
+      "sha256": "47817a24f76da338ebee11cb08ac82b6dd09a82bf73dd9fe2346cb3dc4e3897a",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -287,50 +537,90 @@
       "source_id": "docker.docker-ps",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-ps.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-ps.md",
+      "path": "pages/common/docker-container-ls.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-ls.md",
       "license": "CC BY 4.0",
-      "sha256": "f1950ae279f5e33c03a2ddc5c2f8b2cb14ae6bd143646bc821ff1df701e671c5",
+      "sha256": "b9fc7bf7840da5c89524e416055edb0a9f4d923a88c3c736997f575c1d64c344",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-pull",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-pull.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-pull.md",
+      "path": "pages/common/docker-image-pull.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-pull.md",
       "license": "CC BY 4.0",
-      "sha256": "27094ed6a75655a4d71bf0cd1818604021e8dc7a7f41099302c2ec14f87395f8",
+      "sha256": "ae1e6997bc48c456e9452d3db784148c13f99b5f42922bc8bc8bb0c42258fba6",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-push",
+      "repository": "project-authored",
+      "revision": "2.7.0",
+      "path": "generated/docker/docker-push",
+      "source_url": "https://docs.docker.com/reference/cli/docker/image/push/",
+      "license": "MIT (project-authored)",
+      "sha256": "2d59e305497cf1b9f4d13fefed8fd0e917f4d9365b28b2fa3335290607e3ca7e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-rename",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-container-rename.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-rename.md",
+      "license": "CC BY 4.0",
+      "sha256": "3520d0cf7bee572753022135a3b7fb927addc6efb8a169e5d8b2e7305c4c7b9b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-restart",
+      "repository": "project-authored",
+      "revision": "2.7.0",
+      "path": "generated/docker/docker-restart",
+      "source_url": "https://docs.docker.com/reference/cli/docker/container/restart/",
+      "license": "MIT (project-authored)",
+      "sha256": "678bc6c011b827f8969e403a66dbc042fcf4c81ce75362449af6f5a97e73a299",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-rm",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-rm.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-rm.md",
+      "path": "pages/common/docker-container-rm.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-rm.md",
       "license": "CC BY 4.0",
-      "sha256": "988ed4731ca5ac413ed67127a69b6fc9e38ea105c87d19c8776a2c42b211ab84",
+      "sha256": "cea0658c905f658b5b3e2cfd0f5e6d0292345cbeb17231b63f34164848bf8546",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "docker.docker-rmi",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/docker-image-rm.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-rm.md",
+      "license": "CC BY 4.0",
+      "sha256": "1e52bd3e80603068d8b17f6453e210ff60790ed472d3a41439f6dc6c133325cf",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-run",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-run.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-run.md",
+      "path": "pages/common/docker-container-run.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-run.md",
       "license": "CC BY 4.0",
-      "sha256": "9c16e341a6e79389d9258e3814751929fc6e9bca4177c46beb6b859201f4b793",
+      "sha256": "293a52595f7fc8d531e7095e82ac4631671e6d2bd7a30d4472ddcf02bf9da7ee",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-save",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-save.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-save.md",
+      "path": "pages/common/docker-image-save.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-save.md",
       "license": "CC BY 4.0",
-      "sha256": "07dee26f4ae579d7f03e2078bd63f9bb1f005dc088ec3455ff6a18ba43753d3e",
+      "sha256": "ffbc84cd4972da8367935a1f002258479b9cb5dd741c22f235135fb0e595b028",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -347,30 +637,30 @@
       "source_id": "docker.docker-start",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-start.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-start.md",
+      "path": "pages/common/docker-container-start.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-start.md",
       "license": "CC BY 4.0",
-      "sha256": "14e11ee913158b3c902947b7718e74ec9fde59e28d665df8ddbaf11eb1f63e08",
+      "sha256": "72c61014741c5a43b15c8a7327494780e15f2ae158f8ea83ba52bf84b46b1a7d",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-stats",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-stats.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-stats.md",
+      "path": "pages/common/docker-container-stats.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-stats.md",
       "license": "CC BY 4.0",
-      "sha256": "af5ec435b31f259ce543a6eeabc6b2490648dc646ef96043247db003d024cfb9",
+      "sha256": "ef2f3921f07bd4a0a15eed6e4737e2397d8b9417160864a3557d65ec6ce2b6e9",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-stop",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-stop.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-stop.md",
+      "path": "pages/common/docker-container-stop.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-stop.md",
       "license": "CC BY 4.0",
-      "sha256": "13d98ceadb18902480de13768d646d007df532038758cce2fb0db953d9dec00f",
+      "sha256": "64cf90cf8e0cd31e118625dafa75a5111ec645c36f953d3196289779d5134746",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -387,20 +677,20 @@
       "source_id": "docker.docker-tag",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-tag.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-tag.md",
+      "path": "pages/common/docker-image-tag.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-image-tag.md",
       "license": "CC BY 4.0",
-      "sha256": "17bc3c56d7e3d43c2ac4556abbd3423168e14102f004fc403bbc7ea0250e6f7c",
+      "sha256": "3f738a7fc71aa580d1450ffd6c308c075543da5cdb0479e84d2f3c2174f3c800",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "docker.docker-top",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/docker-top.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-top.md",
+      "path": "pages/common/docker-container-top.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-top.md",
       "license": "CC BY 4.0",
-      "sha256": "c90bef687d7dcc9555d9099712c2ef295b578525204faf585cfc117182e562c2",
+      "sha256": "a88baff78dc4f6abf81e980aa6e1fe2e06c72eb339b763ee76e37356efc5dc09",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -421,6 +711,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-add.md",
       "license": "CC BY 4.0",
       "sha256": "b8ae39c682057ef9bb81e547e47897f6af95914a7fb79fc18590e552ef92dc92",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "git.git-apply",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-apply.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-apply.md",
+      "license": "CC BY 4.0",
+      "sha256": "3cb5221324cbc571e52a29be586ed4fed7b67baa3a6e98e183a6b14562a4e1ac",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -461,6 +761,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-branch.md",
       "license": "CC BY 4.0",
       "sha256": "f64f4f121a606987fce78ffe753cdd2453160ded0587c6c2812f8675b33d3f7b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "git.git-checkout",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-checkout.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-checkout.md",
+      "license": "CC BY 4.0",
+      "sha256": "6d652b2a97f5bd65dec046adacf3b1e4159461cb50269fd2c8b70dbec92ee532",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -534,6 +844,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "git.git-grep",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-grep.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-grep.md",
+      "license": "CC BY 4.0",
+      "sha256": "0278fd32357044b512bb38d292369ab8073089decbf8e10ad2679b60a079b828",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "git.git-init",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -541,6 +861,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-init.md",
       "license": "CC BY 4.0",
       "sha256": "24bafc7806ce91b3affe1145175919219a88a8a989bbaa74aed016542d9d7ef1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "git.git-lfs",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-lfs.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-lfs.md",
+      "license": "CC BY 4.0",
+      "sha256": "273923cb15f56b92c664cd7fccd5a1f84e405495f85bd7173e0bd52f8c417f17",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -554,6 +884,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "git.git-ls-files",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-ls-files.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-ls-files.md",
+      "license": "CC BY 4.0",
+      "sha256": "cb6c93a705d072a7f4e4251094093c5904851bed86b4e6d0aacacd8a804fd4e9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "git.git-merge",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -561,6 +901,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-merge.md",
       "license": "CC BY 4.0",
       "sha256": "89aa54bd51ebf68b2aa0acb0101e8a7055fe418166db5e86a83283e0eab3d397",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "git.git-mv",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-mv.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-mv.md",
+      "license": "CC BY 4.0",
+      "sha256": "ef17ca1680ed19006123bce1eab3b76d59b0c105c782aafb9fb11bef3f05f669",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -634,6 +984,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "git.git-rev-parse",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-rev-parse.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-rev-parse.md",
+      "license": "CC BY 4.0",
+      "sha256": "6d7cf1460c33f3dc3a3cc5fcfc700867ed1b30dfc29adafa6391dfb8e5bafdc3",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "git.git-revert",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -641,6 +1001,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-revert.md",
       "license": "CC BY 4.0",
       "sha256": "04fecb748b9fcf731225fc90e6ad527f9368c5e26192dc2988ed2e4401f221ac",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "git.git-rm",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/git-rm.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/git-rm.md",
+      "license": "CC BY 4.0",
+      "sha256": "6f67cd19a98f7d1ec8f9591bea5fd4b563f377d7f4fe0eb1c5102398fbfe6afd",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -714,6 +1084,106 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "go.go",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go.md",
+      "license": "CC BY 4.0",
+      "sha256": "c449756791b58496a7328b5b664b44d8d1236a0dcf760d7c28e26a895b32542a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-build",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-build.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-build.md",
+      "license": "CC BY 4.0",
+      "sha256": "f4c1d4e25b59ad6632acfdb5d0ac0316cddbbed517294fab221b7e596deacd41",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-fmt",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-fmt.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-fmt.md",
+      "license": "CC BY 4.0",
+      "sha256": "61de895b0de671dcec557059ff617fbe2273d9f23769aab18e35b4b4a61397cb",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-get",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-get.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-get.md",
+      "license": "CC BY 4.0",
+      "sha256": "c7ae8a5808d0fab5fbabc6397f61c3025df8311f9f4c12528835e16f53032329",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-install",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-install.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-install.md",
+      "license": "CC BY 4.0",
+      "sha256": "e696b15f87bf121136e97c69515eaa3ee927b306b9c841d756c966963a23135b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-mod",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-mod.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-mod.md",
+      "license": "CC BY 4.0",
+      "sha256": "9ebb95b9ceba2ba9534c43c41d35b81d6a34a71689d9718884ca4e76859d5083",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-run",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-run.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-run.md",
+      "license": "CC BY 4.0",
+      "sha256": "9240c77bf19721f03d22c5b9b019ff3f91efac8edf7cb050957ed2b4a3687684",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-test",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-test.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-test.md",
+      "license": "CC BY 4.0",
+      "sha256": "eefc324653df57983a70d5810aff90cbfeb70e31c1ad46cdbc9f8338a2847c0d",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.go-vet",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/go-vet.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/go-vet.md",
+      "license": "CC BY 4.0",
+      "sha256": "f9001e917fe5d69f0c78b0b9bf80a73d0253322a9b0aeb7caac141e444b0cc06",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "go.golangci-lint",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/golangci-lint.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/golangci-lint.md",
+      "license": "CC BY 4.0",
+      "sha256": "6de7cf1f9ad834bc94184ceeb9287f43964cfad25407ba559bcee84a9242782b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "http.ab",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -754,16 +1224,6 @@
       "cleaning_revision": "v2.12.0"
     },
     {
-      "source_id": "http.dig",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/dig.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/dig.md",
-      "license": "CC BY 4.0",
-      "sha256": "482109a346fea82b5db2933939708cacb423ff8936aba336f8bf39b3dbae9a8f",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
       "source_id": "http.grpcurl",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -794,16 +1254,6 @@
       "cleaning_revision": "v2.12.0"
     },
     {
-      "source_id": "http.ip",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/linux/ip.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ip.md",
-      "license": "CC BY 4.0",
-      "sha256": "ec74450f88aaeedf1b643cb6fd17e7316e7f6011872b03089f9ab0054d521564",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
       "source_id": "http.jq",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -811,16 +1261,6 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jq.md",
       "license": "CC BY 4.0",
       "sha256": "763483dfe784a6b744565c2f25c912a9c2ef940c1bfbd38cf742768f9237e400",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "http.nc",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/nc.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nc.md",
-      "license": "CC BY 4.0",
-      "sha256": "cb9bb413c9ed8c63b2d402996d6b1f37e497ffa8103bef5ad2b83a2a3d3e9775",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -841,46 +1281,6 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/openssl.md",
       "license": "CC BY 4.0",
       "sha256": "00da81071d00f9c1e001d05b1274d3c6cc63b14a6312be317b50094510d3aae9",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "http.ping",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/ping.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ping.md",
-      "license": "CC BY 4.0",
-      "sha256": "dc39cb51da8252728d9cab913ad64032344beb1b22108327bc8e2baf0a2f86c2",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "http.ss",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/linux/ss.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/ss.md",
-      "license": "CC BY 4.0",
-      "sha256": "8850135d3eea21954c73484d2f05b0b4f20cb7215cf2e3ca1241a573b6957406",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "http.tcpdump",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/tcpdump.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tcpdump.md",
-      "license": "CC BY 4.0",
-      "sha256": "de46ca449b8a8cc004a10eab7cd777107264294e35bd08a1626930406ad42a0d",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "http.traceroute",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/traceroute.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/traceroute.md",
-      "license": "CC BY 4.0",
-      "sha256": "8533668a62e47fccaea4d3ac300e09054ffe51bee714595acf1b1006097e8a4b",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -914,6 +1314,26 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "http.yq",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/yq.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/yq.md",
+      "license": "CC BY 4.0",
+      "sha256": "d0822aa1f784a40e48949a0d5386d003994451515e31819c9871272ece7aa1d3",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.gradle",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gradle.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gradle.md",
+      "license": "CC BY 4.0",
+      "sha256": "0b2e3054f62def6ef411e3bdcd417a4b6fcf96737b1670a28bd325c17be34223",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "java.jar",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -941,6 +1361,46 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/javac.md",
       "license": "CC BY 4.0",
       "sha256": "7490734503f66dab065f68788e0c5bab169ce6033a31ab19e3de01fe7ae06186",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.jmap",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jmap.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jmap.md",
+      "license": "CC BY 4.0",
+      "sha256": "46888f68dabfebeb4bb66d5f84748162e8fc7ab46bdb75d2b2040600673683bd",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.jps",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jps.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jps.md",
+      "license": "CC BY 4.0",
+      "sha256": "d69789d9a9fe42fc61cd1c32ddaf72fdafeea8e0787b328e9a0a46cf37407f7c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.jstack",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/jstack.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/jstack.md",
+      "license": "CC BY 4.0",
+      "sha256": "ad2f76398dc3c5fc06bcb07aaabd9ead23d76e8569f907d42770743c3922872e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.keytool",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/keytool.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/keytool.md",
+      "license": "CC BY 4.0",
+      "sha256": "8f5b48844514643ee261f08c7ee49e1ee1c45b53749924871d770c8aa618d86d",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -974,6 +1434,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "java.mvn-install",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mvn-install.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-install.md",
+      "license": "CC BY 4.0",
+      "sha256": "39814f95d8eef3d6c8e1bb28d43cb93792c92451bf64a6bc4ade7ba8ab8555e4",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "java.mvn-package",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -981,6 +1451,36 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mvn-package.md",
       "license": "CC BY 4.0",
       "sha256": "ff0ba6a88910ae0a4a845a4e7bbfe7b66ee4751bd3a823a6ac2428dba4b4dbaa",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "java.sdk",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sdk.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sdk.md",
+      "license": "CC BY 4.0",
+      "sha256": "bffb9377220b3775d76e3864e49eae8ec887f3ee51a562427dfb04c4331ab1f0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.k9s",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/k9s.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/k9s.md",
+      "license": "CC BY 4.0",
+      "sha256": "3651e62f3318be98b8b0e841604c587a6df0e5802d3e60c8c5a092e67cff5ce7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kind",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kind.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kind.md",
+      "license": "CC BY 4.0",
+      "sha256": "50422da15e1a6bbdc02f2a9b10a3b98549b93a232b5a43afb1f9de8b2a83dd52",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -994,6 +1494,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "kubernetes.kubectl-api-resources",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-api-resources.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-api-resources.md",
+      "license": "CC BY 4.0",
+      "sha256": "d002e2d3f25ae059b8c7eb21f26cc8e417e702023ca0e253fee7bd993d19636c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "kubernetes.kubectl-apply",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1004,6 +1514,26 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "kubernetes.kubectl-auth",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-auth.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-auth.md",
+      "license": "CC BY 4.0",
+      "sha256": "b6d8521a339a8387c65f9f3743abe1ab1864ccc95787cdd7e15dde50c722e0a0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kubectl-cluster-info",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-cluster-info.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-cluster-info.md",
+      "license": "CC BY 4.0",
+      "sha256": "f03205a0d5f6a67c4f8c1e87ff03384ee3fdf6cc520ece90b4937a1921ff9e75",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "kubernetes.kubectl-config",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1011,6 +1541,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-config.md",
       "license": "CC BY 4.0",
       "sha256": "21bde3bab9001bb428be9e8bf4374ea2a80fd0a222cabad15977f5533d654d4c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kubectl-cordon",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-cordon.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-cordon.md",
+      "license": "CC BY 4.0",
+      "sha256": "aa40756f59e3c410ac2623184151dcb28d24a90356ae69ab445c3dea64f6e49a",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1051,6 +1591,36 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-describe.md",
       "license": "CC BY 4.0",
       "sha256": "a0ab948545606b82f56e7b6158a608de3f8daa35a196b4b06c276df214a4e14c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kubectl-diff",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-diff.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-diff.md",
+      "license": "CC BY 4.0",
+      "sha256": "dd271246e3f3557045b01b584d9c532c65b04bf78fb6beaa87c3709c7ec803e0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kubectl-drain",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-drain.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-drain.md",
+      "license": "CC BY 4.0",
+      "sha256": "908a779585d0dc901a3d7b66c925482a849437b47eede324980e8fefda0caba6",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kubectl-edit",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-edit.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-edit.md",
+      "license": "CC BY 4.0",
+      "sha256": "85fd13777fabe7a308827a0c005c5fb133166ca631ac29ccf0739e9f2b639a7e",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1144,6 +1714,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "kubernetes.kubectl-run",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-run.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-run.md",
+      "license": "CC BY 4.0",
+      "sha256": "4ba404b5814226e4ac93c727ace6c2f81751f3c34510b52fb5c165cfabd73477",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "kubernetes.kubectl-scale",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1174,6 +1754,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "kubernetes.kubectl-uncordon",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kubectl-uncordon.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-uncordon.md",
+      "license": "CC BY 4.0",
+      "sha256": "982c7d1c52f0b79177b70eee557cb84ab9f1795f4937a0e5550f0f97d1007942",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "kubernetes.kubectl-wait",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1181,6 +1771,96 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kubectl-wait.md",
       "license": "CC BY 4.0",
       "sha256": "5bb1a64dc2d39143ca34563b486f66522c15fe928b6b42b671a1380663c0133e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.kustomize",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/kustomize.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/kustomize.md",
+      "license": "CC BY 4.0",
+      "sha256": "3c04265fbdee9a9b1b126eafb82bbd32a4dedc72f84581dd1e4d0be838991682",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "kubernetes.minikube",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/minikube.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/minikube.md",
+      "license": "CC BY 4.0",
+      "sha256": "12a5f55ebc13a456085b0cd46242e5951c36396af8c012adeb7a0469d28cdead",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.alias",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/alias.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/alias.md",
+      "license": "CC BY 4.0",
+      "sha256": "aa9c408245756664d896f923974f9eefdd3a3bbb4744239c0a8e492c900d4f2e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.apt",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/apt.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/apt.md",
+      "license": "CC BY 4.0",
+      "sha256": "b8108e7ef67e3efe9ec301c7e4f0a0561d9b3df03377fbfa923b2a4bfdb72375",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.apt-get",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/apt-get.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/apt-get.md",
+      "license": "CC BY 4.0",
+      "sha256": "ea2e650806ed347a9ceeb878bd1a1c34a8bbc9992e8698380655d6d443f1052c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.awk",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/awk.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/awk.md",
+      "license": "CC BY 4.0",
+      "sha256": "56c1324cbe520a67f3013419c9cc337c0ae2f9e017b9692cd8664b5960a33267",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.base64",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/base64.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/base64.md",
+      "license": "CC BY 4.0",
+      "sha256": "9565b88b72398462bd4768a0e4021229be76a9192fb824da6fc2f8d2ff9933ba",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.bash",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/bash.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/bash.md",
+      "license": "CC BY 4.0",
+      "sha256": "d436f8e8ef677868b6b06863ccd00c6d1e4a4d9c604cfddabd06461242a0d42d",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.brew",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/brew.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/brew.md",
+      "license": "CC BY 4.0",
+      "sha256": "1a77f461ce0ebaa2d39af81d23d56021a1f7c0207b6a7ab6b315b124eb2c1587",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1234,6 +1914,36 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.crontab",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/crontab.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/crontab.md",
+      "license": "CC BY 4.0",
+      "sha256": "a70338d27e6e9f27a6d3768ee7d63941daf0d61191dd20aef945734447b8e066",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.cut",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cut.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cut.md",
+      "license": "CC BY 4.0",
+      "sha256": "d261706af1c6f28d4ab0cd5ab1860438867cb6721329c75692fb43fe6b47bd2e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.date",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/date.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/date.md",
+      "license": "CC BY 4.0",
+      "sha256": "a84e8b18d4b84fbf643064a44d6fef85510fb6c6a58ed91d044acac054833149",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.df",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1241,6 +1951,36 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/df.md",
       "license": "CC BY 4.0",
       "sha256": "b80f57915c2f9e62058429df3beeec19f95f8ef1dddee98ead6095ecd22abc42",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.diff",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/diff.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/diff.md",
+      "license": "CC BY 4.0",
+      "sha256": "7f8679bce4918ef8169617988246d877c6b8641236594b1ee487dd8e6e6fae91",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.dmesg",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/dmesg.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/dmesg.md",
+      "license": "CC BY 4.0",
+      "sha256": "139b9e6916d9058bf0ad872457b173666e519fc3fef0b6c152bb9705a615bcdb",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.dnf",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/dnf.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/dnf.md",
+      "license": "CC BY 4.0",
+      "sha256": "3756b311f000d601a4489fd9f100291c5736abea301c97a8f638b800894a4fd7",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1254,6 +1994,46 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.echo",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/echo.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/echo.md",
+      "license": "CC BY 4.0",
+      "sha256": "ff8fa955a5986eaf4dd659a1d65700363a084f5aafa70b1986be19e2afeb367e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.env",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/env.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/env.md",
+      "license": "CC BY 4.0",
+      "sha256": "809c497ffe1d8c59ffc8f8ac08b70b29cff1de4069e03e2774ea49fed8f5acb3",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.export",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/export.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/export.md",
+      "license": "CC BY 4.0",
+      "sha256": "4a7349a896f1160b847796f7920d2cadb2bf00931816f29d3af3b07657dc33ea",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.file",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/file.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/file.md",
+      "license": "CC BY 4.0",
+      "sha256": "c34a5741ebde4ff4e3f15ef7bba57fae0dbf11fd850d4079576c3b72fb08f631",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.find",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1261,6 +2041,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/find.md",
       "license": "CC BY 4.0",
       "sha256": "9f51066543d2cb5c3100cd68b5edb2461f3c662d8efa48aceddecb6fc81d57e9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.free",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/free.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/free.md",
+      "license": "CC BY 4.0",
+      "sha256": "8db0bb2ce33794ac5334aecb2d615b597299a65f52805b035e53aae675ea200e",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1274,6 +2064,26 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.gunzip",
+      "repository": "project-authored",
+      "revision": "2.7.0",
+      "path": "generated/linux/gunzip",
+      "source_url": "https://www.gnu.org/software/gzip/manual/gzip.html",
+      "license": "MIT (project-authored)",
+      "sha256": "dc9ecd9cce5576da42a111979e64832ad64678312c9a764e9294c96121f14410",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.gzip",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/gzip.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/gzip.md",
+      "license": "CC BY 4.0",
+      "sha256": "a9a59564d57d7a11956f230bb080a3b2c5ee5863ae228d489214a402d4503547",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.head",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1281,6 +2091,56 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/head.md",
       "license": "CC BY 4.0",
       "sha256": "588ee6ce82a841a3941f6539ad1d12224fbc301377fd495a5403d43650fc4a6f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.history",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/history.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/history.md",
+      "license": "CC BY 4.0",
+      "sha256": "f7bf50ae9cfe01c81d3dad3cc37a903579f492c306485b6d26382194f9fbb7c8",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.htop",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/htop.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/htop.md",
+      "license": "CC BY 4.0",
+      "sha256": "04e7fa2eb775790b9087287c3edd39a48a6e489569d65fd0c41b80ddb85da4f2",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.id",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/id.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/id.md",
+      "license": "CC BY 4.0",
+      "sha256": "fe77820e529440e86ef2a01750336063c1ab894276ef98b52f290a98c5ed4f12",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.iptables",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/iptables.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/iptables.md",
+      "license": "CC BY 4.0",
+      "sha256": "00c64c27916176be81b41e8459d5e0af48e0061bd15b57918d1214f7bed78860",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.journalctl",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/journalctl.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/journalctl.md",
+      "license": "CC BY 4.0",
+      "sha256": "95188cd34c163f28327faa702bf619d03493991eb35b4d55a47208f0044c33b1",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1294,6 +2154,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.killall",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/killall.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/killall.md",
+      "license": "CC BY 4.0",
+      "sha256": "0534f7266b7cc27d95093551d71bd49742ccaeb6b3eef5b820409007b2af92e1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.less",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1301,6 +2171,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/less.md",
       "license": "CC BY 4.0",
       "sha256": "cb23411121a42b1e835326718fd6c7245fc81b81ec336078beeaa9cf8fcc8f35",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.ln",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ln.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ln.md",
+      "license": "CC BY 4.0",
+      "sha256": "b67d1e76edf62881ce91bff4e12f323d4f9b0c652e7dcff437339c3702fe1407",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1314,6 +2194,26 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.lsblk",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/lsblk.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/lsblk.md",
+      "license": "CC BY 4.0",
+      "sha256": "7553faff5a292eb8418f02375ab27147a29c19edf52a3b9aee17bf8979591d45",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.md5sum",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/md5sum.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/md5sum.md",
+      "license": "CC BY 4.0",
+      "sha256": "d2d2a574e1fcef3fdb13ef4ea21e5ead2a37aef626d88f9a046280638636e4d7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.mkdir",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1324,6 +2224,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.mount",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/mount.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/mount.md",
+      "license": "CC BY 4.0",
+      "sha256": "8ab920e4555672ce0ccf5b6360a81a639e6b999f1b283921c0a601e263b58184",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.mv",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1331,6 +2241,76 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mv.md",
       "license": "CC BY 4.0",
       "sha256": "e72c68968d0ebfc20a808370074fedc24e4a61f4e0226d40217846e791cb048d",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.nano",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nano.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nano.md",
+      "license": "CC BY 4.0",
+      "sha256": "975f67631484ab0d1d4b145d4639119dbd140edd0ca6cc5e8a787acadb5d7181",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.nohup",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nohup.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nohup.md",
+      "license": "CC BY 4.0",
+      "sha256": "187a3a0f386e8843016f7e8be85b84d4f35f91a62a4968250c5cd050312f5520",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.nvidia-smi",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nvidia-smi.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nvidia-smi.md",
+      "license": "CC BY 4.0",
+      "sha256": "7d1a46916fcffa578257301e032a43d9918fbb7e377e6c166a4326eba1f98589",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.pacman",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/pacman.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/pacman.md",
+      "license": "CC BY 4.0",
+      "sha256": "98674954a6b4576a2b16435a5811e6f6e680bf1ef97d6496b682256fdfcb5612",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.passwd",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/passwd.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/passwd.md",
+      "license": "CC BY 4.0",
+      "sha256": "006fccc7567b1211fca1091b88756392556fae27d2ca5f80e814d26721ec395a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.pgrep",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pgrep.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pgrep.md",
+      "license": "CC BY 4.0",
+      "sha256": "a53715756b77f6803ddc68bac930216a5542a5a9bcdad98f9bdc02942eaa9263",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.pkill",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pkill.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pkill.md",
+      "license": "CC BY 4.0",
+      "sha256": "01a03e99b369148813c6b1f513483d6d52421523525e518065deb9437d024dd2",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1351,6 +2331,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pwd.md",
       "license": "CC BY 4.0",
       "sha256": "a701198670f4e6e18b4dfa8ec7e17843c0b5718f3a39bc26fb360b0644a2b363",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.reboot",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/reboot.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/reboot.md",
+      "license": "CC BY 4.0",
+      "sha256": "1d8cc0e8f7da28286160547d20c7b91c829956d7f727737748c14435e9910fb5",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1384,6 +2374,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.screen",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/screen.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/screen.md",
+      "license": "CC BY 4.0",
+      "sha256": "9556724c37bddd83711152ce63f94d08632fcaa144b15b5f78a5f3467cce1dbd",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.sed",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1391,6 +2391,26 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sed.md",
       "license": "CC BY 4.0",
       "sha256": "e58a0db2d4c251d7a1f12011119e3063379d7fd73a81cb0880de13ba360fdee2",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.sha256sum",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sha256sum.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sha256sum.md",
+      "license": "CC BY 4.0",
+      "sha256": "4cd70049caf9b1c0ddf65b45b90ca2a512666b8a4cd9ce3ba922c605ebd52936",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.shutdown",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/shutdown.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/shutdown.md",
+      "license": "CC BY 4.0",
+      "sha256": "87f288d9010e204858cce037b16f95f39286dd9bc80a0c6b9916dee8e8ed3559",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1404,13 +2424,53 @@
       "cleaning_revision": "v2.12.0"
     },
     {
-      "source_id": "linux.ssh",
+      "source_id": "linux.source",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/ssh.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ssh.md",
+      "path": "pages/common/source.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/source.md",
       "license": "CC BY 4.0",
-      "sha256": "5024eec782b87995705cd78b2ba155777895b901810e1ad65ed73c14b1604302",
+      "sha256": "d87bf256c62e87c78218ee5f6f00065d5911b8c74de8cf68196585884fc8a2a6",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.stat",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/stat.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/stat.md",
+      "license": "CC BY 4.0",
+      "sha256": "79aea93bc94990fd1a55901116d465beda2c7554bd38b630c5ba9dcfad60cbfc",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.su",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/su.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/su.md",
+      "license": "CC BY 4.0",
+      "sha256": "8c2f19461b63f7a12600346cf80ec9b6f876721ab1bb7294af4a645553731196",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.sudo",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/sudo.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/sudo.md",
+      "license": "CC BY 4.0",
+      "sha256": "713b212d4085ae17150807ae6974f934c3a35bc616b45393abcb6c462d890662",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.systemctl",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/systemctl.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/systemctl.md",
+      "license": "CC BY 4.0",
+      "sha256": "d057d9227d5f673b4e4005f447a620a81dadc0b79770ccca3ccba3335da7385a",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1434,6 +2494,36 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.tee",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tee.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tee.md",
+      "license": "CC BY 4.0",
+      "sha256": "c35fc42799971e8572066e56807787968c5718a32646c12a341218675b305011",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.time",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/time.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/time.md",
+      "license": "CC BY 4.0",
+      "sha256": "6d6b7d85960b0b0e5bad9b9e25ae15bcdab1bf4c6695a39c7d16ff1e395cc5ca",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.tmux",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tmux.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tmux.md",
+      "license": "CC BY 4.0",
+      "sha256": "5118d4c4470cea12e1338b7a985bb10a1b8d27c2ac00be9dc120ab08c5a03b21",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.top",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1454,6 +2544,56 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.tr",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tr.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tr.md",
+      "license": "CC BY 4.0",
+      "sha256": "cce68da3582aadc33961cea65efab59cd3ca1b2f0d3755af43c21bc0ebfa9cfd",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.tree",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/tree.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/tree.md",
+      "license": "CC BY 4.0",
+      "sha256": "04fdc54285371e9912f2538f95417d38641cf89f699a4d30281a448a6e3d5127",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.ulimit",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ulimit.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ulimit.md",
+      "license": "CC BY 4.0",
+      "sha256": "eb4b8b090a2e76803be7e3f0ecdc62c9b793800517a3ae5d74d7bd24d19d9eb5",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.umount",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/umount.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/umount.md",
+      "license": "CC BY 4.0",
+      "sha256": "5f482bd85ddf3e5a86701bcf19d4599ac528ad4e1b460a26305ba0178e55b6d4",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.uname",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/uname.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uname.md",
+      "license": "CC BY 4.0",
+      "sha256": "566b650ad9cce263142208b9ef9cf1ef7f62361174caf5eef0dcd6b4c5f84c45",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.uniq",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1461,6 +2601,76 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uniq.md",
       "license": "CC BY 4.0",
       "sha256": "5a3f0feb78c6c9e19eb9b3f8a65d29ea3ceeb44a1b94ff95a6ae13dfcf3ec9fd",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.unzip",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/unzip.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/unzip.md",
+      "license": "CC BY 4.0",
+      "sha256": "5fbde9769489d7b4197042dfc97b1cb08744bf4b2f935f7a0095f35836769dd9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.uptime",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/uptime.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uptime.md",
+      "license": "CC BY 4.0",
+      "sha256": "350cbc4619e0f068f0baaf4be15f3c96dffa29a607f6af0e73efbc8856aff680",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.useradd",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/useradd.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/useradd.md",
+      "license": "CC BY 4.0",
+      "sha256": "33843dd7b471ec3d5c8d2478c172d3d7275d2143619b5d0a2b88e97d3fc9f00f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.userdel",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/userdel.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/userdel.md",
+      "license": "CC BY 4.0",
+      "sha256": "b4ce9e1d23d4b42ebb375ffd1dc346032444697a0802ec68951474dc84e495f3",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.usermod",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/usermod.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/usermod.md",
+      "license": "CC BY 4.0",
+      "sha256": "d0ef571fff09dbef696c5c12e1c27ccb55d393e53d29b13214545e518bbc0209",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.vim",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/vim.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/vim.md",
+      "license": "CC BY 4.0",
+      "sha256": "417fc1e112bed8e446e5002c01b1eca6029281f24854faa5cb8e29ae1959d43c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.watch",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/watch.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/watch.md",
+      "license": "CC BY 4.0",
+      "sha256": "206f63b44898deb6a2510d23c71f13983af0b0e4b57d25eff425da5fc85ccfa9",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1474,6 +2684,36 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "linux.which",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/which.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/which.md",
+      "license": "CC BY 4.0",
+      "sha256": "f88352c0529cbd9cc7a15093416faff178b97c65df96da228227aa703b69920e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.xargs",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/xargs.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/xargs.md",
+      "license": "CC BY 4.0",
+      "sha256": "61170aa6ee612c1b6f5859a2933a1a5a9b33519b8116e588e18ee4842c4545a7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "linux.yum",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/dnf.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/dnf.md",
+      "license": "CC BY 4.0",
+      "sha256": "3756b311f000d601a4489fd9f100291c5736abea301c97a8f638b800894a4fd7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "linux.zip",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1481,6 +2721,46 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/zip.md",
       "license": "CC BY 4.0",
       "sha256": "755fc42c49f7ecb4d7a9540231cc42d25a4a70875f23525606a8e2e19366c879",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "media.ffmpeg",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ffmpeg.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ffmpeg.md",
+      "license": "CC BY 4.0",
+      "sha256": "e1071be09c3a8d77cffc3c58912d186f34942eae0762fccec034de7714c9dfd1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "media.magick",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/magick.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/magick.md",
+      "license": "CC BY 4.0",
+      "sha256": "94c5282169ae597646be304bcc3b879f22f873fe57842c32436f00ae34610164",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "media.pandoc",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pandoc.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pandoc.md",
+      "license": "CC BY 4.0",
+      "sha256": "a66aad69e671302d6d3942592e018c0b954f6382bb23c771a858aeefb1072be1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "network.arp",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/arp.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/arp.md",
+      "license": "CC BY 4.0",
+      "sha256": "9c7d48aa007832254789a0bb0be9dedba6d7031d3946304a5b56bb34370a5701",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1514,6 +2794,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "network.host",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/host.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/host.md",
+      "license": "CC BY 4.0",
+      "sha256": "f24109873c05cf39588c2464d341993cab3a9b3a8a998ac42e5cb4b379a23c55",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "network.hostnamectl",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1521,6 +2811,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/hostnamectl.md",
       "license": "CC BY 4.0",
       "sha256": "c90e164309125ff7e8259c65e8f55557edf380a8a47b1f308392774e37465e22",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "network.ifconfig",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ifconfig.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ifconfig.md",
+      "license": "CC BY 4.0",
+      "sha256": "a9e47028296e696d01f096f2337e33db1f5c9daa03d3b2b08e46d386f349e819",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1534,6 +2834,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "network.iperf3",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/iperf3.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/iperf3.md",
+      "license": "CC BY 4.0",
+      "sha256": "d73f48e01fa7a01de0bc82ed9e3baeb78e8f7da190de796a0d604231381a06c9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "network.lsof",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1541,6 +2851,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/lsof.md",
       "license": "CC BY 4.0",
       "sha256": "4a93efd677ebc1309a88a309ea3739c4a298e9f0bbd06c950b18cd0efedd0a8a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "network.mtr",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/mtr.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/mtr.md",
+      "license": "CC BY 4.0",
+      "sha256": "8aa37850f7c23a247771cf266bbf0b1b230e9b3c80676662bb546db95c738815",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1574,6 +2894,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "network.nmcli",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/linux/nmcli-device.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/linux/nmcli-device.md",
+      "license": "CC BY 4.0",
+      "sha256": "6b8b3459c7437f5b61bc8a62e860e997fb2256a7112db9827d9a9079a3ee33a1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "network.nslookup",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1591,6 +2921,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ping.md",
       "license": "CC BY 4.0",
       "sha256": "dc39cb51da8252728d9cab913ad64032344beb1b22108327bc8e2baf0a2f86c2",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "network.route",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/route.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/route.md",
+      "license": "CC BY 4.0",
+      "sha256": "0b54d56ad94d4f9b486cf60443ddfbe1febde15f0f7124adc5768895b0ac39a3",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1664,6 +3004,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "network.telnet",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/telnet.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/telnet.md",
+      "license": "CC BY 4.0",
+      "sha256": "a15fa2643fb20c66b82885d4ace2c08a7a95ec426cfe092615b2555e9f56a586",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "network.traceroute",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1724,6 +3074,36 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "node.http-server",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/http-server.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/http-server.md",
+      "license": "CC BY 4.0",
+      "sha256": "da2bb9cecb24885d5baa5bd867bbbd4bf0779ce594d74b0d45c2e5ee926d6a3b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.next",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/next.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/next.md",
+      "license": "CC BY 4.0",
+      "sha256": "9851e3da020a5fb34b42f5c98b0be37b532ad3897612588cdb021e66780e91ca",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.ng",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/ng.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ng.md",
+      "license": "CC BY 4.0",
+      "sha256": "b6647f86b2d188c53169695f1f171e029ae4cbf6de3486e0590fc5dbdf427e6c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "node.node",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1731,6 +3111,16 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/node.md",
       "license": "CC BY 4.0",
       "sha256": "3fdf7cbc8d479cbcaefdd3e83053baa67e8390cd73f8ab24b24cbdb93d174700",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.nodemon",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nodemon.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nodemon.md",
+      "license": "CC BY 4.0",
+      "sha256": "e2b459e7d59b6d3bc150f7b7afc2f2c6a9b63f84a28cd3367e6b24d82162faaf",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1764,6 +3154,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "node.npm-ci",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-ci.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-ci.md",
+      "license": "CC BY 4.0",
+      "sha256": "827fdedec099479a6cc2449accfd3aea99f23418ad255e9d5fe51b17d2fd9ca3",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "node.npm-config",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1774,6 +3174,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "node.npm-init",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-init.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-init.md",
+      "license": "CC BY 4.0",
+      "sha256": "e2bea89e4e1d9c795909eb7c1a6b1bdedb77f1199ee13faf88dd97390d0c5af7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "node.npm-install",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -1781,6 +3191,26 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-install.md",
       "license": "CC BY 4.0",
       "sha256": "a1d0a0e18b67e57ef9e3c4bd507a1f151a392da8de0bbd44ac6e7943bebdd7b1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.npm-list",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-ls.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-ls.md",
+      "license": "CC BY 4.0",
+      "sha256": "5779aa977275e21a38a5b85372b92a4ba6feff91cfa293a324a8cb3bb2e27d1f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.npm-outdated",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-outdated.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-outdated.md",
+      "license": "CC BY 4.0",
+      "sha256": "a070f192700fb748aed9ec7388ea16ea0e89424946c3e11cc59040941c9d4aec",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1797,30 +3227,80 @@
       "source_id": "node.npm-run-script",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/npm-run-script.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-run-script.md",
+      "path": "pages/common/npm-run.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-run.md",
       "license": "CC BY 4.0",
-      "sha256": "a2fb0d230a91fb22f156afaa4cd342956d1370dab83473d6cb9acbc8f8464257",
+      "sha256": "4d61d7e7cbb714b98f8991d0dbe39454c95524757919c68435d2ead82c3337c3",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "node.npm-test",
+      "repository": "project-authored",
+      "revision": "2.7.0",
+      "path": "generated/node/npm-test",
+      "source_url": "https://docs.npmjs.com/cli/commands/npm-test",
+      "license": "MIT (project-authored)",
+      "sha256": "16e454014fd742dff3e4d15c46419f1d9a6323ace6a03d98b135291134d650f2",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.npm-uninstall",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/npm-test.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-test.md",
+      "path": "pages/common/npm-uninstall.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-uninstall.md",
       "license": "CC BY 4.0",
-      "sha256": "c78770b9f2990cfa8e832315e1b13a62faa37a9e478dfaee437065459feb3a60",
+      "sha256": "e4500acdb00089d3fa6d6b71d701d3a868e3da3f268214a88471d1c48ecf1b72",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.npm-update",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-update.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-update.md",
+      "license": "CC BY 4.0",
+      "sha256": "af0e56d56a3304ef40e2fca91db626be5080591820001a81455b3b010c7d09fc",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.npm-version",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/npm-version.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-version.md",
+      "license": "CC BY 4.0",
+      "sha256": "acfc6406155ddf414d8268af4b6b5aac143b429b6d5568dc4e68722f6b3db1d2",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "node.npx",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/npx.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npx.md",
+      "path": "pages/common/npm-exec.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/npm-exec.md",
       "license": "CC BY 4.0",
-      "sha256": "fc4abfb9744ebd024d2d10e788b9cf11cac4bc2a74036ad44b0fa55449f86607",
+      "sha256": "cfc46c05f15972a13487cec237ff1433475ddb455378889c19c1eb2ab7cc6adf",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.nvm",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/nvm.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/nvm.md",
+      "license": "CC BY 4.0",
+      "sha256": "c7acb0ab0120ab048856b0a65e55182f9a1e5574df34982ef9c84012b1f9db3e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.pm2",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pm2.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pm2.md",
+      "license": "CC BY 4.0",
+      "sha256": "3a23b6e97c2bafbbc940570bb66753a33df893e434c78e4800701c4aee6a51e5",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1871,6 +3351,26 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/vite.md",
       "license": "CC BY 4.0",
       "sha256": "75e2969b818c6e0a64e090621835e3111fb26801cf12225898efa9f4f004c90f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.vue",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/vue.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/vue.md",
+      "license": "CC BY 4.0",
+      "sha256": "ab7261bc99dfb2bff1fe86e7ff8a6e6836235bca54f99ff915017d321a859e4f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "node.webpack",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/webpack.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/webpack.md",
+      "license": "CC BY 4.0",
+      "sha256": "e788e3471db66b26ba562de8a2948f2f267eb5c36431bdbe505bf567c586ed71",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1945,12 +3445,12 @@
     },
     {
       "source_id": "python.http-server",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/http-server.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/http-server.md",
-      "license": "CC BY 4.0",
-      "sha256": "da2bb9cecb24885d5baa5bd867bbbd4bf0779ce594d74b0d45c2e5ee926d6a3b",
+      "repository": "project-authored",
+      "revision": "2.7.0",
+      "path": "generated/python/http-server",
+      "source_url": "https://docs.python.org/3/library/http.server.html",
+      "license": "MIT (project-authored)",
+      "sha256": "f80114c88c33fc9bd1b9bcb7e792bc6731a34054c0c796d6fdcec2842001c36f",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -1994,13 +3494,63 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "python.pip-freeze",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip-freeze.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip-freeze.md",
+      "license": "CC BY 4.0",
+      "sha256": "0c9e6e5901c277a0b9c68cd207827f494b04a16d36b9fa48bb6039a8e739829a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "python.pip-install",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip-install.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip-install.md",
+      "license": "CC BY 4.0",
+      "sha256": "bda096951fd45382574cc153f0fad5906a23cb0be06a7c349daa4b3d06281407",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "python.pip-list",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip-list.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip-list.md",
+      "license": "CC BY 4.0",
+      "sha256": "a8abb4265308b25ab2180f00583e0fbf421de4e852b3d79cd87ab299c86a3662",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "python.pip-show",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip-show.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip-show.md",
+      "license": "CC BY 4.0",
+      "sha256": "5285221a58c30f5b2795a204eb0eaf9e211a380d4950787e9aaf5d8f90c3d1b5",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "python.pip-uninstall",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pip-uninstall.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip-uninstall.md",
+      "license": "CC BY 4.0",
+      "sha256": "a88aa8086899466872b3f3e6345b673cea19aa69c1e290237ec5b189d72f1667",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "python.pip3",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pip3.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip3.md",
+      "path": "pages/common/pip.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pip.md",
       "license": "CC BY 4.0",
-      "sha256": "fabb9e52c534ef5c967d84be1aba3a1f2078e7a177427acb844dbb45279ab077",
+      "sha256": "bf8c42d018422a66f1e97d84a574ebc4131ed7b28532a11524c271e7044c2fde",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2034,6 +3584,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "python.pre-commit",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pre-commit.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pre-commit.md",
+      "license": "CC BY 4.0",
+      "sha256": "cd51b82f86c201b88f687ada87b690d50f9a9e11fb01a6237c1768942058d785",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "python.pydoc",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -2054,6 +3614,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "python.pyinstaller",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/pyinstaller.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pyinstaller.md",
+      "license": "CC BY 4.0",
+      "sha256": "d65862291b1e1b3d7a8e72f092c834c2335d1ff6d2ba528506ea81224e5b6798",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "python.pylint",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -2061,16 +3631,6 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pylint.md",
       "license": "CC BY 4.0",
       "sha256": "b6c6f4a93a524f630450ef50411d5ad3785d6961a92e013c323a930c4ed34d39",
-      "cleaning_revision": "v2.12.0"
-    },
-    {
-      "source_id": "python.pytest",
-      "repository": "https://github.com/tldr-pages/tldr.git",
-      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/pytest.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/pytest.md",
-      "license": "CC BY 4.0",
-      "sha256": "25036432727a8b14beea2031eddfb527d3a968e9efe03b2097584f2590a08cae",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2087,20 +3647,30 @@
       "source_id": "python.python3",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/python3.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python3.md",
+      "path": "pages/common/python.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/python.md",
       "license": "CC BY 4.0",
-      "sha256": "2a3d7528c0ec9651046dac91330bb3c4204aaa866c46170f7478b82b68d86fb6",
+      "sha256": "2a07652c1437e460eb9eb6f449a1df3f4c6e4d7c573198d4f232b8327c91c9e7",
       "cleaning_revision": "v2.12.0"
     },
     {
       "source_id": "python.ruff",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-      "path": "pages/common/ruff.md",
-      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ruff.md",
+      "path": "pages/common/ruff-check.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/ruff-check.md",
       "license": "CC BY 4.0",
-      "sha256": "e65b4d13a460565eb467565810da1dcdb344b59cba3c98d9d810e1d3d1692150",
+      "sha256": "34d021a20858e4c11f08b4972ea3be3499fc910d85b95c6c4cfe2399dac82060",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "python.streamlit",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/streamlit.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/streamlit.md",
+      "license": "CC BY 4.0",
+      "sha256": "0fc722f595e6eeba8eadb134557c63924f817f7b98d68124f54e9f8b9e99d390",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2114,6 +3684,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "python.twine",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/twine.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/twine.md",
+      "license": "CC BY 4.0",
+      "sha256": "1dfa37a350150b6464a32f1dbfa1100e042ff748fdd3ea9bf51352d1f5eb6c39",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "python.uv",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -2124,6 +3704,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "python.uvicorn",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/uvicorn.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/uvicorn.md",
+      "license": "CC BY 4.0",
+      "sha256": "0adbb7d7f8174d8ddf94a165379a81e697ca951306ac8a08337b0d4110367279",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "python.virtualenv",
       "repository": "https://github.com/tldr-pages/tldr.git",
       "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
@@ -2131,6 +3721,36 @@
       "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/virtualenv.md",
       "license": "CC BY 4.0",
       "sha256": "6b37a231f21147655890b9b3dbc3329eb5f0026f96846d6ed7c26be17d76037f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.client-list",
+      "repository": "project-authored",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "source_url": "https://redis.io/docs/latest/commands/client-list/",
+      "license": "MIT (project-authored)",
+      "sha256": "aa207d4d2c1ae5af0b5bb8c2a7b066a6c4297cc47432077aad63ff8cac54820e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.config",
+      "repository": "project-authored",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "source_url": "https://redis.io/docs/latest/commands/config-get/",
+      "license": "MIT (project-authored)",
+      "sha256": "a57acaca6a7a66eaae234a4e687cd902fbfba0c5d611c27f00f8f78042b44c01",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.dbsize",
+      "repository": "project-authored",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "source_url": "https://redis.io/docs/latest/commands/dbsize/",
+      "license": "MIT (project-authored)",
+      "sha256": "40e9bb7dc0c865f93d53e9c704e4075584d41b7c21a279605d02d7d76fe79b61",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2154,6 +3774,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "redis.flushdb",
+      "repository": "project-authored",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "source_url": "https://redis.io/docs/latest/commands/flushdb/",
+      "license": "MIT (project-authored)",
+      "sha256": "9d65d484a661f1980a7f1229672ea0d3ee5bd4f948dcf38d30a623c660ccf398",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "redis.hash",
       "repository": "project-authored",
       "revision": "v2.1.0",
@@ -2161,6 +3791,16 @@
       "source_url": "https://redis.io/docs/latest/develop/data-types/hashes/",
       "license": "MIT (project-authored)",
       "sha256": "b4342e9cf3fa8c7c91649138bedab2a03e5b12e4a992d93c9b5357d828f36870",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.incr",
+      "repository": "project-authored",
+      "revision": "v2.1.0",
+      "path": "generated/redis",
+      "source_url": "https://redis.io/docs/latest/commands/incr/",
+      "license": "MIT (project-authored)",
+      "sha256": "0bb88d40faf04a547ffd0f7315fb84a9cd229ea66bc1cff1b7972bf8a8789eab",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2200,7 +3840,7 @@
       "path": "generated/redis",
       "source_url": "https://redis.io/docs/latest/develop/clients/patterns/bulk-loading/",
       "license": "MIT (project-authored)",
-      "sha256": "e46255865b132fd6212ca14ae1cb6443df234946b4f1f47af0d0c1ffe387aa77",
+      "sha256": "2fcf66c869920bb0740623bbaef06b6ae8bd74abab4cc110c47c94c5d2f446fa",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2211,6 +3851,26 @@
       "source_url": "https://redis.io/docs/latest/develop/pubsub/",
       "license": "MIT (project-authored)",
       "sha256": "c6b73e0a4862d721b1148b2bd70f45d1b9e29d4c1261bef73dd980c0fc299d97",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.redis-cli",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/redis-cli.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/redis-cli.md",
+      "license": "CC BY 4.0",
+      "sha256": "08785ad8ffe191633189c61dec130f3521738b97d9fa9c6adb5326f2e4b293ab",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "redis.redis-server",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/redis-server.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/redis-server.md",
+      "license": "CC BY 4.0",
+      "sha256": "8c2360f94b8c47be82917bb7ad2b1ed508ae2be5df54390dc1fe9094ed6b0eda",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2284,6 +3944,126 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "rust.cargo",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo.md",
+      "license": "CC BY 4.0",
+      "sha256": "251bbeb3f41dd6e2a3eec7145b062358ffc8e6bbed1ad8a2625e725ac7bfb5c4",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-add",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-add.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-add.md",
+      "license": "CC BY 4.0",
+      "sha256": "eff7b79ac59de6c27f51e754ad1b0068b775c8aeef76f35a033106e08f60a417",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-build",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-build.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-build.md",
+      "license": "CC BY 4.0",
+      "sha256": "6f5f2ac8e875b0511ef1ff8a7260831fd61c764c2a44a86997da27ab4f97e2ac",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-check",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-check.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-check.md",
+      "license": "CC BY 4.0",
+      "sha256": "3f87b41479d25b02137195e3885efbd6f6ebb2c117ee5aaaee897e4c287a7cb4",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-clippy",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-clippy.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-clippy.md",
+      "license": "CC BY 4.0",
+      "sha256": "1dce84d9698a1d2a18b8c7db8f61129f3d9f44dbe979aabf9689b42d28cd07ec",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-fmt",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-fmt.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-fmt.md",
+      "license": "CC BY 4.0",
+      "sha256": "522aeed7242a3ad898e72aaeeb6f63982fdff0ed48ab70621d022547d18b8e96",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-install",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-install.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-install.md",
+      "license": "CC BY 4.0",
+      "sha256": "824c13187c4ed8eecacf660ee43fc7e2cea3e53904729efe3d86e602ea075af9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-run",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-run.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-run.md",
+      "license": "CC BY 4.0",
+      "sha256": "e0719abd4f56d2e618141e5b5a741c1e4351fe7a85544766b02172cfb46cf64d",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.cargo-test",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/cargo-test.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/cargo-test.md",
+      "license": "CC BY 4.0",
+      "sha256": "bfc3c858fc18280424d4107e1395905e5a2f9966609750b9a922479825ed7800",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.rustc",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/rustc.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/rustc.md",
+      "license": "CC BY 4.0",
+      "sha256": "477c34e0aa6053587836799e69f7dc2b0fb0a47942929452e0cc063849b4bb4e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "rust.rustup",
+      "repository": "https://github.com/tldr-pages/tldr.git",
+      "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
+      "path": "pages/common/rustup.md",
+      "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/rustup.md",
+      "license": "CC BY 4.0",
+      "sha256": "ffe2419cdc0875715ab6119d410f3dd14679c484d6c278c59e57887d22ed3cac",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.alter-table",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/alter-table.html",
+      "license": "MIT (project-authored)",
+      "sha256": "84ce4fc997c2ac54429b69d31ce6ba7b87ebc1a1940369776441a79142f8e65e",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.backup",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2340,7 +4120,7 @@
       "path": "generated/mysql",
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/create-view.html",
       "license": "MIT (project-authored)",
-      "sha256": "1360042f7feedc681ec774e0b7bd9c0e1ee4e2329c9fee58fd304a1a5774adc3",
+      "sha256": "4c8e64da15d7d118d01bea3bd24b69949e35d3266e7d41ae6a5b2f323ce7822f",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2354,6 +4134,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "sql.drop-table",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/drop-table.html",
+      "license": "MIT (project-authored)",
+      "sha256": "a45cf3a101e2484ec9b422b5ebcaaaee2006faecef8ad875ef9fec8f5b5120d5",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.explain-query",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2361,6 +4151,16 @@
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/explain.html",
       "license": "MIT (project-authored)",
       "sha256": "7e755aa590cfd84b655e3f8bd98d51f0a19c1829272476dd2d86eb534ac5d6a7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.group-by",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
+      "license": "MIT (project-authored)",
+      "sha256": "7933f699796957ff0817d50d838c4a0d40106bc91d49a2d653b1dbee4c0982eb",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2391,6 +4191,26 @@
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/connecting.html",
       "license": "MIT (project-authored)",
       "sha256": "2a3ed26a27b7746f715c6d6626edae5c61265da11096b37d3f86ea02c0d76d44",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.postgres-activity",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
+      "source_url": "https://www.postgresql.org/docs/current/monitoring-stats.html",
+      "license": "MIT (project-authored)",
+      "sha256": "507e639ad8b3dd48d767d1aa6499fbe5b57a85361782b95945a33664c5d0039c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.postgres-alter-table",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
+      "source_url": "https://www.postgresql.org/docs/current/sql-altertable.html",
+      "license": "MIT (project-authored)",
+      "sha256": "193e6047ae757a4347591d7e2c380758ad5a57318fdb847bdb8d678455f7cc7b",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2444,6 +4264,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "sql.postgres-create-user",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
+      "source_url": "https://www.postgresql.org/docs/current/sql-createrole.html",
+      "license": "MIT (project-authored)",
+      "sha256": "d82f44208cc22863aad2cf48603cc9a9ab20d6709e1eace4b8a88e73da53dfd0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.postgres-create-view",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2464,6 +4294,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "sql.postgres-drop-table",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
+      "source_url": "https://www.postgresql.org/docs/current/sql-droptable.html",
+      "license": "MIT (project-authored)",
+      "sha256": "07cc7b4e8245d2ca405310f9bcfacab38eadbc652d5252307fbfd7a183c54007",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.postgres-explain",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2471,6 +4311,16 @@
       "source_url": "https://www.postgresql.org/docs/current/using-explain.html",
       "license": "MIT (project-authored)",
       "sha256": "02a8a46dcd5be31cc7582525c49d5ba131a6a0d9d07ea1b00bb6e1fd5accb27a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.postgres-group-by",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/postgresql",
+      "source_url": "https://www.postgresql.org/docs/current/sql-select.html",
+      "license": "MIT (project-authored)",
+      "sha256": "a1a463281d4a86c2def2db47148048834d3a318c63555154cd23f52894698860",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2544,6 +4394,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "sql.processlist",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/show-processlist.html",
+      "license": "MIT (project-authored)",
+      "sha256": "bfc0eec8103978fd6410faa899cc7f9ab85df04d7f149cd3aeb27b488ab50590",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.restore",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2564,6 +4424,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "sql.show-tables",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/show-tables.html",
+      "license": "MIT (project-authored)",
+      "sha256": "48e67cca102af5a0626bf6eabe31ba92e67c119387e0d58d86a58be6922309d0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "sql.transaction",
       "repository": "project-authored",
       "revision": "v2.2.0",
@@ -2571,6 +4441,16 @@
       "source_url": "https://dev.mysql.com/doc/refman/8.4/en/commit.html",
       "license": "MIT (project-authored)",
       "sha256": "352e1aecbc772c8d66de2689dbbb8f7ab7e128734fa4f0ba389a16c6626f8f53",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "sql.truncate-table",
+      "repository": "project-authored",
+      "revision": "v2.2.0",
+      "path": "generated/mysql",
+      "source_url": "https://dev.mysql.com/doc/refman/8.4/en/truncate-table.html",
+      "license": "MIT (project-authored)",
+      "sha256": "6dc2d08b2d160e0b0af03b5941bb2bb2d20da044c92e190a5e5a6bc1edd78f8d",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2684,6 +4564,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.chkdsk",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/chkdsk",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/chkdsk",
+      "license": "MIT (project-authored)",
+      "sha256": "915a3fed9a79bcad0807ec2e3070247dde38dbc802d027e2ff5e86bc44eabb0c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.choco",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -2710,7 +4600,17 @@
       "path": "generated/windows/copy-item",
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/copy-item",
       "license": "MIT (project-authored)",
-      "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+      "sha256": "9d6f0264fb70bdae81b9a7a89e108196d9b03d79bcbce590c6d49bbcf78a6a92",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.dir",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/dir",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/dir",
+      "license": "MIT (project-authored)",
+      "sha256": "c03a5bf42401ea6b3dcd92b236349f793ce6c2d1165f7b6e3772824573c14d01",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2721,6 +4621,36 @@
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.archive/expand-archive",
       "license": "MIT (project-authored)",
       "sha256": "6b7623c6e78b373784db2ddcd14220bafed2c8f78fafad900b60c34b7b818846",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.findstr",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/findstr",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/findstr",
+      "license": "MIT (project-authored)",
+      "sha256": "ed9e35dc3ce9336ad2480bce3b0c64e838c52ff36ba4a98751004c2217503a07",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.firewall",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/firewall",
+      "source_url": "https://learn.microsoft.com/powershell/module/netsecurity/new-netfirewallrule",
+      "license": "MIT (project-authored)",
+      "sha256": "df86011f4df4ff6898d5fa9e964261822e2e791608738a12ba28221700b27907",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.folder-size",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/folder-size",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/measure-object",
+      "license": "MIT (project-authored)",
+      "sha256": "31d7c914ea58915c8e5b055d6a91ef31f70939a8792eb8a878539b22dca01bde",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2774,6 +4704,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.get-netadapter",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-netadapter",
+      "source_url": "https://learn.microsoft.com/powershell/module/netadapter/get-netadapter",
+      "license": "MIT (project-authored)",
+      "sha256": "dba288b02adc613e8e3d310eb44acaa5fe3882bd234fc220cbb98bd1316260e7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.get-nettcpconnection",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -2804,6 +4744,46 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.get-volume",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-volume",
+      "source_url": "https://learn.microsoft.com/powershell/module/storage/get-volume",
+      "license": "MIT (project-authored)",
+      "sha256": "c55df9cc95bb9e9a943cb7fc2facef858a1f453d9487a2426b4f2a99d5cde0dd",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.get-winevent",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/get-winevent",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.diagnostics/get-winevent",
+      "license": "MIT (project-authored)",
+      "sha256": "ddea2b5aeccb727878d3f2e07b5612d82510e7f8b5ddac865d8ae2431439395b",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.icacls",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/icacls",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/icacls",
+      "license": "MIT (project-authored)",
+      "sha256": "7b47dfaea830301bc769a1b5f2bfe7c9105ee1be411be6ec76bef5bf044d20d5",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.install-module",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/install-module",
+      "source_url": "https://learn.microsoft.com/powershell/module/powershellget/install-module",
+      "license": "MIT (project-authored)",
+      "sha256": "54cba94da0fb11660f79ee610997809af05b6de61681b1e9851d58f98b055ae9",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.invoke-webrequest",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -2814,13 +4794,43 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.ipconfig",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/ipconfig",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/ipconfig",
+      "license": "MIT (project-authored)",
+      "sha256": "52c28ae85f2fa47a785ad2cce37f8640cf4b9d4f8089cc5cb554e184cc5f89a0",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.mklink",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/mklink",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/mklink",
+      "license": "MIT (project-authored)",
+      "sha256": "3fc42d89768df4016b5b35935d1e8a21c96622a1ee9604fa6fb6288ea99f652c",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.move-item",
       "repository": "project-authored",
       "revision": "v2.7.0",
       "path": "generated/windows/move-item",
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/move-item",
       "license": "MIT (project-authored)",
-      "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+      "sha256": "c7b5adc3f9cf1d739a04695a9d55ec30b9be47ffd83d92ba4d4fb62b949e7675",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.net-user",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/net-user",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/net-user",
+      "license": "MIT (project-authored)",
+      "sha256": "9e8c12f483a671d00fbb60d91b59d639e3ef5adc54047611279a70883982ddf5",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2844,6 +4854,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.ping",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/ping",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/ping",
+      "license": "MIT (project-authored)",
+      "sha256": "974d1109ccee4ec5a8d2a1f047d6f8e89c784928f24b424395738817e48d1c05",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.powershell",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -2854,13 +4874,23 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.reg",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/reg",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/reg",
+      "license": "MIT (project-authored)",
+      "sha256": "b147bad719783ad0fa4156762353a9742827690383987483902275257f1c25d1",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.remove-item",
       "repository": "project-authored",
       "revision": "v2.7.0",
       "path": "generated/windows/remove-item",
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item",
       "license": "MIT (project-authored)",
-      "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+      "sha256": "aeb37a38edb748d0724746a5ad1bde7ef5aa0a39ec18a1895d1986ea3365446c",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2880,7 +4910,7 @@
       "path": "generated/windows/restart-service",
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/restart-service",
       "license": "MIT (project-authored)",
-      "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+      "sha256": "6d90f3933260b0f4a9f9a75b5cd8e8136d882eeee3ed35c3bb0794712e1395d3",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2891,6 +4921,16 @@
       "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/robocopy",
       "license": "MIT (project-authored)",
       "sha256": "665d0b2e364722d1a3edb2b5199a0dd82b6d2480cec8a3222e4619d5a83a4850",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.schtasks",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/schtasks",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/schtasks",
+      "license": "MIT (project-authored)",
+      "sha256": "39f69fa2828b0edc1d51d6533edfe796f5099176fc7a2ef945e8615526924067",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2914,6 +4954,46 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.set-clipboard",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/set-clipboard",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/set-clipboard",
+      "license": "MIT (project-authored)",
+      "sha256": "1ff27abc87abe079df12024862fd43ee640116655970deb07e2331c854828dc7",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.set-content",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/set-content",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/set-content",
+      "license": "MIT (project-authored)",
+      "sha256": "b6c49bb113daa3a3080386899314e67de1661880766725c07ae96bf0d87847d4",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.set-environment-variable",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/set-environment-variable",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/setx",
+      "license": "MIT (project-authored)",
+      "sha256": "410997e05b2e795d72e55c38ae06ad0fedeafb3be15fbcd3699db6118a343f9a",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.set-executionpolicy",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/set-executionpolicy",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.security/set-executionpolicy",
+      "license": "MIT (project-authored)",
+      "sha256": "1279be0e9bd2b75ac6f5b5fd59875ff2d204b928b84bb24c90831f084b3c3303",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.set-location",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -2921,6 +5001,26 @@
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/set-location",
       "license": "MIT (project-authored)",
       "sha256": "8ef9b5934737cb1389e3e0e56c50cab42ad670119594ec651d7c74fa559dda45",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.sfc",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/sfc",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/sfc",
+      "license": "MIT (project-authored)",
+      "sha256": "e53a416cf2a2072605a6184cd676a2a06cc1e8a92f04ecae80f17ce488852584",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.shutdown",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/shutdown",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/shutdown",
+      "license": "MIT (project-authored)",
+      "sha256": "30ff31c033b614ac9454ed9994c81984fee7b6d2208dcd1c964d787e7b820e4d",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2950,7 +5050,7 @@
       "path": "generated/windows/stop-process",
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
       "license": "MIT (project-authored)",
-      "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+      "sha256": "3fc71911858b167e126ecb5a7694ad4023342e3d4cda0eeaae99562a3d74e498",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2961,6 +5061,16 @@
       "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-service",
       "license": "MIT (project-authored)",
       "sha256": "e80484aec468c67987b526004a40abb8279c4bab7ad05de1039f9366311ec59f",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.systeminfo",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/systeminfo",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/systeminfo",
+      "license": "MIT (project-authored)",
+      "sha256": "3d3d113b4ca18c501caa618e4eb5dbb6e1f118d934a02931ccc1841a6fc9ac06",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -2994,6 +5104,16 @@
       "cleaning_revision": "v2.12.0"
     },
     {
+      "source_id": "windows.tracert",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/tracert",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/tracert",
+      "license": "MIT (project-authored)",
+      "sha256": "9e6c3104c8e3b581cf1a62076282e95db2547b2e712005842101927db2ad7aa2",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
       "source_id": "windows.where",
       "repository": "project-authored",
       "revision": "v2.7.0",
@@ -3001,6 +5121,26 @@
       "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/where",
       "license": "MIT (project-authored)",
       "sha256": "8396c2f3f26000399cde0354d19d11adaed5cb30d001cdf9d5979a41a879e590",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.where-object",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/where-object",
+      "source_url": "https://learn.microsoft.com/powershell/module/microsoft.powershell.core/where-object",
+      "license": "MIT (project-authored)",
+      "sha256": "3bd8b99546de7f2f43d04ee348abc6ede7f0583260094a348bf9d199fd3993bb",
+      "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.whoami",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/whoami",
+      "source_url": "https://learn.microsoft.com/windows-server/administration/windows-commands/whoami",
+      "license": "MIT (project-authored)",
+      "sha256": "acbef9c3eea10eda3bf8af2b09e0b9317c6e40fae388798c583761ebedab5924",
       "cleaning_revision": "v2.12.0"
     },
     {
@@ -3012,23 +5152,33 @@
       "license": "MIT (project-authored)",
       "sha256": "b81723e72cc1ad1c6ab9ede08999a8ca976cc438f5c80bdcd25024e43ced0dc8",
       "cleaning_revision": "v2.12.0"
+    },
+    {
+      "source_id": "windows.wsl",
+      "repository": "project-authored",
+      "revision": "v2.7.0",
+      "path": "generated/windows/wsl",
+      "source_url": "https://learn.microsoft.com/windows/wsl/basic-commands",
+      "license": "MIT (project-authored)",
+      "sha256": "b12ecd59d86a7f3fafbeb0f5111ffe13d9a9b3b2653d2ed37e9599e708af56a9",
+      "cleaning_revision": "v2.12.0"
     }
   ],
   "recipes": [
     {
       "recipe_id": "docker.docker-run.image",
       "topic_id": "docker.docker-run",
-      "source_revision": "135ad73dc16bf48d50d7a95638e72b3a63d219ee958c184f03f796ba5f2021ae",
+      "source_revision": "6303f1a4a15899ae061819d3385909b3f62960f938381eb6eab7a5875e46b34b",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
           "source_id": "docker.docker-run",
           "title": "tldr: docker-run",
-          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-run.md",
+          "source_url": "https://github.com/tldr-pages/tldr/blob/d7f4fcb00a22fa5e5a595323705df61e1ecff707/pages/common/docker-container-run.md",
           "license": "CC BY 4.0",
           "revision": "d7f4fcb00a22fa5e5a595323705df61e1ecff707",
-          "path": "pages/common/docker-run.md",
-          "sha256": "9c16e341a6e79389d9258e3814751929fc6e9bca4177c46beb6b859201f4b793",
+          "path": "pages/common/docker-container-run.md",
+          "sha256": "293a52595f7fc8d531e7095e82ac4631671e6d2bd7a30d4472ddcf02bf9da7ee",
           "kind": "vendored",
           "role": "topic_basis"
         }
@@ -3162,7 +5312,7 @@
     {
       "recipe_id": "windows.copy-item.paths",
       "topic_id": "windows.copy-item",
-      "source_revision": "af3e6793e7e07160d998643eb0f08032f586a83bd5f952826f829c62a4773218",
+      "source_revision": "c47ff22ef3419a0840b51c08afe00e1641946b7a6531b50b97150e57f5602545",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
@@ -3172,7 +5322,7 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/copy-item",
-          "sha256": "eb34f1e8da29dd313b441a472dcbd9a3028b98de7167f3fb8916d67a2712b1c6",
+          "sha256": "9d6f0264fb70bdae81b9a7a89e108196d9b03d79bcbce590c6d49bbcf78a6a92",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
@@ -3257,7 +5407,7 @@
     {
       "recipe_id": "windows.move-item.paths",
       "topic_id": "windows.move-item",
-      "source_revision": "0ef8fba36ab1e660c8688fef7d367467d4bc090f07e06542e338f77656f08869",
+      "source_revision": "c0e9743377a92e13a0506e7cd53bbef9de7abb23c175b906093916a50ee139ad",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
@@ -3267,7 +5417,7 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/move-item",
-          "sha256": "b439c9311deeeacb3774341c3208081015f341add19b08da74d07e22ceec364f",
+          "sha256": "c7b5adc3f9cf1d739a04695a9d55ec30b9be47ffd83d92ba4d4fb62b949e7675",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
@@ -3314,7 +5464,7 @@
     {
       "recipe_id": "windows.remove-item.path",
       "topic_id": "windows.remove-item",
-      "source_revision": "f77f574e22e8a16b15be0038fdbcc73e44a7e3d7ab1dc547c0d4c7f7ffa24b66",
+      "source_revision": "0fa3c0c6e0923e9777c4791f7bd78198cc6542d3763a65f8f3eb1cb87aed5511",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
@@ -3324,7 +5474,7 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/remove-item",
-          "sha256": "df284af5d8fb21f95b2a739bbce333c972ba36e53bbdc755fd3fef1ab8f493c0",
+          "sha256": "aeb37a38edb748d0724746a5ad1bde7ef5aa0a39ec18a1895d1986ea3365446c",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
@@ -3333,7 +5483,7 @@
     {
       "recipe_id": "windows.restart-service.name",
       "topic_id": "windows.restart-service",
-      "source_revision": "4d1a280556b758086f561749f33abef7f87617ed79cf10346f2be056b352b2a4",
+      "source_revision": "eee9a88b6c54c44e2c81774ea33b40f95bf3299666513beab307b95caa02ddb9",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
@@ -3343,7 +5493,7 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/restart-service",
-          "sha256": "d710e652a26d8deb33861e3d8bda70c60fdb0e4cf0dcdf7ebb12511b2cddb4c3",
+          "sha256": "6d90f3933260b0f4a9f9a75b5cd8e8136d882eeee3ed35c3bb0794712e1395d3",
           "kind": "generated_seed",
           "role": "topic_basis"
         }
@@ -3371,7 +5521,7 @@
     {
       "recipe_id": "windows.stop-process.pid",
       "topic_id": "windows.stop-process",
-      "source_revision": "25b8dd4ce1a6b7c0a3e02cc39ccc79a1def3b2d372d269a8fb8d7c254e504907",
+      "source_revision": "4a3da7455e3006b7368d26ff07473c9530066a6a8624f81cbad08cc78db20836",
       "cleaning_revision": "v2.12.0",
       "provenance": [
         {
@@ -3381,7 +5531,7 @@
           "license": "MIT (project-authored)",
           "revision": "v2.7.0",
           "path": "generated/windows/stop-process",
-          "sha256": "e4d207a7a69d361aea6a72a27d88446ba2d71ed3d15e9bad69d12ef5857bcef8",
+          "sha256": "3fc71911858b167e126ecb5a7694ad4023342e3d4cda0eeaae99562a3d74e498",
           "kind": "generated_seed",
           "role": "topic_basis"
         }

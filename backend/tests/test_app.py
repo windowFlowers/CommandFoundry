@@ -26,22 +26,28 @@ def test_health_and_knowledge_status() -> None:
         assert client.get("/health").json() == {"status": "ok", "version": "2.12.0"}
         payload = client.get("/knowledge/status").json()
     assert payload["ready"] is True
-    assert payload["topic_count"] == 300
+    assert payload["topic_count"] == 515
     assert payload["domains"] == {
-        "cicd": 15,
-        "docker": 25,
-        "git": 30,
-        "http": 20,
-        "java": 7,
-        "kubernetes": 20,
-        "linux": 30,
-        "network": 20,
-        "node": 20,
-        "python": 25,
-        "redis": 15,
-        "sql": 30,
+        "cicd": 19,
+        "cloud": 6,
+        "cpp": 6,
+        "database": 4,
+        "docker": 34,
+        "git": 38,
+        "go": 10,
+        "http": 14,
+        "java": 14,
+        "kubernetes": 33,
+        "linux": 93,
+        "media": 3,
+        "network": 28,
+        "node": 35,
+        "python": 34,
+        "redis": 22,
+        "rust": 11,
+        "sql": 41,
         "testing": 10,
-        "windows": 33,
+        "windows": 60,
     }
     assert payload["retrieval_mode"] == "bm25"
 

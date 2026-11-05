@@ -19,6 +19,8 @@ const providerLabels = {
   moonshot: "Moonshot 提取",
   siliconflow: "SiliconFlow 提取",
   ollama: "Ollama 提取",
+  llamacpp: "llama.cpp 提取",
+  vllm: "vLLM 提取",
   custom: "模型提取",
   manual: "手动添加",
 };

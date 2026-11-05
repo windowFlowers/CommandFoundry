@@ -19,7 +19,7 @@ def test_windows_offline_cases_cover_the_seed_set_and_hit_top_three() -> None:
     topics = _windows_topics()
     topic_ids = {topic.id for topic in topics}
 
-    assert 25 <= len(topics) <= 35
+    assert 25 <= len(topics) <= 70
     assert len(cases) >= len(topics) * 3
     assert {case["expected_topic_id"] for case in cases} == topic_ids
 

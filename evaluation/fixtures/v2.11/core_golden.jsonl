@@ -32,11 +32,11 @@
 {"id":"golden-v211-032","query":"如何使用 aria2c？","expected_topic_id":"http.aria2c","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-033","query":"curl GET","expected_topic_id":"http.curl","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-034","query":"如何使用 curlie？","expected_topic_id":"http.curlie","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
-{"id":"golden-v211-035","query":"如何使用 dig？","expected_topic_id":"http.dig","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-035","query":"如何使用 dig？","expected_topic_id":"network.dig","category":"network","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-036","query":"调用 gRPC 服务","expected_topic_id":"http.grpcurl","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-037","query":"HTTPie GET","expected_topic_id":"http.http","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-038","query":"HTTP ping","expected_topic_id":"http.httping","category":"http","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
-{"id":"golden-v211-039","query":"如何使用 ip？","expected_topic_id":"http.ip","category":"http","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-039","query":"如何使用 ip？","expected_topic_id":"network.ip","category":"network","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-040","query":"格式化 JSON","expected_topic_id":"http.jq","category":"http","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-041","query":"如何使用 jar？","expected_topic_id":"java.jar","category":"java","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-042","query":"如何使用 java？","expected_topic_id":"java.java","category":"java","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
@@ -91,7 +91,7 @@
 {"id":"golden-v211-091","query":"如何使用 flake8？","expected_topic_id":"python.flake8","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-092","query":"如何使用 flask？","expected_topic_id":"python.flask","category":"python","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-093","query":"如何使用 gunicorn？","expected_topic_id":"python.gunicorn","category":"python","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
-{"id":"golden-v211-094","query":"如何使用 http-server？","expected_topic_id":"python.http-server","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
+{"id":"golden-v211-094","query":"如何使用 http-server？","expected_topic_id":"node.http-server","category":"node","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-095","query":"如何使用 ipython？","expected_topic_id":"python.ipython","category":"python","difficulty":"medium","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-096","query":"如何使用 jupyter？","expected_topic_id":"python.jupyter","category":"python","difficulty":"hard","expected_relevance":1,"source":"knowledge/eval_dataset.json"}
 {"id":"golden-v211-097","query":"如何使用 mypy？","expected_topic_id":"python.mypy","category":"python","difficulty":"easy","expected_relevance":1,"source":"knowledge/eval_dataset.json"}

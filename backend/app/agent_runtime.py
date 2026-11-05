@@ -37,6 +37,20 @@ class RunBusyError(RuntimeErrorBase):
     pass
 
 
+DecisionFailureCode = Literal["provider_timeout", "provider_rate_limit", "provider_authentication",
+                              "provider_error", "invalid_model_decision"]
+
+
+class DecisionError(RuntimeErrorBase):
+    """A provider failure with a fixed public code, never its raw exception."""
+    def __init__(self, code: DecisionFailureCode):
+        if code not in {"provider_timeout", "provider_rate_limit", "provider_authentication",
+                        "provider_error", "invalid_model_decision"}:
+            raise RuntimeErrorBase("invalid_error_code")
+        self.code = code
+        super().__init__(code)
+
+
 class Contract(BaseModel):
     # Pydantic otherwise trusts existing instances, including model_copy and
     # model_construct values that never passed their field validators.
@@ -86,6 +100,7 @@ class Observation(Contract):
     call_id: str
     name: str
     output: JsonValue
+    arguments: dict[str, JsonValue] = Field(default_factory=dict)
 
 
 class PendingCall(Contract):
@@ -116,6 +131,7 @@ class AgentRun(AgentView):
     pending: PendingCall | None = None
     answer: str | None = None
     error_code: str | None = None
+    scope_fingerprint: str = ""
 
 
 class _State(TypedDict):
@@ -129,10 +145,12 @@ class _State(TypedDict):
     pending: dict | None
     answer: str | None
     error_code: str | None
+    scope_fingerprint: str
 
 
 _TERMINAL = {"completed", "failed", "cancelled", "budget_exhausted"}
 _SECRET_KEY = re.compile(r"password|passwd|secret|token|credential|authorization|api.?key|private.?key", re.I)
+_TOKEN_METRICS = {"prompt_tokens", "completion_tokens", "total_tokens", "estimated_tokens"}
 
 
 def _json(value) -> str:
@@ -150,7 +168,9 @@ def _safe(value, *, limit: int) -> None:
         raise RuntimeErrorBase("content_limit")
     def sensitive_keys(item):
         if isinstance(item, dict):
-            return any(_SECRET_KEY.search(str(key)) or sensitive_keys(child) for key, child in item.items())
+            return any((bool(_SECRET_KEY.search(str(key))) and not (
+                key in _TOKEN_METRICS and (child is None or type(child) is int and child >= 0)))
+                or sensitive_keys(child) for key, child in item.items())
         return isinstance(item, list) and any(sensitive_keys(child) for child in item)
     if (sensitive_keys(value) or contains_sensitive_input(serialized)
             or find_credential_leaks({"value": value}) or redact_report(value) != value):
@@ -159,11 +179,16 @@ def _safe(value, *, limit: int) -> None:
 
 class AgentRuntime:
     def __init__(self, database_path: Path, *, decider: Callable[[AgentView], AgentDecision],
-                 tools: list[ToolSpec], max_steps: int = 8, max_output_chars: int = 16000):
+                 tools: list[ToolSpec], max_steps: int = 8, max_output_chars: int = 16000,
+                 scope_fingerprint: str = "", before_tool: Callable[[AgentView], None] | None = None):
         if type(max_steps) is not int or not 1 <= max_steps <= 64:
             raise RuntimeErrorBase("invalid_step_budget")
         if type(max_output_chars) is not int or not 64 <= max_output_chars <= 100000:
             raise RuntimeErrorBase("invalid_output_budget")
+        if not isinstance(scope_fingerprint, str) or (scope_fingerprint and not re.fullmatch(r"[a-f0-9]{64}", scope_fingerprint)):
+            raise RuntimeErrorBase("invalid_scope")
+        self.scope_fingerprint = scope_fingerprint
+        self.before_tool = before_tool
         self.path = Path(database_path).resolve()
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.decider = decider
@@ -222,14 +247,18 @@ class AgentRuntime:
         value = dict(snapshot.values)
         if value["status"] not in _TERMINAL and any(task.interrupts for task in snapshot.tasks):
             value["status"] = "awaiting_approval"
-        return AgentRun.model_validate(value)
+        run = AgentRun.model_validate(value)
+        if run.scope_fingerprint != self.scope_fingerprint:
+            raise RuntimeErrorBase("run_scope_mismatch")
+        return run
 
     def create(self, query: str) -> AgentRun:
         if not isinstance(query, str) or not query.strip():
             raise RuntimeErrorBase("invalid_query")
         _safe(query, limit=8192)
         run = AgentRun(run_id=uuid4().hex, query=query, observations=[], steps=0,
-                       max_steps=self.max_steps, max_output_chars=self.max_output_chars, status="created")
+                       max_steps=self.max_steps, max_output_chars=self.max_output_chars,
+                       status="created", scope_fingerprint=self.scope_fingerprint)
         with self._locked():
             self.graph.update_state(self._config(run.run_id), run.model_dump(mode="json"), as_node="create")
         return run
@@ -305,6 +334,8 @@ class AgentRuntime:
                 tool_fingerprint=tool.fingerprint(), approval_id=uuid4().hex,
                 requires_approval=tool.requires_approval)
             return {"status": "running", "steps": state["steps"] + 1, "pending": pending.model_dump(mode="json")}
+        except DecisionError as exc:
+            return self._failed(exc.code)
         except Exception:
             return self._failed("invalid_decision")
 
@@ -330,6 +361,8 @@ class AgentRuntime:
     def _execute(self, state):
         pending = PendingCall.model_validate(state["pending"])
         try:
+            if self.before_tool:
+                self.before_tool(AgentView.model_validate({key: state[key] for key in AgentView.model_fields}))
             tool = self._tool(pending)
             if not pending.approved:
                 return self._failed("approval_required")
@@ -352,12 +385,16 @@ class AgentRuntime:
                     cursor.execute("INSERT INTO agent_tool_attempts VALUES (?, ?, ?, 'started', NULL)", (state["run_id"], pending.call_id, fingerprint))
                 output = tool.executor(args)
                 _safe(output, limit=state["max_output_chars"])
-                observation = Observation(call_id=pending.call_id, name=tool.name, output=output)
+                observation = Observation(call_id=pending.call_id, name=tool.name, output=output,
+                                          arguments=pending.tool_call.arguments)
                 output = observation.model_dump(mode="json")["output"]
                 with self.saver.cursor() as cursor:
                     cursor.execute("UPDATE agent_tool_attempts SET status='completed', output=? WHERE run_id=? AND call_id=?", (_json(output), state["run_id"], pending.call_id))
-            observation = Observation(call_id=pending.call_id, name=tool.name, output=output)
+            observation = Observation(call_id=pending.call_id, name=tool.name, output=output,
+                                      arguments=pending.tool_call.arguments)
             return {"status": "running", "pending": None, "observations": [*state["observations"], observation.model_dump(mode="json")]}
+        except DecisionError as exc:
+            return self._failed(exc.code)
         except Exception:
             return self._failed("tool_execution_failed")
 

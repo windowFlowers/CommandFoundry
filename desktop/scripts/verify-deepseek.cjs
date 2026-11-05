@@ -3,12 +3,13 @@ const { app, safeStorage } = require("electron");
 
 const { testOpenAICompatibleConnection } = require("../electron/openai-compatible-connection.cjs");
 const { readModelConfig } = require("../electron/model-config.cjs");
+const { providerRequiresApiKey } = require("../electron/model-providers.cjs");
 
 app.setPath("userData", path.join(app.getPath("appData"), "AegisCopilot"));
 
 app.whenReady().then(async () => {
   const config = readModelConfig({ userDataPath: app.getPath("userData"), safeStorage });
-  if (!config.apiKey && config.provider !== "ollama") {
+  if (!config.apiKey && providerRequiresApiKey(config.provider)) {
     process.stdout.write(JSON.stringify({ ok: false, configured: false, provider: config.provider, reason: "no_api_key" }));
     app.exit(2);
     return;

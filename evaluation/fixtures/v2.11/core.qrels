@@ -32,11 +32,11 @@ golden-v211-031 0 http.ab 1
 golden-v211-032 0 http.aria2c 1
 golden-v211-033 0 http.curl 1
 golden-v211-034 0 http.curlie 1
-golden-v211-035 0 http.dig 1
+golden-v211-035 0 network.dig 1
 golden-v211-036 0 http.grpcurl 1
 golden-v211-037 0 http.http 1
 golden-v211-038 0 http.httping 1
-golden-v211-039 0 http.ip 1
+golden-v211-039 0 network.ip 1
 golden-v211-040 0 http.jq 1
 golden-v211-041 0 java.jar 1
 golden-v211-042 0 java.java 1
@@ -91,7 +91,7 @@ golden-v211-090 0 python.django-admin 1
 golden-v211-091 0 python.flake8 1
 golden-v211-092 0 python.flask 1
 golden-v211-093 0 python.gunicorn 1
-golden-v211-094 0 python.http-server 1
+golden-v211-094 0 node.http-server 1
 golden-v211-095 0 python.ipython 1
 golden-v211-096 0 python.jupyter 1
 golden-v211-097 0 python.mypy 1

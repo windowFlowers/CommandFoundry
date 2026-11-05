@@ -613,7 +613,9 @@ def main(argv: list[str] | None = None) -> int:
         with httpx.Client(base_url=args.endpoint.rstrip("/"), timeout=settings.llm_timeout_seconds + 15) as client:
             evaluate_cases(client)
     else:
-        if settings.llm_provider != "ollama" and not settings.llm_api_key:
+        from app.generation import KEYLESS_PROVIDERS
+
+        if settings.llm_provider not in KEYLESS_PROVIDERS and not settings.llm_api_key:
             raise SystemExit(
                 "model mode requires the currently configured provider API key; "
                 "set AEGIS_LLM_API_KEY or pass --endpoint to a running CommandFoundry API"

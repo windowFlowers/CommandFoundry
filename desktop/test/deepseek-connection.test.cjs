@@ -62,6 +62,43 @@ test("generic connection test supports a keyless local Ollama endpoint", async (
   assert.equal(result.providerLabel, "Ollama（本机）");
 });
 
+test("generic connection test supports a keyless llama.cpp endpoint with thinking disabled", async () => {
+  const result = await testOpenAICompatibleConnection({
+    provider: "llamacpp",
+    baseUrl: "http://127.0.0.1:18080/v1",
+    model: "qwen3.5-4b",
+    fetchImpl: async (url, options) => {
+      assert.equal(url, "http://127.0.0.1:18080/v1/chat/completions");
+      const body = JSON.parse(options.body);
+      assert.deepEqual(body.chat_template_kwargs, { enable_thinking: false });
+      return {
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: '{"status":"ok"}' } }] }),
+      };
+    },
+  });
+  assert.equal(result.provider, "llamacpp");
+  assert.equal(result.providerLabel, "llama.cpp（私有部署）");
+});
+
+test("generic connection test supports a keyless vLLM endpoint with thinking disabled", async () => {
+  const result = await testOpenAICompatibleConnection({
+    provider: "vllm",
+    baseUrl: "http://127.0.0.1:18000/v1",
+    model: "qwen3.5-4b",
+    fetchImpl: async (url, options) => {
+      assert.equal(url, "http://127.0.0.1:18000/v1/chat/completions");
+      assert.deepEqual(JSON.parse(options.body).chat_template_kwargs, { enable_thinking: false });
+      return {
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: '{"status":"ok"}' } }] }),
+      };
+    },
+  });
+  assert.equal(result.provider, "vllm");
+  assert.equal(result.providerLabel, "vLLM（私有部署）");
+});
+
 test("generic connection test retries a portable request for older compatible endpoints", async () => {
   let calls = 0;
   const result = await testOpenAICompatibleConnection({

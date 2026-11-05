@@ -9,7 +9,7 @@ from app.main import catalog, retriever
 def test_all_300_evaluation_queries_hit_expected_topic_in_top_three() -> None:
     dataset_path = Path(__file__).resolve().parents[2] / "knowledge" / "eval_dataset.json"
     cases = json.loads(dataset_path.read_text(encoding="utf-8"))
-    assert len(cases) == 300
+    assert len(cases) == 515
     hits = 0
     for case in cases:
         result_ids = [item.topic.id for item in retriever.retrieve(case["query"], top_k=3)]
@@ -33,11 +33,11 @@ def test_nfkc_cleaning_keeps_fullwidth_query_aliases_retrievable() -> None:
 
 def test_catalog_sources_are_traceable_to_manifest() -> None:
     source_ids = {item["source_id"] for item in catalog.manifest["sources"]}
-    assert len(catalog.topics) == 300
+    assert len(catalog.topics) == 515
     assert all(topic.source.source_id in source_ids for topic in catalog.topics)
     assert all(len(topic.source.sha256) == 64 for topic in catalog.topics)
     source_lock = json.loads((Path(__file__).resolve().parents[2] / "knowledge" / "sources.lock.json").read_text(encoding="utf-8"))
-    assert len(source_lock["sources"]) == 300
+    assert len(source_lock["sources"]) == 515
     assert {item["source_id"] for item in source_lock["sources"]} == source_ids
     assert all(item["source_url"].startswith("https://") for item in source_lock["sources"])
 

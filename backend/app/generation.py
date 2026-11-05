@@ -118,6 +118,7 @@ SYSTEM_PROMPT = """你是 CommandFoundry，一个谨慎的开发者命令助手�
 输出严格 JSON，字段仅允许 summary、summary_segments、commands、notes。
 summary_segments 每项必须包含 text 和 citation_ids；summary 应等于这些 text 的顺序拼接。
 commands 每项必须包含 label、language、code、platforms、prerequisites、risk、warning、citation_ids。
+commands 最多 6 条；候选命令较多时只保留与当前问题最相关的几条。
 只能使用证据中列出的 citation_id。每段事实和每条命令都必须带至少一个有效 citation_id。
 默认使用简洁中文；若当前问题或非权威用户个性化给出明确语言、详略偏好，可在不影响证据与安全时遵循，且当前问题优先。命令保留原始语法和占位符。不要使用 Markdown 代码围栏。
 如果候选中没有可靠的命令，commands 必须返回空数组，禁止为了满足格式编造命令。
@@ -140,6 +141,66 @@ key 必须使用稳定槽位：response_style 只用 language（en 或 zh-CN）�
 display_text 使用简短中文事实描述。不能确认时输出 {\"operations\": []}，不要猜测。"""
 
 
+# Local OpenAI-compatible servers that do not authenticate requests.
+KEYLESS_PROVIDERS = frozenset({"ollama", "llamacpp", "vllm"})
+# Self-hosted servers that accept chat_template_kwargs, used to turn off the
+# default reasoning of hybrid-thinking models such as Qwen3.5.
+THINKING_TOGGLE_PROVIDERS = frozenset({"llamacpp", "vllm"})
+# Self-hosted engines with grammar-constrained decoding (vLLM guided decoding,
+# llama.cpp grammars).  ``json_object`` only guarantees JSON syntax; the schema
+# also enforces ModelAnswerDraft's limits (e.g. at most 6 commands), which
+# small models otherwise overrun on command-heavy topics.
+SCHEMA_DECODING_PROVIDERS = frozenset({"llamacpp", "vllm"})
+# Output cap for schema-constrained answers.  Normal answers stay well under
+# 1k tokens; if the model closes a string early (e.g. an unescaped quote) the
+# grammar only admits separators and it can pad with whitespace until the
+# context is exhausted, so bound that failure to seconds instead of minutes.
+SCHEMA_ANSWER_MAX_TOKENS = 2048
+
+
+# Prose fields may only close after sentence punctuation. A grammar cannot tell
+# a closing quote from an unescaped one, so a model copying ``tasklist /FI "..``
+# into the summary would end the string mid-sentence and pad whitespace up to
+# the cap. With this pattern a mid-sentence quote is illegal and the model
+# rewords instead; exact commands belong in ``commands``.
+PROSE_CHAR = r'[^"\\\n\r\t]'
+SENTENCE_END = "[。！？.!?]"
+PROSE_PATTERN = f"^{PROSE_CHAR}*{SENTENCE_END}$"
+
+
+# Field order stated in SYSTEM_PROMPT ("字段仅允许 summary、summary_segments、commands、notes").
+ANSWER_FIELD_ORDER = ("summary", "summary_segments", "commands", "notes")
+
+
+def _answer_json_schema() -> dict:
+    schema = ModelAnswerDraft.model_json_schema()
+    schema["properties"].pop("generation", None)
+    schema.get("$defs", {}).pop("GenerationInfo", None)
+    # Grammar engines emit properties in schema order, so it must match the
+    # order SYSTEM_PROMPT asks for. Otherwise a model that writes
+    # summary_segments right after summary can no longer go back to
+    # ``commands`` (it closed the object with no commands at all), and once
+    # every field is required it pads whitespace after ``notes`` instead of
+    # writing the remaining key. All fields are required (empty lists stay
+    # allowed), matching OpenAI strict-mode semantics.
+    properties = schema["properties"]
+    schema["properties"] = {name: properties[name] for name in ANSWER_FIELD_ORDER}
+    schema["required"] = list(ANSWER_FIELD_ORDER)
+    summary = schema["properties"]["summary"]
+    summary.pop("minLength")
+    summary["pattern"] = f"^{PROSE_CHAR}{{0,{summary.pop('maxLength') - 1}}}{SENTENCE_END}$"
+    # xgrammar (vLLM) drops JSON escapes from strings with a length bound, so
+    # ``code`` could never contain an escaped quote: quoted commands came back mangled or
+    # cut off. Pydantic still enforces the bound when parsing.
+    schema["$defs"]["CommandBlock"]["properties"]["code"].pop("minLength")
+    schema["$defs"]["AnswerSegment"]["properties"]["text"]["pattern"] = PROSE_PATTERN
+    schema["properties"]["notes"]["items"]["pattern"] = PROSE_PATTERN
+    return schema
+
+
+ANSWER_JSON_SCHEMA = _answer_json_schema()
+
+
 class OpenAICompatibleGenerator:
     def __init__(
         self,
@@ -160,8 +221,8 @@ class OpenAICompatibleGenerator:
 
     @property
     def available(self) -> bool:
-        # Ollama's local OpenAI-compatible endpoint does not require a key.
-        return bool(self.api_key) or self.provider == "ollama"
+        # Local OpenAI-compatible endpoints (Ollama, llama.cpp, vLLM) do not require a key.
+        return bool(self.api_key) or self.provider in KEYLESS_PROVIDERS
 
     @staticmethod
     def _strip_code_fence(content: str) -> str:
@@ -210,8 +271,8 @@ class OpenAICompatibleGenerator:
         The SDK owns authentication, URL construction, timeouts and provider
         error translation.  ``transport`` is only an explicit test seam; the
         production path never bypasses the SDK with a hand-written HTTP call.
-        Ollama still receives a harmless placeholder key because the SDK
-        requires a non-empty key even when the local endpoint does not.
+        Keyless local providers still receive a harmless placeholder key
+        because the SDK requires a non-empty key even when the endpoint does not.
         """
         http_client = None
         if self.transport is not None:
@@ -227,7 +288,19 @@ class OpenAICompatibleGenerator:
             http_client=http_client,
         )
 
+    def _answer_response_format(self) -> dict:
+        if self.provider in SCHEMA_DECODING_PROVIDERS:
+            return {
+                "type": "json_schema",
+                "json_schema": {"name": "model_answer", "schema": ANSWER_JSON_SCHEMA, "strict": True},
+            }
+        return {"type": "json_object"}
+
     def _completion(self, payload: dict) -> tuple[object, int]:
+        if self.provider in THINKING_TOGGLE_PROVIDERS:
+            # Hybrid-thinking models (e.g. Qwen3.5) reason by default and can
+            # spend the whole token budget before the JSON answer.
+            payload = {**payload, "extra_body": {"chat_template_kwargs": {"enable_thinking": False}}}
         started = perf_counter()
         with self._client() as client:
             try:
@@ -255,6 +328,12 @@ class OpenAICompatibleGenerator:
             return False
         body = getattr(error, "body", None)
         message = str(body or getattr(error, "message", "") or error).casefold()
+        if payload.get("tools") and "tool" in message and not any(
+            name in message for name in ("temperature", "max_tokens", "response_format")
+        ):
+            # An unsupported native tool protocol cannot be repaired by
+            # dropping generation controls or retrying the same tool request.
+            return False
         return any(
             marker in message
             for marker in (
@@ -281,7 +360,7 @@ class OpenAICompatibleGenerator:
         payload = {
             "model": self.model,
             "temperature": 0.1,
-            "response_format": {"type": "json_object"},
+            "response_format": self._answer_response_format(),
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {
@@ -295,12 +374,15 @@ class OpenAICompatibleGenerator:
                 },
             ],
         }
+        if self.provider in SCHEMA_DECODING_PROVIDERS:
+            payload["max_tokens"] = SCHEMA_ANSWER_MAX_TOKENS
         response, latency_ms = self._completion(payload)
         try:
             choice = response.choices[0]
             message = choice.message
             content = message.content
-            draft = ModelAnswerDraft.model_validate_json(self._strip_code_fence(content))
+            # strict=False: grammars admit raw tabs in strings, e.g. a copied tab escape.
+            draft = ModelAnswerDraft.model_validate(json.loads(self._strip_code_fence(content), strict=False))
             usage = response.usage
             draft.generation = GenerationInfo(
                 attempted=True,

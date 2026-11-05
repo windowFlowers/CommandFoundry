@@ -958,6 +958,10 @@ class CommandPlanner:
                 ("http", r"curl|wget|http|https|接口|api"),
                 ("kubernetes", r"kubernetes|k8s|kubectl|pod|集群"),
                 ("java", r"java|maven|gradle|jar"),
+                ("go", r"golang|\bgo (?:mod|build|run|test)\b"),
+                ("rust", r"\b(?:rust|rustup|cargo)\b"),
+                ("cpp", r"\b(?:gcc|clang|cmake|makefile)\b|g\+\+"),
+                ("cloud", r"\b(?:aws|gcloud|azure)\b"),
                 ("cicd", r"github actions|jenkins|gitlab ci|pipeline|流水线"),
                 ("testing", r"pytest|jest|playwright|测试|单元测试"),
                 ("windows", r"windows|powershell|cmd|服务|进程|端口"),
@@ -1101,7 +1105,7 @@ class CommandPlanner:
             # is sufficiently specific to open the string-set recipe.
             "redis.string-set": r"redis(?:-cli)?.{0,24}(?:\bset\b.{0,24}(?:key\b|value\b|键|值|过期|expire|ttl)|键值|设置(?:键|值)|过期|expire|ttl)|(?:\bset\b.{0,24}(?:key\b|value\b|键|值|过期|expire|ttl)|设置(?:键|值)|过期|expire|ttl).{0,24}redis",
             "windows.get-childitem": r"(?<![a-z])get[- ]?childitem(?![a-z])|(?:\bcmd(?:\.exe)?\b\s*)?\bdir\b|列出.{0,12}(?:文件|目录)|查看文件夹内容|目录列表",
-            "windows.new-item": r"(?<![a-z])new[- ]?item(?![a-z])|(?:创建|新建).{0,16}(?:文件|目录|文件夹)|(?:文件|目录|文件夹).{0,16}(?:创建|新建)",
+            "windows.new-item": r"(?<![a-z])new[- ]?item(?![a-z])(?!.*symboliclink)|(?:创建|新建).{0,16}(?:文件|目录|文件夹)|(?:文件|目录|文件夹).{0,16}(?:创建|新建)",
             "windows.copy-item": r"(?<![a-z])copy[- ]?item(?![a-z])|复制|拷贝|(?<![a-z])copy(?![a-z])",
             "windows.move-item": r"(?<![a-z])move[- ]?item(?![a-z])|移动|重命名|(?<![a-z])move(?![a-z])",
             "windows.remove-item": r"(?<![a-z])remove[- ]?item(?![a-z])|删除|移除|(?<![a-z])remove(?![a-z])",
@@ -1223,7 +1227,7 @@ class CommandPlanner:
             lexical_topic = None
             windows_lexical = (
                 ("windows.get-childitem", r"(?<![a-z])get[- ]?childitem(?![a-z])|(?:\bcmd(?:\.exe)?\b\s*)?\bdir\b|列出.{0,12}(?:文件|目录)|查看文件夹内容|目录列表"),
-                ("windows.new-item", r"(?<![a-z])new[- ]?item(?![a-z])|(?:创建|新建|生成).{0,16}(?:文件|目录|文件夹|file)|(?:文件|目录|文件夹|file).{0,16}(?:创建|新建)"),
+                ("windows.new-item", r"(?<![a-z])new[- ]?item(?![a-z])(?!.*symboliclink)|(?:创建|新建|生成).{0,16}(?:文件|目录|文件夹|file)|(?:文件|目录|文件夹|file).{0,16}(?:创建|新建)"),
                 ("windows.copy-item", r"(?<![a-z])copy[- ]?item(?![a-z])|复制.{0,20}(?:文件|目录|到)|拷贝文件|复制文件"),
                 ("windows.move-item", r"(?<![a-z])move[- ]?item(?![a-z])|移动.{0,20}(?:文件|目录|到)|重命名文件"),
                 ("windows.remove-item", r"(?<![a-z])remove[- ]?item(?![a-z])|删除.{0,20}(?:文件|目录)|移除文件"),
@@ -1253,6 +1257,14 @@ class CommandPlanner:
                 ((topic, pattern) for topic, pattern in windows_lexical if re.search(pattern, lowered, re.IGNORECASE)),
                 None,
             )
+            # A Windows topic without a recipe outranking the recipe topics is
+            # the more specific match unless the wording names a recipe task:
+            # “开放防火墙端口” mentions 端口 but is not the netstat recipe.
+            top_topic = str(hits[0].topic.id).removeprefix("parent.") if hits else ""
+            if not lexical_match and top_topic.startswith("windows.") and not any(
+                item.topic_id == top_topic for item in getattr(self.catalog, "recipes", [])
+            ):
+                return None
             if lexical_match:
                 lexical_topic = lexical_match[0]
             elif re.search(

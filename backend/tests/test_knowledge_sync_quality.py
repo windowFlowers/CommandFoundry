@@ -95,6 +95,6 @@ def test_generated_quality_report_records_cleaning_revision() -> None:
 
     assert report["cleaning_revision"] == CLEANING_REVISION
     assert report["status"] in {"clean", "warning"}
-    assert report["topic_count"] == manifest["topic_count"] == 300
+    assert report["topic_count"] == manifest["topic_count"] == 515
     assert manifest["cleaning_revision"] == CLEANING_REVISION
     assert manifest["quality_report_sha256"] == report["report_sha256"]
