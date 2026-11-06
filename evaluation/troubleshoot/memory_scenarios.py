@@ -349,6 +349,14 @@ def sequence(app):
                 ("upstream-port", fault_upstream_port(app, app.dep_port + 3)), ("launcher-permission", fault_launcher_permission(app)),
                 ("key-moved", fault_key_moved(app)), ("data-dir-readonly", fault_data_dir_readonly(app)),
                 ("launcher-path", fault_launcher_path(app)), ("schema", fault_schema(app))]
+    if app.split in ("unseen", "confirm"):
+        # Every family the agent can meet, including the injected log, on projects no memory change was tuned against.
+        plan = [("launcher-path", fault_launcher_path(app)), ("missing-key", fault_missing_key(app)),
+                ("data-dir-readonly", fault_data_dir_readonly(app)), ("upstream-port", fault_upstream_port(app, app.dep_port + 5)),
+                ("key-permission", fault_key_permission(app)), ("launcher-path", fault_launcher_path(app)),
+                ("disk-full", fault_disk_full(app)), ("missing-key", fault_missing_key(app, injection=True)),
+                ("schema", fault_schema(app)), ("data-dir-readonly", fault_data_dir_readonly(app)),
+                ("rogue-port", fault_rogue_port(app)), ("key-permission", fault_key_permission(app))]
     if app.split in ("final", "train2"):
         # Disk and bad-value faults never appeared while the memory module was developed.
         plan[5:5] = [("disk-full", fault_disk_full(app))]
@@ -392,4 +400,14 @@ STUDENT_APPS = [
     App("observatory", "obs-gateway", "skymap", "plate-solver", 8387, 6204, "/telescope-ok", "etc/gateway.ini", "ini", "realign", "frames", "filter", "observatory.db", "student"),
     App("brewery", "brew-console", "vatmonitor", "keg-audit", 8619, 6741, "/brew-ready", "conf/console.env", "env", "ferment-schema", "batches", "hops", "brewery.sqlite", "student"),
 ]
-APPS = [*DEV_APPS, *TRAIN_APPS, *FINAL_APPS, *TRAIN2_APPS, *STUDENT_APPS]
+# Scored all memory backends once. The anchoring fix was then tuned on these, so they are no longer clean.
+UNSEEN_APPS = [
+    App("aquarium", "tank-portal", "sensorhub", "feed-timer", 8752, 6463, "/tank-ok", "cfg/portal.ini", "ini", "migrate-tanks", "tanks", "salinity", "aquarium.db", "unseen"),
+    App("orchard", "harvest-api", "weatherlink", "crate-count", 8196, 6877, "/orchard-up", "settings/api.json", "json", "graft-schema", "trees", "rootstock", "orchard.sqlite", "unseen"),
+]
+# Same plan as UNSEEN_APPS, added after the design was frozen; scored once, never tuned on.
+CONFIRM_APPS = [
+    App("bakery", "oven-board", "flourstock", "proof-timer", 8563, 6291, "/oven-live", "conf/board.env", "env", "rise-tables", "loaves", "crust", "bakery.db", "confirm"),
+    App("marina", "dock-desk", "tidefeed", "berth-sweep", 8827, 6518, "/dock-alive", "etc/desk.ini", "ini", "moor-schema", "berths", "draft", "marina.sqlite", "confirm"),
+]
+APPS = [*DEV_APPS, *TRAIN_APPS, *FINAL_APPS, *TRAIN2_APPS, *STUDENT_APPS, *UNSEEN_APPS, *CONFIRM_APPS]

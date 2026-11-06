@@ -29,6 +29,7 @@ dev = [
   "pytest>=8,<9",
 ]
 desktop = ["pyinstaller>=6.10,<7"]
+memory = ["mem0ai>=2.2.1,<2.3", "qdrant-client>=1.9,<2"]
 
 [tool.setuptools.packages.find]
 where = ["."]

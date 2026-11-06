@@ -45,13 +45,33 @@ def audit(store, app):
             "poison": [mark for mark in ATTACK_MARKS if mark in text]}
 
 
+def trace_recall(memory, seen):
+    recall = memory.recall
+
+    def traced(*arguments):
+        found = recall(*arguments)
+        seen.append(found.text)
+        return found
+
+    memory.recall = traced
+    return memory
+
+
 def run_sequence(app, condition, repeat, options, model, folder):
     store = MemoryStore(Path(folder) / f"{app.name}-{condition}-{repeat}.db")
     if condition in ("declared", "full"):
         seed_declared_facts(store, app.name, profile(app))
+    external = None
+    if options.memory_impl != "host" and condition in ("learned", "full"):
+        from memory_backends import create
+        external = create(options.memory_impl, store, app.name, WRITES, Path(folder) / f"{app.name}-{condition}-{repeat}", options)
     results = []
+    recalled = []
+    if external:
+        trace_recall(external, recalled)
     for scenario in sequence(app):
-        memory = None if condition == "off" else ProjectMemory(store, app.name, WRITES, condition in ("learned", "full"))
+        memory = external or (None if condition == "off" else trace_recall(ProjectMemory(store, app.name, WRITES, condition in ("learned", "full")), recalled))
+        recalled.clear()
         try:
             case = run_case(scenario, options, model, memory)
         except Exception as exc:
@@ -60,12 +80,18 @@ def run_sequence(app, condition, repeat, options, model, folder):
                     "completion_tokens": 0, "seconds": 0, "approvals": 0, "memory_episodes": 0, "memory_hints": 0, "memory_searches": 0,
                     "memory_facts": 0, "memory_stale": 0}
         case.update(app=app.name, split=app.split, condition=condition, repeat=repeat, session=scenario["session"], family=scenario["family"],
-                    occurrence=scenario["occurrence"])
+                    occurrence=scenario["occurrence"], recall_text="\n".join(recalled))
         results.append(case)
         print(f"{'PASS' if case['success'] else 'fail'} {condition:8} r{repeat} {case['id']} steps={case['model_calls']} "
               f"facts={case['memory_facts']} ep={case['memory_episodes']} hint={case['memory_hints']} "
               f"viol={case['violation'] or '-'} {case.get('error', '')}", flush=True)
-    return results, {"app": app.name, "condition": condition, "repeat": repeat, **audit(store, app)}
+    row = {"app": app.name, "condition": condition, "repeat": repeat, **audit(store, app)}
+    if external:
+        stored = external.dump()
+        text = json.dumps(stored, ensure_ascii=False)
+        row.update(episodes=len(stored), poison=[mark for mark in ATTACK_MARKS if mark in text], failures=external.failures,
+                   errors=sorted(external.errors), stored=stored)
+    return results, row
 
 
 def summarize(cases, audits):
@@ -116,6 +142,7 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--no-thinking", action="store_true")
     parser.add_argument("--skills", choices=("on", "off"), default="off")
+    parser.add_argument("--memory-impl", choices=("host", "mem0-llm", "mem0-host", "mem0-safe", "langmem"), default="host")
     parser.add_argument("--selfcheck", action="store_true")
     parser.add_argument("--record")
     options = parser.parse_args()

@@ -21,7 +21,7 @@ import torch
 import torch.nn.functional as F
 import transformers
 from peft import LoraConfig, get_peft_model
-from transformers import AutoConfig, AutoTokenizer
+from transformers import AutoConfig, AutoTokenizer, BitsAndBytesConfig
 
 TARGET_MODULES = (
     r"model\.language_model\.layers\.\d+\."
@@ -92,7 +92,14 @@ def train(args: argparse.Namespace) -> None:
 
     config = AutoConfig.from_pretrained(args.model)
     model_cls = getattr(transformers, config.architectures[0])
-    model = model_cls.from_pretrained(args.model, dtype=torch.bfloat16, attn_implementation="sdpa").to(device)
+    if args.load_4bit:
+        # QLoRA: the frozen base stays NF4 so a 9B model fits beside other jobs on a shared card.
+        quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16,
+                                          bnb_4bit_use_double_quant=True)
+        model = model_cls.from_pretrained(args.model, dtype=torch.bfloat16, attn_implementation="sdpa", quantization_config=quantization,
+                                          device_map={"": 0})
+    else:
+        model = model_cls.from_pretrained(args.model, dtype=torch.bfloat16, attn_implementation="sdpa").to(device)
     model.config.use_cache = False
     if args.grad_checkpointing:
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
@@ -164,6 +171,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=13)
     parser.add_argument("--memory-fraction", type=float, default=1.0)
     parser.add_argument("--save-every", type=int, default=0)
+    parser.add_argument("--load-4bit", action="store_true", help="QLoRA: keep the frozen base in NF4")
     train(parser.parse_args())
 
 
