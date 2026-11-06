@@ -15,6 +15,7 @@ from .memory import estimate_tokens
 from .models import PersonalizationInfo, UserMemory, UserMemoryCreateRequest, UserMemoryUpdateRequest
 from .repository import ConversationRepository
 from .retrieval import EmbeddingEngine, tokenize
+from .sanitize import looks_like_instruction
 
 
 GLOBAL_CATEGORIES = {"response_style", "expertise"}
@@ -493,7 +494,8 @@ def validate_candidate(candidate: MemoryCandidate) -> MemoryCandidate | None:
     key = _normalize_memory_key(candidate.key)
     value = _clean_text(candidate.value, limit=160)
     display = _clean_text(candidate.display_text, limit=240)
-    if not key or not value or not display or contains_sensitive_data(f"{value}\n{display}"):
+    text = f"{value}\n{display}"
+    if not key or not value or not display or contains_sensitive_data(text) or looks_like_instruction(text):
         return None
 
     # Normalize the known preference families at the service boundary.  This

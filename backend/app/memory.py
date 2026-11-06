@@ -17,6 +17,7 @@ from .models import (
     RetrievalHit,
 )
 from .repository import ConversationRepository
+from .sanitize import redact
 
 
 CJK_CHARACTER = re.compile(r"[\u3400-\u9fff]")
@@ -118,7 +119,7 @@ def _sanitize_memory_text(value: str, *, limit: int) -> str:
             text = pattern.sub(lambda match: f"{match.group(1)}[REDACTED]", text)
         else:
             text = pattern.sub("[REDACTED]", text)
-    return text[:limit]
+    return redact(text, "[REDACTED]")[:limit]
 
 
 def _answer_memory_payload(
