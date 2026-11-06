@@ -78,7 +78,7 @@ def fix_line(entry: dict) -> str:
     """Describe an executed write in stable terms; a PID means nothing next time."""
     name, arguments, output = entry["tool"], entry["arguments"], entry.get("output", "")
     label = WRITE_LABELS[name]
-    if name == "edit_file":
+    if name == "edit_file" and CONFIG_FILE.search(arguments["path"]):
         old, new = clean(arguments["old_text"], 60), clean(arguments["new_text"], 60)
         return f"{label} {clean(arguments['path'], 80)}：{old} 改为 {new}"
     if name == "kill_process":
@@ -92,6 +92,7 @@ def fix_line(entry: dict) -> str:
         return f"{label} {clean(arguments['path'], 80)} {' '.join(clean(item, 30) for item in arguments.get('args', []))}".strip()
     if name == "git_action":
         return f"{label} {clean(arguments['action'], 20)} {clean(arguments.get('ref', ''), 40)}".strip()
+    # Text in other files may be a bare key with nothing to mark it as one, so only the path is kept.
     return f"{label} {clean(arguments['path'], 80)}"
 
 

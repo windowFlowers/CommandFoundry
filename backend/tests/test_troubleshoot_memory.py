@@ -248,6 +248,15 @@ def test_secrets_in_edits_are_not_persisted(tmp_path, store):
     assert "hunter2" not in json.dumps(store.export("p"), ensure_ascii=False)
 
 
+def test_bare_key_edited_outside_config_is_not_persisted(tmp_path, store):
+    """Found by the student benchmark: a key file has no password= for redaction to catch."""
+    turns = ([call("edit_file", 1, path="/opt/app/secrets/app.key.bak", old_text="s3cr3t-value", new_text="s3cr3t-value")],
+             [call("service_restart", 2, name="api")], [finish()])
+    run(tmp_path, store, Script(*turns), Host())
+    dump = json.dumps(store.export("p"), ensure_ascii=False)
+    assert "/opt/app/secrets/app.key.bak" in dump and "s3cr3t-value" not in dump
+
+
 def test_tampered_rows_are_not_recalled(tmp_path, store):
     run(tmp_path, store, Script(*fix_turns()), Host(), name="1.db")
     with sqlite3.connect(tmp_path / "memory.db") as db:

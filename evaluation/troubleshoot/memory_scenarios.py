@@ -287,6 +287,32 @@ def fault_bad_port_value(app):
             "solution": f"sed -i 's/{app.port}x/{app.port}/' {app.config_path}\n" + restart(app), "diagnosis": [["port", "端口", str(app.port)]]}
 
 
+def fault_launcher_permission(app):
+    run = f"/opt/svc/{app.web}/run"
+    return {"prompt": f"{app.web} 拉不起来，重启也没用。", "category": "permission", "fault": f"chmod 644 {run}\n",
+            "solution": f"chmod 755 {run}\n" + restart(app), "diagnosis": [["权限", "permission", "执行", "run"]]}
+
+
+def fault_launcher_path(app):
+    run = f"/opt/svc/{app.web}/run"
+    return {"prompt": f"部署脚本改过之后 {app.web} 启动就退出。", "category": "config",
+            "fault": f"sed -i 's#{app.root}/server.py#{app.root}/server_v2.py#' {run}\n",
+            "solution": f"sed -i 's#{app.root}/server_v2.py#{app.root}/server.py#' {run}\n" + restart(app),
+            "diagnosis": [["server_v2", "server.py", "启动脚本", "run"]]}
+
+
+def fault_key_moved(app):
+    key = f"{app.root}/secrets/app.key"
+    return {"prompt": f"整理目录之后 {app.web} 起不来了。", "category": "config",
+            "fault": f"mv {key} {key}.bak\nsed -i 's#{key}#{key}.gone#' {app.config_path}.sample\n",
+            "solution": f"sed -i 's#{key}#{key}.bak#' {app.config_path}\n" + restart(app), "diagnosis": [["app.key", "key", "密钥"]]}
+
+
+def fault_data_dir_readonly(app):
+    return {"prompt": f"存储迁移之后 {app.web} 启动失败。", "category": "permission", "fault": "rm -f /srv/data/.boot\nchmod 555 /srv/data\n",
+            "solution": "chmod 755 /srv/data\n" + restart(app), "diagnosis": [["权限", "permission", "只读", "/srv/data"]]}
+
+
 def scenario(app, session, fault):
     return {"id": f"{app.name}-{session:02d}-{fault.get('tag')}", "app": app.name, "split": app.split, "category": fault["category"],
             "level": 2, "prompt": fault["prompt"], "setup": base(app) + fault["fault"] + start(app) + fault.get("after", ""),
@@ -316,6 +342,13 @@ def sequence(app):
             ("upstream-port", fault_upstream_port(app, app.dep_port + 7)), ("schema", fault_schema(app)),
             ("missing-key", fault_missing_key(app, injection=True)), ("key-permission", fault_key_permission(app)),
             ("rogue-port", fault_rogue_port(app))]
+    if app.split == "student":
+        # Four families absent from every teacher trajectory, then repeats.
+        plan = [("launcher-permission", fault_launcher_permission(app)), ("key-moved", fault_key_moved(app)),
+                ("launcher-path", fault_launcher_path(app)), ("data-dir-readonly", fault_data_dir_readonly(app)),
+                ("upstream-port", fault_upstream_port(app, app.dep_port + 3)), ("launcher-permission", fault_launcher_permission(app)),
+                ("key-moved", fault_key_moved(app)), ("data-dir-readonly", fault_data_dir_readonly(app)),
+                ("launcher-path", fault_launcher_path(app)), ("schema", fault_schema(app))]
     if app.split in ("final", "train2"):
         # Disk and bad-value faults never appeared while the memory module was developed.
         plan[5:5] = [("disk-full", fault_disk_full(app))]
@@ -354,4 +387,9 @@ TRAIN2_APPS = [
     App("census", "census-web", "geoindex", "tally-job", 8496, 6522, "/health/live", "cfg/web.json", "json", "table-sync", "households", "region", "census.db", "train2"),
     App("arcade", "arcade-srv", "scoreboard", "replay-gc", 8715, 6168, "/service-check", "run/arcade.env", "env", "mutate-db", "players", "tier", "arcade.sqlite", "train2"),
 ]
-APPS = [*DEV_APPS, *TRAIN_APPS, *FINAL_APPS, *TRAIN2_APPS]
+# Holdout for distilled models: apps and four fault families no trajectory contains.
+STUDENT_APPS = [
+    App("observatory", "obs-gateway", "skymap", "plate-solver", 8387, 6204, "/telescope-ok", "etc/gateway.ini", "ini", "realign", "frames", "filter", "observatory.db", "student"),
+    App("brewery", "brew-console", "vatmonitor", "keg-audit", 8619, 6741, "/brew-ready", "conf/console.env", "env", "ferment-schema", "batches", "hops", "brewery.sqlite", "student"),
+]
+APPS = [*DEV_APPS, *TRAIN_APPS, *FINAL_APPS, *TRAIN2_APPS, *STUDENT_APPS]
