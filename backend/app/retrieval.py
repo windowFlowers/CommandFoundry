@@ -125,6 +125,7 @@ _DOMAIN_INDEX_CACHE: dict[
         frozenset[str],
         tuple[tuple[str, str, re.Pattern[str] | None, float], ...],
         dict[str, tuple[tuple[str, float], ...]],
+        dict[str, frozenset[str]],
     ],
 ] = {}
 
@@ -164,6 +165,10 @@ def _hint_pattern(hint: str) -> re.Pattern[str] | None:
     return None
 
 
+def _exact_name(value: str) -> str:
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", value).casefold())
+
+
 def _contains_hint(query: str, hint: str) -> bool:
     value = hint.casefold()
     pattern = _hint_pattern(value)
@@ -178,6 +183,7 @@ def _domain_index(
     frozenset[str],
     tuple[tuple[str, str, re.Pattern[str] | None, float], ...],
     dict[str, tuple[tuple[str, float], ...]],
+    dict[str, frozenset[str]],
 ]:
     key = id(topics)
     cached = _DOMAIN_INDEX_CACHE.get(key)
@@ -186,7 +192,10 @@ def _domain_index(
     known_domains = frozenset(topic.domain for topic in topics)
     entries: list[tuple[str, str, re.Pattern[str] | None, float]] = []
     token_domains: dict[str, dict[str, float]] = {}
+    exact_names: dict[str, set[str]] = {}
     for topic in topics:
+        for name in (topic.title, *topic.aliases):
+            exact_names.setdefault(_exact_name(name), set()).add(topic.domain)
         names = (topic.id.rsplit(".", 1)[-1], topic.title, *topic.aliases)
         for name in names:
             candidate = _normalized_query(name).casefold()
@@ -211,6 +220,7 @@ def _domain_index(
         known_domains,
         tuple(entries),
         {token: tuple(values.items()) for token, values in token_domains.items()},
+        {name: frozenset(domains) for name, domains in exact_names.items()},
     )
     _DOMAIN_INDEX_CACHE[key] = cached
     return cached
@@ -219,7 +229,13 @@ def _domain_index(
 def _infer_domain(query: str, topics: Sequence[KnowledgeTopic]) -> str | None:
     lowered = query.casefold()
     candidates: dict[str, int] = {}
-    known_domains, entries, token_domains = _domain_index(topics)
+    known_domains, entries, token_domains, exact_names = _domain_index(topics)
+    # A query that is exactly one topic's title or alias already names its
+    # domain.  Token routing must not filter that topic out: ``where python
+    # 路径`` is a Windows topic even though ``python`` is the stronger token.
+    exact_domains = exact_names.get(_exact_name(query), frozenset())
+    if len(exact_domains) == 1:
+        return next(iter(exact_domains))
     for domain, hints in _DOMAIN_HINTS.items():
         if domain not in known_domains:
             continue

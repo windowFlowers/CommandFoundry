@@ -26,6 +26,7 @@ REFERENCE_PATTERN = re.compile(
     r"这种|该方法|该命令|换成|改成|怎么写\s*[？?]?$|安全吗|会丢|还有别的|呢\s*[？?]?$)",
     re.IGNORECASE,
 )
+PLATFORM_SWAP_FILLER = re.compile(r"[\s，,。.？?!！]|那|换成|改成|的话|怎么写|怎么做|呢|用")
 ORDINAL_PATTERN = re.compile(r"第\s*([一二三123])\s*(?:种|个|条|项|方案|方法)")
 CONSTRAINT_PATTERN = re.compile(r"必须|不要|不能|只(?:要|用|允许)|安全|不丢|避免|限制|不自动")
 SECRET_PATTERNS = (
@@ -239,7 +240,10 @@ def resolve_contextual_query(query: str, turn: ConversationTurn | None) -> str:
             previous,
             flags=re.IGNORECASE,
         )
-        return f"{rewritten}；补充要求：{current}"
+        # A bare swap ("PostgreSQL 怎么写？") adds nothing beyond the target, and
+        # repeating it lets generic words outrank the rewritten question.
+        extra = re.sub(re.escape(target), "", current, flags=re.IGNORECASE)
+        return f"{rewritten}；补充要求：{current}" if PLATFORM_SWAP_FILLER.sub("", extra) else rewritten
     commands = (turn.assistant.answer.commands if turn.assistant.answer else [])[:6]
     ordinal = ORDINAL_PATTERN.search(current)
     selected_label = ""

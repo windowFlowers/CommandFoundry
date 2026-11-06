@@ -38,6 +38,14 @@ def test_query_analysis_decomposes_only_distinct_known_domains() -> None:
     assert generic.decomposed is False
 
 
+def test_exact_topic_alias_overrides_token_domain_routing() -> None:
+    query = "where python 路径"
+
+    assert analyze_query(query, catalog.topics).domain == "windows"
+    assert retriever.retrieve_advanced(query, top_k=4)[0].topic.id == "windows.where"
+    assert analyze_query("python where 路径", catalog.topics).domain != "windows"
+
+
 def test_explicit_metadata_filter_keeps_shell_specific_topics() -> None:
     powershell_topic = next(topic for topic in catalog.topics if topic.id == "windows.new-item")
     linux_topic = next(topic for topic in catalog.topics if topic.id == "linux.cd")

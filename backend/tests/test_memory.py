@@ -109,6 +109,14 @@ def test_local_reference_resolution_handles_platform_pointer_and_new_topic() -> 
     assert resolve_contextual_query(explicit, linux) == explicit
 
 
+def test_platform_swap_keeps_only_requirements_the_follow_up_adds() -> None:
+    mysql = _turn("MySQL 中怎么创建一个视图？", "创建 MySQL 视图")
+
+    assert resolve_contextual_query("PostgreSQL 怎么写？", mysql) == "PostgreSQL 中怎么创建一个视图？"
+    assert resolve_contextual_query("那 PostgreSQL 呢？", mysql) == "PostgreSQL 中怎么创建一个视图？"
+    assert resolve_contextual_query("PostgreSQL 只读视图怎么写？", mysql).endswith("补充要求：PostgreSQL 只读视图怎么写？")
+
+
 def test_ordinal_pointer_can_use_grounded_citations_when_command_is_not_rendered() -> None:
     answer = Answer(
         mode="model",
