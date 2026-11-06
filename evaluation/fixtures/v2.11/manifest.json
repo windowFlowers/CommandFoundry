@@ -8,8 +8,8 @@
       "path": "core_golden.jsonl",
       "qrels": "core.qrels",
       "case_count": 137,
-      "sha256": "a532ff29989b69b434db896ac978c21d99aa940914a3a98a6b3e8dd5961a0ae0",
-      "qrels_sha256": "30be93dfd38982b96954c83ef26bcd0e965d2c3f8790c70fa935a553be344485"
+      "sha256": "fb5e25f107b1e49bf4eaf8c5611fb0584e2e0fc2676e84bb6d15807fdf9fd346",
+      "qrels_sha256": "07a424f8c6f30319f142987bb24cd0ed7d73cb06c937e057a7a0cab960168f5d"
     },
     {
       "name": "answer-golden",
@@ -25,13 +25,13 @@
     "cicd": 10,
     "docker": 11,
     "git": 10,
-    "http": 11,
+    "http": 9,
     "java": 7,
     "kubernetes": 10,
     "linux": 13,
-    "network": 10,
-    "node": 10,
-    "python": 10,
+    "network": 12,
+    "node": 11,
+    "python": 9,
     "redis": 10,
     "sql": 11,
     "testing": 10,
