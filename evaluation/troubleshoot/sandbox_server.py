@@ -74,9 +74,15 @@ def stop(body):
     with lock:
         run = runs.pop(body["run_id"], None)
     if run:
+        pid = run["process"].pid
+        # --new-session puts the inner bwrap in its own session, so killpg alone leaves it and every
+        # service running. It is PID 1 of the sandbox: killing it takes the whole namespace down.
+        # (--die-with-parent is no use here: it fires when the request thread that started bwrap ends.)
         try:
-            os.killpg(run["process"].pid, signal.SIGKILL)
-        except ProcessLookupError:
+            for child in Path(f"/proc/{pid}/task/{pid}/children").read_text().split():
+                os.kill(int(child), signal.SIGKILL)
+            os.killpg(pid, signal.SIGKILL)
+        except (FileNotFoundError, ProcessLookupError):
             pass
         run["process"].wait(timeout=5)
         shutil.rmtree(run["base"], ignore_errors=True)
@@ -123,6 +129,8 @@ def reap():
 
 def main():
     os.chmod(ROOT, 0o700)
+    # A previous daemon may have died with sandboxes still running.
+    subprocess.run(["pkill", "-9", "-f", f"^bwrap .*{RUNS}/"], check=False)
     shutil.rmtree(RUNS, ignore_errors=True)
     RUNS.mkdir()
     API.unlink(missing_ok=True)

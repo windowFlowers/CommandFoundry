@@ -14,7 +14,7 @@ CommandFoundry is a local-first command RAG desktop application for developers, 
 
 `backend/app/troubleshoot` is a developer troubleshooting agent. It uses tools to find and fix service faults, write actions go through a host policy and approval, and host probes decide whether a fix worked. It is not part of the desktop app yet; it runs in an isolated sandbox through `scripts/run_memory_bench.py`.
 
-- Long-term memory: only runs the host verified add project facts and fixes. Failed attempts are kept as negative experience, and fixes that keep failing are quarantined. Memory only informs the model and cannot relax the safety policy.
+- Long-term memory: the host decides what is written, and only runs it verified add project facts and fixes. Memory only informs the model and cannot relax the safety policy. [Mem0](https://github.com/mem0ai/mem0) can store and retrieve the records (`pip install -e ".[memory]"`), but no model extracts memories from a run: in the comparison, extraction stored the contents of secret files.
 - Trajectory distillation: Qwen3.5-4B is LoRA-tuned on troubleshooting trajectories from a teacher model.
 
 Task success rates below use apps and fault types absent from training, 100 sessions per cell, temperature 0.7, skills off:
@@ -25,7 +25,19 @@ Task success rates below use apps and fault types absent from training, 100 sess
 | Qwen3.5-4B distilled | 91% | 92% |
 | Qwen3.5-9B base (FP8) | 96% | 93% |
 
-The scenarios are built by this project and cover 2 apps; repeating one configuration can differ by about 6 points. Methods, confidence intervals and known issues are in [AGENT_EVOLUTION.md](docs/AGENT_EVOLUTION.md) (Chinese).
+The scenarios are built by this project and cover 2 apps; repeating one configuration can differ by about 6 points.
+
+The memory gain above does not generalize. A later run on 2 new apps, 240 sessions per row, Qwen3.5-4B base:
+
+| Memory | Success | Tool calls per session | Secrets stored |
+| --- | --- | --- | --- |
+| None | 85.0% | 12.6 | - |
+| Own (SQLite, lexical match) | 83.3% | 10.5 | None |
+| Mem0 retrieval, host-written records | 87.5% | 10.3 | None |
+
+Mem0 retrieval beats the own version by 4.2 points (95% interval 0.4 to 7.9) and no memory by 2.5 points (-3.3 to 7.5, not significant). The established benefit so far is 18% fewer tool calls. There is also a known side effect: listed project facts make small models overlook what is not listed, and launcher-script faults drop from 28/40 to 18/40.
+
+Methods, the full comparison and known issues are in [AGENT_EVOLUTION.md](docs/AGENT_EVOLUTION.md) (Chinese).
 
 ## Technology stack
 

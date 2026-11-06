@@ -534,3 +534,19 @@ def test_mem0_failure_never_ends_the_run(store):
 
     assert found.facts and mem.search("x") == "没有相关记忆"
     assert mem.failures == 3 and any("vector store down" in error for error in mem.errors)
+
+
+def test_a_finished_run_leaves_no_open_database_connection(tmp_path, store, monkeypatch):
+    opened, connect = [], sqlite3.connect
+
+    def tracked(*arguments, **options):
+        opened.append(connect(*arguments, **options))
+        return opened[-1]
+
+    monkeypatch.setattr(sqlite3, "connect", tracked)
+    run(tmp_path, store, Script(*fix_turns()), Host())
+
+    assert len(opened) > 2
+    for connection in opened:
+        with pytest.raises(sqlite3.ProgrammingError):
+            connection.execute("select 1")

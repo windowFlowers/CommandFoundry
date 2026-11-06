@@ -11,6 +11,7 @@ import logging
 import re
 import sqlite3
 import threading
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter
@@ -216,8 +217,15 @@ class TroubleshootAgent:
         builder.add_edge("end", END)
         self.graph = builder.compile(checkpointer=self.saver)
 
+    @contextmanager
     def _db(self):
-        return sqlite3.connect(self.path, timeout=10)
+        # sqlite3's own context manager commits but never closes.
+        connection = sqlite3.connect(self.path, timeout=10)
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     @staticmethod
     def _config(run_id: str) -> dict:
