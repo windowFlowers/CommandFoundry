@@ -60,6 +60,21 @@ jobs:
         working-directory: frontend
         run: npm test
 
+  # The desktop app ships for Windows only and its tests assert Windows paths.
+  desktop:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
       - name: Install desktop dependencies
         working-directory: desktop
         run: npm ci
